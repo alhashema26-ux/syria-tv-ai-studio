@@ -1,0 +1,26 @@
+[project]
+name = "stv-studio"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "alhashema26-ux", email = "alhashema26@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.116.0",
+    "google-genai>=2.11.0",
+    "openai>=2.45.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.2",
+    "python-dotenv>=1.2.2",
+    "structlog>=26.1.0",
+    "tenacity>=9.1.4",
+]
+
+[project.scripts]
+stv-studio = "stv_studio:main"
+
+[build-system]
+requires = ["uv_build>=0.11.29,<0.12.0"]
+build-backend = "uv_build"
