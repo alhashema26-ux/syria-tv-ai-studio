@@ -45,12 +45,18 @@ class Settings(BaseSettings):
         ..., 
         description="مفتاح Google Gemini API"
     )
-    
+    voyage_api_key: SecretStr = Field(
+        ...,
+        description="مفتاح Voyage AI للـ embeddings"
+    )
     # --- Default Models ---
     default_provider: Literal["anthropic", "openai", "gemini"] = "anthropic"
     anthropic_model: str = "claude-sonnet-5"
     openai_model: str = "gpt-5.6-terra"
     gemini_model: str = "gemini-3.1-flash-lite"
+    voyage_model: str = "voyage-3"
+    embedding_dimensions: int = 1024
+
     
     # --- Generation Settings ---
     temperature: float = Field(default=0.4, ge=0.0, le=2.0)
