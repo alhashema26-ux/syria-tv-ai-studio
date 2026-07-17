@@ -2,7 +2,8 @@
 Process Report - السكريبت الرئيسي
 ====================================
 يأخذ نص تقرير خام، ويشغّل السلسلة الكاملة:
-Analyzer -> Title Generator -> Description Generator -> Thumbnail Generator -> حفظ التقرير.
+Analyzer -> Title Generator -> Description Generator -> Thumbnail Generator
+-> Quality Evaluator (GPT مستقل) -> حفظ التقرير.
 
 الاستخدام:
     python scripts/process_report.py path/to/transcript.txt
@@ -20,6 +21,7 @@ from stv_studio.agents.analyzer import TranscriptAnalyzer
 from stv_studio.agents.title_generator import TitleAgent
 from stv_studio.agents.description_generator import DescriptionAgent
 from stv_studio.agents.thumbnail_generator import ThumbnailAgent
+from stv_studio.agents.quality_evaluator import QualityEvaluator
 from stv_studio.utils.output_saver import OutputSaver
 
 
@@ -41,32 +43,45 @@ async def process(transcript: str):
     print("=" * 70)
 
     # الخطوة 1: التحليل
-    print("\n[1/5] Analyzing transcript...")
+    print("\n[1/6] Analyzing transcript...")
     analyzer = TranscriptAnalyzer()
     analysis = await analyzer.analyze(transcript)
     print(f"[OK] Topic: {analysis.topic[:70]}...")
 
     # الخطوة 2: العناوين
-    print("\n[2/5] Generating 10 titles with RAG...")
+    print("\n[2/6] Generating 10 titles with RAG...")
     title_agent = TitleAgent(router=analyzer.router)
     titles_result = await title_agent.generate(analysis)
     chosen_title = titles_result.titles[titles_result.recommended.index].text
     print(f"[OK] Chosen title: {chosen_title}")
 
     # الخطوة 3: الوصف
-    print("\n[3/5] Generating description...")
+    print("\n[3/6] Generating description...")
     desc_agent = DescriptionAgent(router=analyzer.router)
     desc_result = await desc_agent.generate(analysis, chosen_title)
     print(f"[OK] Description generated ({len(desc_result.keywords)} keywords, {len(desc_result.hashtags)} hashtags)")
 
     # الخطوة 4: أفكار الثمبنيل
-    print("\n[4/5] Generating thumbnail options...")
+    print("\n[4/6] Generating thumbnail options...")
     thumb_agent = ThumbnailAgent(router=analyzer.router)
     thumb_result = await thumb_agent.generate(analysis, chosen_title)
+    chosen_thumbnail = thumb_result.options[thumb_result.recommended_index]
     print(f"[OK] Generated {len(thumb_result.options)} thumbnail options")
 
-    # الخطوة 5: الحفظ
-    print("\n[5/5] Saving full report...")
+    # الخطوة 5: التقييم المستقل (GPT)
+    print("\n[5/6] Evaluating quality (independent model)...")
+    evaluator = QualityEvaluator(router=analyzer.router)
+    eval_result = await evaluator.evaluate(
+        transcript=transcript,
+        analysis=analysis,
+        chosen_title=chosen_title,
+        description=desc_result.description,
+        chosen_thumbnail=chosen_thumbnail,
+    )
+    print(f"[OK] Overall score: {eval_result.overall_score}/100 — {eval_result.verdict}")
+
+    # الخطوة 6: الحفظ
+    print("\n[6/6] Saving full report...")
     stats = analyzer.router.get_stats()
 
     saver = OutputSaver()
@@ -79,7 +94,6 @@ async def process(transcript: str):
         output_tokens=stats["total_output_tokens"],
     )
 
-    # نضيف الوصف والثمبنيل يدوياً بآخر الملف
     with open(filepath, "a", encoding="utf-8") as f:
         f.write("\n---\n\n## 📄 الوصف والكلمات المفتاحية\n\n")
         f.write(f"### الوصف\n{desc_result.description}\n\n")
@@ -91,14 +105,33 @@ async def process(transcript: str):
         f.write("\n---\n\n## 🖼️ أفكار نص الثمبنيل\n\n")
         for i, opt in enumerate(thumb_result.options):
             marker = " ⭐" if i == thumb_result.recommended_index else ""
-            f.write(f"**{i}. {opt.text}**{marker}\n")
+            f.write(f"**{i}. {opt.text}**{marker} ({opt.word_count} كلمات)\n")
             f.write(f"   - ملاحظة بصرية: {opt.visual_note}\n\n")
+
+        f.write("\n---\n\n## 🔍 تقييم الجودة المستقل (GPT)\n\n")
+        f.write(f"**التقييم الإجمالي:** {eval_result.overall_score}/100\n\n")
+        f.write(f"**الحكم:** {eval_result.verdict}\n\n")
+        f.write(f"**جاهز للنشر:** {'✅ نعم' if eval_result.ready_to_publish else '❌ لا'}\n\n")
+
+        f.write("### المعايير التفصيلية\n\n")
+        for c in eval_result.criteria:
+            f.write(f"- **{c.name}:** {c.score}/100 — {c.comment}\n")
+
+        f.write("\n### نقاط القوة\n\n")
+        for s in eval_result.strengths:
+            f.write(f"- {s}\n")
+
+        if eval_result.weaknesses:
+            f.write("\n### نقاط الضعف\n\n")
+            for w in eval_result.weaknesses:
+                f.write(f"- {w}\n")
 
     print(f"[OK] Saved to: {filepath}")
 
     print(f"\n{'=' * 70}")
     print(f"[COMPLETE] Total cost: ${stats['total_cost_usd']:.6f}")
     print(f"           Tokens: {stats['total_input_tokens']} in, {stats['total_output_tokens']} out")
+    print(f"           Quality: {eval_result.overall_score}/100 ({'✅ Ready' if eval_result.ready_to_publish else '❌ Needs review'})")
     print(f"\n📄 Open in VS Code: {filepath}")
 
     return filepath
