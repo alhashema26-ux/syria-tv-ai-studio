@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syria TV AI Studio</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 24px;
+            line-height: 1.7;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        header {
+            background: #1e293b;
+            color: white;
+            padding: 24px 32px;
+            border-radius: 12px 12px 0 0;
+        }
+        header h1 { font-size: 22px; margin-bottom: 4px; }
+        header p { color: #94a3b8; font-size: 14px; }
+        .card {
+            background: white;
+            padding: 32px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 220px;
+            padding: 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        textarea:focus { outline: none; border-color: #1e293b; }
+        button {
+            margin-top: 16px;
+            background: #b91c1c;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover { background: #991616; }
+        button:disabled { background: #94a3b8; cursor: wait; }
+        .loading {
+            display: none;
+            margin-top: 16px;
+            padding: 16px;
+            background: #fef3c7;
+            border-radius: 8px;
+            color: #92400e;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .result-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 24px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .copy-btn {
+            background: #059669;
+            padding: 8px 16px;
+            font-size: 13px;
+            margin: 0;
+        }
+        .copy-btn:hover { background: #047857; }
+        .filename {
+            color: #64748b;
+            font-size: 13px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📺 Syria TV AI Studio</h1>
+            <p>الصق نص التقرير، واحصل على تحليل كامل + عناوين + وصف + ثمبنيل + تقييم جودة</p>
+        </header>
+
+        <div class="card">
+            <form id="reportForm" method="post" action="/process">
+                <textarea name="transcript" placeholder="الصق نص التقرير الإخباري هنا...">{{ transcript or "" }}</textarea>
+                <br>
+                <button type="submit" id="submitBtn">🚀 معالجة التقرير</button>
+                <div class="loading" id="loadingMsg">
+                    ⏳ جارٍ المعالجة... هذا يستغرق 30-90 ثانية (تحليل + عناوين + وصف + ثمبنيل + تقييم)
+                </div>
+            </form>
+        </div>
+
+        {% if error %}
+        <div class="card">
+            <div class="error">❌ حدث خطأ: {{ error }}</div>
+        </div>
+        {% endif %}
+
+        {% if result %}
+        <div class="card">
+            <div class="result-header">
+                <h2>✅ النتيجة</h2>
+                <div>
+                    <span class="filename">{{ result.filename }}</span>
+                    <button class="copy-btn" onclick="copyResult()">📋 نسخ الكل</button>
+                </div>
+            </div>
+            <div class="result-box" id="resultContent">{{ result.content }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.getElementById('reportForm').addEventListener('submit', function() {
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = '⏳ جارٍ المعالجة...';
+            document.getElementById('loadingMsg').style.display = 'block';
+        });
+
+        function copyResult() {
+            const text = document.getElementById('resultContent').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ تم النسخ!');
+            });
+        }
+    </script>
+</body>
+</html>

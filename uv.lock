@@ -663,6 +663,22 @@ wheels = [
 ]
 
 [[package]]
+name = "fastapi"
+version = "0.139.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "annotated-doc" },
+    { name = "pydantic" },
+    { name = "starlette" },
+    { name = "typing-extensions" },
+    { name = "typing-inspection" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cd/95/d3f0ae10836324a2eab98a52b61210ac609f08200bf4bb0dc8132d32f78a/fastapi-0.139.2.tar.gz", hash = "sha256:333145a6891e9b5b3cfceb69baf817e8240cde4d4588ae5a10bf56ffacb6255e", size = 423428, upload-time = "2026-07-16T15:06:17.912Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5f/c7/cb03251d9dfb177246a9809a76f189d21df32dbd4a845951881d11323b7f/fastapi-0.139.2-py3-none-any.whl", hash = "sha256:b9ad015a835173d59865e2f5d8296fbc2b317bf56a2ba1a5bfbdd03de2fd4b1c", size = 130234, upload-time = "2026-07-16T15:06:19.557Z" },
+]
+
+[[package]]
 name = "filelock"
 version = "3.30.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2491,6 +2507,15 @@ wheels = [
 ]
 
 [[package]]
+name = "python-multipart"
+version = "0.0.32"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/42/55c32bb9b12693c092ad250a0e82edb5b31ddeda6eb772de5f308b3804ad/python_multipart-0.0.32.tar.gz", hash = "sha256:be54b7f3fa167bb83e4fcd936b887b708f4e57fe75911c02aebf53efaf8d938e", size = 46881, upload-time = "2026-06-04T16:18:58.647Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/04/e8135ebd1ad02c56ec633277529b2602ff99ff634be76cdba5744cf554fd/python_multipart-0.0.32-py3-none-any.whl", hash = "sha256:ff6d3f776f16878c894e52e107296ffc890e913c611b1a4ec6c44e2821fe2e23", size = 30042, upload-time = "2026-06-04T16:18:57.319Z" },
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -2957,6 +2982,19 @@ wheels = [
 ]
 
 [[package]]
+name = "starlette"
+version = "1.3.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/eb/e3/7c1dc7381d9f8ab7d854328ebfa884e62cb3f3d8549ddfd37c7814f42afa/starlette-1.3.1.tar.gz", hash = "sha256:05d0213193f2fbaae60e2ecb593b4add4262ad4e46536b54abe36f11a71724e0", size = 2703240, upload-time = "2026-06-12T09:23:11.602Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ec/bb/2799cc2ede3ed41131f8975621e7213dfc7ef4acbbaadfa440f32500c370/starlette-1.3.1-py3-none-any.whl", hash = "sha256:c7372aae11c3c3f26a42df7bd626cec2f47d03483d261d369516a615a53714c6", size = 73632, upload-time = "2026-06-12T09:23:10.017Z" },
+]
+
+[[package]]
 name = "structlog"
 version = "26.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2972,16 +3010,20 @@ source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
     { name = "chromadb" },
+    { name = "fastapi" },
     { name = "google-genai" },
+    { name = "jinja2" },
     { name = "openai" },
     { name = "openpyxl" },
     { name = "pandas" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
+    { name = "python-multipart" },
     { name = "sentence-transformers" },
     { name = "structlog" },
     { name = "tenacity" },
+    { name = "uvicorn" },
     { name = "voyageai" },
 ]
 
@@ -2989,16 +3031,20 @@ dependencies = [
 requires-dist = [
     { name = "anthropic", specifier = ">=0.116.0" },
     { name = "chromadb", specifier = ">=1.5.9" },
+    { name = "fastapi", specifier = ">=0.139.2" },
     { name = "google-genai", specifier = ">=2.11.0" },
+    { name = "jinja2", specifier = ">=3.1.6" },
     { name = "openai", specifier = ">=2.45.0" },
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "pandas", specifier = ">=3.0.3" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "pydantic-settings", specifier = ">=2.14.2" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
+    { name = "python-multipart", specifier = ">=0.0.32" },
     { name = "sentence-transformers", specifier = ">=5.6.0" },
     { name = "structlog", specifier = ">=26.1.0" },
     { name = "tenacity", specifier = ">=9.1.4" },
+    { name = "uvicorn", specifier = ">=0.51.0" },
     { name = "voyageai", specifier = ">=0.5.0" },
 ]
 
