@@ -12,7 +12,7 @@ class CriterionScore(BaseModel):
 
     name: str = Field(..., max_length=50)
     score: int = Field(..., ge=0, le=100)
-    comment: str = Field(..., max_length=300)
+    comment: str = Field(..., max_length=800)
 
 
 class EvaluationResult(BaseModel):
@@ -23,9 +23,9 @@ class EvaluationResult(BaseModel):
 
     overall_score: int = Field(..., ge=0, le=100)
     criteria: list[CriterionScore] = Field(..., min_length=4, max_length=8)
-    strengths: list[str] = Field(..., min_length=1, max_length=5)
-    weaknesses: list[str] = Field(default_factory=list, max_length=5)
-    verdict: str = Field(..., max_length=100)
+    strengths: list[str] = Field(..., min_length=1, max_length=8)
+    weaknesses: list[str] = Field(default_factory=list, max_length=8)
+    verdict: str = Field(..., max_length=200)
     ready_to_publish: bool
 
     def to_display(self) -> str:
