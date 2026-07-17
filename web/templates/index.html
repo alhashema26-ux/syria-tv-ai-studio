@@ -13,15 +13,27 @@
             padding: 24px;
             line-height: 1.7;
         }
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 1000px; margin: 0 auto; }
         header {
             background: #1e293b;
             color: white;
             padding: 24px 32px;
             border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         header h1 { font-size: 22px; margin-bottom: 4px; }
         header p { color: #94a3b8; font-size: 14px; }
+        header a {
+            color: white;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        header a:hover { background: rgba(255,255,255,0.25); }
         .card {
             background: white;
             padding: 32px;
@@ -41,103 +53,92 @@
         }
         textarea:focus { outline: none; border-color: #1e293b; }
 
-        .options-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-        .options-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #475569;
-            margin-bottom: 12px;
-        }
-        .checkbox-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-        }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-        }
+        .options-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+        .options-title { font-size: 14px; font-weight: bold; color: #475569; margin-bottom: 12px; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; cursor: pointer; }
         .checkbox-item:hover { background: #f1f5f9; }
         .checkbox-item input { width: 16px; height: 16px; cursor: pointer; }
         .checkbox-item.required { opacity: 0.6; }
         .checkbox-item.required input { cursor: not-allowed; }
         .note { font-size: 12px; color: #94a3b8; margin-top: 8px; }
 
-        button {
-            margin-top: 20px;
-            background: #b91c1c;
-            color: white;
-            border: none;
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        button { margin-top: 20px; background: #b91c1c; color: white; border: none; padding: 14px 32px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
         button:hover { background: #991616; }
         button:disabled { background: #94a3b8; cursor: wait; }
-        .loading {
-            display: none;
-            margin-top: 16px;
-            padding: 16px;
-            background: #fef3c7;
-            border-radius: 8px;
-            color: #92400e;
-        }
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .result-box {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 24px;
-            white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .copy-btn {
-            background: #059669;
-            padding: 8px 16px;
-            font-size: 13px;
-            margin: 0;
-        }
+        .loading { display: none; margin-top: 16px; padding: 16px; background: #fef3c7; border-radius: 8px; color: #92400e; }
+        .error { background: #fee2e2; color: #991b1b; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+
+        /* ===== نتيجة منسّقة ===== */
+        .result-meta { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-cost { background: #dbeafe; color: #1e40af; }
+        .badge-quality-high { background: #d1fae5; color: #065f46; }
+        .badge-quality-mid { background: #fef3c7; color: #92400e; }
+        .badge-quality-low { background: #fee2e2; color: #991b1b; }
+
+        .section { margin-bottom: 28px; }
+        .section-title { font-size: 15px; font-weight: bold; color: #1e293b; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+
+        .main-title-box { background: #1e293b; color: white; padding: 20px 24px; border-radius: 10px; margin-bottom: 20px; }
+        .main-title-box .label { font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
+        .main-title-box .title-text { font-size: 22px; font-weight: bold; line-height: 1.5; }
+
+        .analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+        .analysis-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; }
+        .analysis-item .k { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+        .analysis-item .v { font-size: 14px; font-weight: bold; color: #1e293b; }
+
+        .title-option { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; margin-bottom: 10px; }
+        .title-option.recommended { background: #fef9e7; border-color: #f59e0b; }
+        .title-option .style-tag { font-size: 11px; background: #e2e8f0; color: #475569; padding: 2px 10px; border-radius: 10px; display: inline-block; margin-bottom: 6px; }
+        .title-option.recommended .style-tag { background: #f59e0b; color: white; }
+        .title-option .title-text { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .title-option .rationale { font-size: 13px; color: #64748b; }
+
+        .desc-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; white-space: pre-wrap; font-size: 14px; margin-bottom: 14px; }
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { background: #e0e7ff; color: #3730a3; padding: 4px 10px; border-radius: 12px; font-size: 12px; }
+        .hashtag { background: #ecfdf5; color: #065f46; padding: 4px 10px; border-radius: 12px; font-size: 12px; }
+
+        .thumb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+        .thumb-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; }
+        .thumb-card.recommended { background: #fef9e7; border-color: #f59e0b; }
+        .thumb-card .thumb-text { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
+        .thumb-card .thumb-note { font-size: 12px; color: #64748b; line-height: 1.5; }
+        .thumb-card .word-count { font-size: 11px; color: #94a3b8; }
+
+        .eval-score-box { display: flex; align-items: center; gap: 20px; background: #f8fafc; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+        .eval-score-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; flex-shrink: 0; }
+        .eval-verdict { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+        .eval-ready { font-size: 13px; }
+        .criterion { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #e2e8f0; gap: 12px; }
+        .criterion:last-child { border-bottom: none; }
+        .criterion .c-name { font-weight: bold; font-size: 13px; min-width: 140px; }
+        .criterion .c-score { font-size: 13px; font-weight: bold; color: #1e293b; }
+        .criterion .c-comment { font-size: 12px; color: #64748b; flex: 1; }
+        .strengths-weaknesses { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+        .sw-box { padding: 14px; border-radius: 8px; }
+        .sw-box.strengths { background: #f0fdf4; }
+        .sw-box.weaknesses { background: #fef2f2; }
+        .sw-box .sw-title { font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+        .sw-box.strengths .sw-title { color: #166534; }
+        .sw-box.weaknesses .sw-title { color: #991b1b; }
+        .sw-box li { font-size: 12px; margin-bottom: 4px; margin-right: 16px; }
+
+        .copy-btn { background: #059669; padding: 8px 16px; font-size: 13px; margin: 0; }
         .copy-btn:hover { background: #047857; }
-        .filename {
-            color: #64748b;
-            font-size: 13px;
-            font-family: monospace;
-        }
+        .actions-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 16px; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📺 Syria TV AI Studio</h1>
-            <p>الصق نص التقرير، اختر ما تحتاجه، واحصل على النتيجة</p>
+            <div>
+                <h1>📺 Syria TV AI Studio</h1>
+                <p>الصق نص التقرير، اختر ما تحتاجه، واحصل على النتيجة</p>
+            </div>
+            <a href="/history">📂 التقارير السابقة</a>
         </header>
 
         <div class="card">
@@ -172,28 +173,131 @@
                 </div>
 
                 <button type="submit" id="submitBtn">🚀 معالجة التقرير</button>
-                <div class="loading" id="loadingMsg">
-                    ⏳ جارٍ المعالجة... قد تستغرق 15-90 ثانية حسب الخيارات المحددة
-                </div>
+                <div class="loading" id="loadingMsg">⏳ جارٍ المعالجة... قد تستغرق 15-90 ثانية حسب الخيارات المحددة</div>
             </form>
         </div>
 
         {% if error %}
-        <div class="card">
-            <div class="error">❌ حدث خطأ: {{ error }}</div>
-        </div>
+        <div class="card"><div class="error">❌ حدث خطأ: {{ error }}</div></div>
         {% endif %}
 
         {% if result %}
         <div class="card">
-            <div class="result-header">
-                <h2>✅ النتيجة</h2>
-                <div>
-                    <span class="filename">{{ result.filename }}</span>
-                    <button class="copy-btn" onclick="copyResult()">📋 نسخ الكل</button>
+            <div class="actions-bar">
+                <button class="copy-btn" onclick="copyResult()">📋 نسخ التقرير كاملاً</button>
+            </div>
+
+            <div class="result-meta">
+                <span class="badge badge-cost">💰 التكلفة: ${{ "%.4f"|format(result.cost) }}</span>
+                {% if result.evaluation %}
+                <span class="badge {% if result.evaluation.overall_score >= 80 %}badge-quality-high{% elif result.evaluation.overall_score >= 60 %}badge-quality-mid{% else %}badge-quality-low{% endif %}">
+                    📊 الجودة: {{ result.evaluation.overall_score }}/100
+                </span>
+                {% endif %}
+            </div>
+
+            {% if result.titles %}
+            <div class="main-title-box">
+                <div class="label">⭐ العنوان الموصى به</div>
+                <div class="title-text">{{ result.titles.titles[result.titles.recommended.index].text }}</div>
+            </div>
+            {% endif %}
+
+            <div class="section">
+                <div class="section-title">🔍 التحليل</div>
+                <div class="analysis-grid">
+                    <div class="analysis-item"><div class="k">التصنيف</div><div class="v">{{ result.analysis.category }}</div></div>
+                    <div class="analysis-item"><div class="k">النبرة</div><div class="v">{{ result.analysis.tone }}</div></div>
+                    <div class="analysis-item"><div class="k">الشعور</div><div class="v">{{ result.analysis.emotion }}</div></div>
+                    <div class="analysis-item"><div class="k">الأولوية</div><div class="v">{{ result.analysis.urgency_level or "—" }}</div></div>
+                </div>
+                <div class="desc-box">{{ result.analysis.summary }}</div>
+                {% if result.analysis.keywords %}
+                <div class="tags">
+                    {% for kw in result.analysis.keywords %}<span class="tag">{{ kw }}</span>{% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            {% if result.titles %}
+            <div class="section">
+                <div class="section-title">🎯 العناوين المقترحة ({{ result.titles.titles|length }})</div>
+                {% for t in result.titles.titles %}
+                <div class="title-option {% if loop.index0 == result.titles.recommended.index %}recommended{% endif %}">
+                    <span class="style-tag">{{ t.style }}</span>
+                    {% if loop.index0 == result.titles.recommended.index %}<span class="style-tag" style="background:#f59e0b;color:white;">⭐ موصى به</span>{% endif %}
+                    <div class="title-text">{{ t.text }}</div>
+                    <div class="rationale">{{ t.rationale }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if result.description %}
+            <div class="section">
+                <div class="section-title">📄 الوصف والكلمات المفتاحية</div>
+                <div class="desc-box">{{ result.description.description }}</div>
+                <div class="tags" style="margin-bottom:10px;">
+                    {% for kw in result.description.keywords %}<span class="tag">{{ kw }}</span>{% endfor %}
+                </div>
+                <div class="tags">
+                    {% for h in result.description.hashtags %}<span class="hashtag">{{ h }}</span>{% endfor %}
                 </div>
             </div>
-            <div class="result-box" id="resultContent">{{ result.content }}</div>
+            {% endif %}
+
+            {% if result.thumbnail %}
+            <div class="section">
+                <div class="section-title">🖼️ أفكار نص الثمبنيل ({{ result.thumbnail.options|length }})</div>
+                <div class="thumb-grid">
+                    {% for opt in result.thumbnail.options %}
+                    <div class="thumb-card {% if loop.index0 == result.thumbnail.recommended_index %}recommended{% endif %}">
+                        <div class="thumb-text">{{ opt.text }} {% if loop.index0 == result.thumbnail.recommended_index %}⭐{% endif %}</div>
+                        <div class="word-count">{{ opt.word_count }} كلمات</div>
+                        <div class="thumb-note">{{ opt.visual_note }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if result.evaluation %}
+            <div class="section">
+                <div class="section-title">🔍 تقييم الجودة المستقل (GPT)</div>
+                <div class="eval-score-box">
+                    <div class="eval-score-circle" style="background: {% if result.evaluation.overall_score >= 80 %}#059669{% elif result.evaluation.overall_score >= 60 %}#d97706{% else %}#dc2626{% endif %};">
+                        {{ result.evaluation.overall_score }}
+                    </div>
+                    <div>
+                        <div class="eval-verdict">{{ result.evaluation.verdict }}</div>
+                        <div class="eval-ready">{% if result.evaluation.ready_to_publish %}✅ جاهز للنشر{% else %}❌ يحتاج مراجعة{% endif %}</div>
+                    </div>
+                </div>
+
+                {% for c in result.evaluation.criteria %}
+                <div class="criterion">
+                    <div class="c-name">{{ c.name }}</div>
+                    <div class="c-comment">{{ c.comment }}</div>
+                    <div class="c-score">{{ c.score }}/100</div>
+                </div>
+                {% endfor %}
+
+                <div class="strengths-weaknesses">
+                    <div class="sw-box strengths">
+                        <div class="sw-title">✅ نقاط القوة</div>
+                        <ul>{% for s in result.evaluation.strengths %}<li>{{ s }}</li>{% endfor %}</ul>
+                    </div>
+                    {% if result.evaluation.weaknesses %}
+                    <div class="sw-box weaknesses">
+                        <div class="sw-title">⚠️ نقاط الضعف</div>
+                        <ul>{% for w in result.evaluation.weaknesses %}<li>{{ w }}</li>{% endfor %}</ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <textarea id="rawContent" style="position:absolute; left:-9999px;">{{ result.raw_text }}</textarea>
         </div>
         {% endif %}
     </div>
@@ -206,10 +310,8 @@
         });
 
         function copyResult() {
-            const text = document.getElementById('resultContent').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('✅ تم النسخ!');
-            });
+            const text = document.getElementById('rawContent').value;
+            navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ التقرير كاملاً!'));
         }
     </script>
 </body>

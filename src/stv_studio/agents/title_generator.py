@@ -159,7 +159,7 @@ class TitleAgent:
             prompt=user_prompt,
             task=TaskType.TITLE_GENERATION,
             system=self.system_prompt,
-            max_tokens=8000,
+            max_tokens=10000,
         )
         
         # الخطوة 4: استخراج JSON

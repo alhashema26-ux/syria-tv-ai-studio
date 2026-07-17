@@ -41,6 +41,11 @@ class CheckpointManager:
         }
         self._write()
 
+    @property
+    def data(self) -> dict:
+        """الوصول العلني الكامل لبيانات الـ checkpoint (analysis, titles, description, thumbnail, evaluation)."""
+        return self._data
+
     def save_step(self, step_name: str, step_data: dict, cost_so_far: float = 0.0) -> None:
         """يحفظ نتيجة خطوة ناجحة فوراً."""
         self._data["data"][step_name] = step_data
@@ -82,3 +87,18 @@ class CheckpointManager:
             if data.get("status") != "complete":
                 incomplete.append(f)
         return incomplete
+
+    @classmethod
+    def list_complete(cls) -> list[dict]:
+        """يرجع كل ملفات checkpoint المكتملة، مرتبة من الأحدث للأقدم."""
+        if not cls.CHECKPOINT_DIR.exists():
+            return []
+        results = []
+        for f in cls.CHECKPOINT_DIR.glob("checkpoint_*.json"):
+            with open(f, encoding="utf-8") as fp:
+                data = json.load(fp)
+            if data.get("status") == "complete":
+                data["_filepath"] = str(f)
+                results.append(data)
+        results.sort(key=lambda d: d.get("completed_at", ""), reverse=True)
+        return results
