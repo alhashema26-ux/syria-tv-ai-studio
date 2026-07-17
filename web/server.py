@@ -1,8 +1,8 @@
 """
 Syria TV AI Studio - Web Interface
 =====================================
-واجهة ويب بسيطة: صفحة فيها مربع نص، تلصق التقرير، تضغط زر،
-وتحصل على النتيجة الكاملة (تحليل + عناوين + وصف + ثمبنيل + تقييم).
+واجهة ويب: صفحة فيها مربع نص + خيارات، تلصق التقرير، تختار المطلوب،
+وتحصل على النتيجة (تحليل + عناوين/وصف/ثمبنيل/تقييم حسب الاختيار).
 """
 
 import sys
@@ -27,12 +27,25 @@ async def home(request: Request):
 
 
 @app.post("/process", response_class=HTMLResponse)
-async def process_transcript(request: Request, transcript: str = Form(...)):
+async def process_transcript(
+    request: Request,
+    transcript: str = Form(...),
+    include_titles: str = Form(default=None),
+    include_description: str = Form(default=None),
+    include_thumbnail: str = Form(default=None),
+    include_evaluation: str = Form(default=None),
+):
     error = None
     result_data = None
 
     try:
-        filepath = await process(transcript)
+        filepath = await process(
+            transcript,
+            include_titles=bool(include_titles),
+            include_description=bool(include_description),
+            include_thumbnail=bool(include_thumbnail),
+            include_evaluation=bool(include_evaluation),
+        )
         report_text = filepath.read_text(encoding="utf-8")
         result_data = {
             "filename": filepath.name,

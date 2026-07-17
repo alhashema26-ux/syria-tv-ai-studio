@@ -31,7 +31,7 @@
         }
         textarea {
             width: 100%;
-            min-height: 220px;
+            min-height: 200px;
             padding: 16px;
             border: 2px solid #cbd5e1;
             border-radius: 8px;
@@ -40,8 +40,42 @@
             resize: vertical;
         }
         textarea:focus { outline: none; border-color: #1e293b; }
+
+        .options-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .options-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 12px;
+        }
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .checkbox-item:hover { background: #f1f5f9; }
+        .checkbox-item input { width: 16px; height: 16px; cursor: pointer; }
+        .checkbox-item.required { opacity: 0.6; }
+        .checkbox-item.required input { cursor: not-allowed; }
+        .note { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+
         button {
-            margin-top: 16px;
+            margin-top: 20px;
             background: #b91c1c;
             color: white;
             border: none;
@@ -103,16 +137,43 @@
     <div class="container">
         <header>
             <h1>📺 Syria TV AI Studio</h1>
-            <p>الصق نص التقرير، واحصل على تحليل كامل + عناوين + وصف + ثمبنيل + تقييم جودة</p>
+            <p>الصق نص التقرير، اختر ما تحتاجه، واحصل على النتيجة</p>
         </header>
 
         <div class="card">
             <form id="reportForm" method="post" action="/process">
                 <textarea name="transcript" placeholder="الصق نص التقرير الإخباري هنا...">{{ transcript or "" }}</textarea>
-                <br>
+
+                <div class="options-section">
+                    <div class="options-title">🎯 ماذا تريد أن يولّد النظام؟</div>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-item required">
+                            <input type="checkbox" checked disabled>
+                            التحليل (إلزامي)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="include_titles" value="1" checked>
+                            العناوين المقترحة (RAG)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="include_description" value="1" checked>
+                            الوصف والكلمات المفتاحية والهاشتاغات
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="include_thumbnail" value="1" checked>
+                            أفكار نص الثمبنيل
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="include_evaluation" value="1" checked>
+                            تقييم الجودة المستقل (GPT)
+                        </label>
+                    </div>
+                    <div class="note">💡 التقييم المستقل يحتاج الوصف والثمبنيل ليعمل بدقة كاملة.</div>
+                </div>
+
                 <button type="submit" id="submitBtn">🚀 معالجة التقرير</button>
                 <div class="loading" id="loadingMsg">
-                    ⏳ جارٍ المعالجة... هذا يستغرق 30-90 ثانية (تحليل + عناوين + وصف + ثمبنيل + تقييم)
+                    ⏳ جارٍ المعالجة... قد تستغرق 15-90 ثانية حسب الخيارات المحددة
                 </div>
             </form>
         </div>
