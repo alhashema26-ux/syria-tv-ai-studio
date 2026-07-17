@@ -89,7 +89,6 @@ class QualityEvaluator:
 ## فكرة الثمبنيل المُوصى بها
 
 - **النص:** {chosen_thumbnail.text if chosen_thumbnail else "لا يوجد (لم يُطلب توليد ثمبنيل)"}
-- **البريف البصري:** {chosen_thumbnail.visual_note if chosen_thumbnail else "غير متاح"}
 
 ## المطلوب
 

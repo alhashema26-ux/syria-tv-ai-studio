@@ -125,8 +125,7 @@ async def process_structured(
                 f.write("\n---\n\n## 🖼️ أفكار نص الثمبنيل\n\n")
                 for i, opt in enumerate(thumb_result.options):
                     marker = " ⭐" if i == thumb_result.recommended_index else ""
-                    f.write(f"**{i}. {opt.text}**{marker} ({opt.word_count} كلمات)\n")
-                    f.write(f"   - ملاحظة بصرية: {opt.visual_note}\n\n")
+                    f.write(f"**{i}. {opt.text}**{marker} ({opt.word_count} كلمات)\n\n")
             if eval_result:
                 f.write("\n---\n\n## 🔍 تقييم الجودة المستقل (GPT)\n\n")
                 f.write(f"**التقييم الإجمالي:** {eval_result.overall_score}/100\n\n")

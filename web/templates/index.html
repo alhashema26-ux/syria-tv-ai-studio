@@ -78,7 +78,7 @@
         .badge-quality-low { background: #fee2e2; color: #991b1b; }
 
         .section { margin-bottom: 28px; }
-        .section-title { font-size: 15px; font-weight: bold; color: #1e293b; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+        .section-title { font-size: 15px; font-weight: bold; color: #1e293b; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
 
         .main-title-box { background: #1e293b; color: white; padding: 20px 24px; border-radius: 10px; margin-bottom: 20px; }
         .main-title-box .label { font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
@@ -101,12 +101,21 @@
         .tag { background: #e0e7ff; color: #3730a3; padding: 4px 10px; border-radius: 12px; font-size: 12px; }
         .hashtag { background: #ecfdf5; color: #065f46; padding: 4px 10px; border-radius: 12px; font-size: 12px; }
 
-        .thumb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
-        .thumb-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; }
+        .mini-copy-btn {
+            background: #059669; color: white; border: none;
+            padding: 4px 12px; border-radius: 6px; font-size: 11px;
+            font-weight: bold; cursor: pointer; margin: 0;
+        }
+        .mini-copy-btn:hover { background: #047857; }
+        .tags-block { margin-bottom: 14px; }
+        .tags-block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .tags-block-title { font-size: 12px; font-weight: bold; color: #475569; }
+
+        .thumb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .thumb-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; }
         .thumb-card.recommended { background: #fef9e7; border-color: #f59e0b; }
-        .thumb-card .thumb-text { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
-        .thumb-card .thumb-note { font-size: 12px; color: #64748b; line-height: 1.5; }
-        .thumb-card .word-count { font-size: 11px; color: #94a3b8; }
+        .thumb-card .thumb-text { font-size: 15px; font-weight: bold; }
+        .thumb-card .word-count { font-size: 11px; color: #94a3b8; margin-top: 4px; }
 
         .eval-score-box { display: flex; align-items: center; gap: 20px; background: #f8fafc; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
         .eval-score-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; flex-shrink: 0; }
@@ -212,11 +221,6 @@
                     <div class="analysis-item"><div class="k">الأولوية</div><div class="v">{{ result.analysis.urgency_level or "—" }}</div></div>
                 </div>
                 <div class="desc-box">{{ result.analysis.summary }}</div>
-                {% if result.analysis.keywords %}
-                <div class="tags">
-                    {% for kw in result.analysis.keywords %}<span class="tag">{{ kw }}</span>{% endfor %}
-                </div>
-                {% endif %}
             </div>
 
             {% if result.titles %}
@@ -237,12 +241,29 @@
             <div class="section">
                 <div class="section-title">📄 الوصف والكلمات المفتاحية</div>
                 <div class="desc-box">{{ result.description.description }}</div>
-                <div class="tags" style="margin-bottom:10px;">
-                    {% for kw in result.description.keywords %}<span class="tag">{{ kw }}</span>{% endfor %}
+
+                <div class="tags-block">
+                    <div class="tags-block-header">
+                        <span class="tags-block-title">🔑 الكلمات المفتاحية ({{ result.description.keywords|length }})</span>
+                        <button class="mini-copy-btn" onclick="copyKeywords()">📋 نسخ للصق في يوتيوب</button>
+                    </div>
+                    <div class="tags">
+                        {% for kw in result.description.keywords %}<span class="tag">{{ kw }}</span>{% endfor %}
+                    </div>
                 </div>
-                <div class="tags">
-                    {% for h in result.description.hashtags %}<span class="hashtag">{{ h }}</span>{% endfor %}
+
+                <div class="tags-block">
+                    <div class="tags-block-header">
+                        <span class="tags-block-title">#️⃣ الهاشتاغات ({{ result.description.hashtags|length }})</span>
+                        <button class="mini-copy-btn" onclick="copyHashtags()">📋 نسخ الهاشتاغات</button>
+                    </div>
+                    <div class="tags">
+                        {% for h in result.description.hashtags %}<span class="hashtag">{{ h }}</span>{% endfor %}
+                    </div>
                 </div>
+
+                <textarea id="keywordsRaw" style="position:absolute; left:-9999px;">{{ result.description.keywords|join(", ") }}</textarea>
+                <textarea id="hashtagsRaw" style="position:absolute; left:-9999px;">{{ result.description.hashtags|join(" ") }}</textarea>
             </div>
             {% endif %}
 
@@ -254,7 +275,6 @@
                     <div class="thumb-card {% if loop.index0 == result.thumbnail.recommended_index %}recommended{% endif %}">
                         <div class="thumb-text">{{ opt.text }} {% if loop.index0 == result.thumbnail.recommended_index %}⭐{% endif %}</div>
                         <div class="word-count">{{ opt.word_count }} كلمات</div>
-                        <div class="thumb-note">{{ opt.visual_note }}</div>
                     </div>
                     {% endfor %}
                 </div>
@@ -312,6 +332,16 @@
         function copyResult() {
             const text = document.getElementById('rawContent').value;
             navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ التقرير كاملاً!'));
+        }
+
+        function copyKeywords() {
+            const text = document.getElementById('keywordsRaw').value;
+            navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ الكلمات المفتاحية! الصقها مباشرة في خانة الكلمات المفتاحية بيوتيوب.'));
+        }
+
+        function copyHashtags() {
+            const text = document.getElementById('hashtagsRaw').value;
+            navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ الهاشتاغات!'));
         }
     </script>
 </body>
