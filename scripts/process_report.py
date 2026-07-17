@@ -2,7 +2,7 @@
 Process Report - السكريبت الرئيسي
 ====================================
 يأخذ نص تقرير خام، ويشغّل السلسلة الكاملة:
-Analyzer -> Title Generator -> Description Generator -> حفظ التقرير.
+Analyzer -> Title Generator -> Description Generator -> Thumbnail Generator -> حفظ التقرير.
 
 الاستخدام:
     python scripts/process_report.py path/to/transcript.txt
@@ -19,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from stv_studio.agents.analyzer import TranscriptAnalyzer
 from stv_studio.agents.title_generator import TitleAgent
 from stv_studio.agents.description_generator import DescriptionAgent
+from stv_studio.agents.thumbnail_generator import ThumbnailAgent
 from stv_studio.utils.output_saver import OutputSaver
 
 
@@ -40,26 +41,32 @@ async def process(transcript: str):
     print("=" * 70)
 
     # الخطوة 1: التحليل
-    print("\n[1/4] Analyzing transcript...")
+    print("\n[1/5] Analyzing transcript...")
     analyzer = TranscriptAnalyzer()
     analysis = await analyzer.analyze(transcript)
     print(f"[OK] Topic: {analysis.topic[:70]}...")
 
-    # الخطوة 2: العناوين (نفس الـ router عشان نجمع التكلفة)
-    print("\n[2/4] Generating 10 titles with RAG...")
+    # الخطوة 2: العناوين
+    print("\n[2/5] Generating 10 titles with RAG...")
     title_agent = TitleAgent(router=analyzer.router)
     titles_result = await title_agent.generate(analysis)
     chosen_title = titles_result.titles[titles_result.recommended.index].text
     print(f"[OK] Chosen title: {chosen_title}")
 
     # الخطوة 3: الوصف
-    print("\n[3/4] Generating description...")
+    print("\n[3/5] Generating description...")
     desc_agent = DescriptionAgent(router=analyzer.router)
     desc_result = await desc_agent.generate(analysis, chosen_title)
     print(f"[OK] Description generated ({len(desc_result.keywords)} keywords, {len(desc_result.hashtags)} hashtags)")
 
-    # الخطوة 4: الحفظ
-    print("\n[4/4] Saving full report...")
+    # الخطوة 4: أفكار الثمبنيل
+    print("\n[4/5] Generating thumbnail options...")
+    thumb_agent = ThumbnailAgent(router=analyzer.router)
+    thumb_result = await thumb_agent.generate(analysis, chosen_title)
+    print(f"[OK] Generated {len(thumb_result.options)} thumbnail options")
+
+    # الخطوة 5: الحفظ
+    print("\n[5/5] Saving full report...")
     stats = analyzer.router.get_stats()
 
     saver = OutputSaver()
@@ -72,7 +79,7 @@ async def process(transcript: str):
         output_tokens=stats["total_output_tokens"],
     )
 
-    # نضيف الوصف يدوياً بآخر الملف (save_full_report ما بيعرف عنه)
+    # نضيف الوصف والثمبنيل يدوياً بآخر الملف
     with open(filepath, "a", encoding="utf-8") as f:
         f.write("\n---\n\n## 📄 الوصف والكلمات المفتاحية\n\n")
         f.write(f"### الوصف\n{desc_result.description}\n\n")
@@ -80,6 +87,12 @@ async def process(transcript: str):
         f.write(", ".join(desc_result.keywords) + "\n\n")
         f.write(f"### الهاشتاغات ({len(desc_result.hashtags)})\n")
         f.write(" ".join(desc_result.hashtags) + "\n")
+
+        f.write("\n---\n\n## 🖼️ أفكار نص الثمبنيل\n\n")
+        for i, opt in enumerate(thumb_result.options):
+            marker = " ⭐" if i == thumb_result.recommended_index else ""
+            f.write(f"**{i}. {opt.text}**{marker}\n")
+            f.write(f"   - ملاحظة بصرية: {opt.visual_note}\n\n")
 
     print(f"[OK] Saved to: {filepath}")
 
