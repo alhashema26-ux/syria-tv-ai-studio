@@ -217,5 +217,7 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Data files (not tracked)
-data/
+# Data files (built artifacts only — raw source files ARE tracked for deployment builds)
+data/chroma_db/
+data/processed/
+data/checkpoints/
