@@ -37,6 +37,11 @@ async def run_job(job_id: str, transcript: str, options: dict):
         JOBS[job_id] = {"status": "error", "result": None, "error": f"{e}\n\n{traceback.format_exc()[-500:]}"}
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(request, "index.html", {"result": None})
