@@ -66,7 +66,7 @@ class QualityEvaluator:
         analysis: AnalysisResult,
         chosen_title: str,
         description: str,
-        chosen_thumbnail: ThumbnailOption,
+        chosen_thumbnail: Optional[ThumbnailOption] = None,
     ) -> str:
         return f"""## النص الأصلي
 
@@ -88,8 +88,8 @@ class QualityEvaluator:
 
 ## فكرة الثمبنيل المُوصى بها
 
-- **النص:** {chosen_thumbnail.text}
-- **البريف البصري:** {chosen_thumbnail.visual_note}
+- **النص:** {chosen_thumbnail.text if chosen_thumbnail else "لا يوجد (لم يُطلب توليد ثمبنيل)"}
+- **البريف البصري:** {chosen_thumbnail.visual_note if chosen_thumbnail else "غير متاح"}
 
 ## المطلوب
 
@@ -102,7 +102,7 @@ class QualityEvaluator:
         analysis: AnalysisResult,
         chosen_title: str,
         description: str,
-        chosen_thumbnail: ThumbnailOption,
+        chosen_thumbnail: Optional[ThumbnailOption] = None,
     ) -> EvaluationResult:
         user_prompt = self._build_user_prompt(
             transcript, analysis, chosen_title, description, chosen_thumbnail
