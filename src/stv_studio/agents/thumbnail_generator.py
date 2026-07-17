@@ -2,7 +2,7 @@
 Thumbnail Generator Agent
 ============================
 يأخذ AnalysisResult + العنوان المُختار، ويولّد
-5 أفكار لنص الصورة المصغّرة (Thumbnail) مع ملاحظات بصرية.
+10 أفكار احترافية لنص الصورة المصغّرة (Thumbnail) مع بريف تصميم بصري كامل.
 """
 
 import json
@@ -19,7 +19,7 @@ from stv_studio.schemas.thumbnail import ThumbnailResult
 
 class ThumbnailAgent:
     """
-    Agent يولّد أفكار نص الثمبنيل.
+    Agent يولّد أفكار نص الثمبنيل مع بريف تصميم احترافي.
 
     الاستخدام:
         agent = ThumbnailAgent()
@@ -77,9 +77,11 @@ class ThumbnailAgent:
 {", ".join(analysis.keywords[:10])}
 """
 
-        title_section = f"""## العنوان المُختار (لتجنّب التكرار الحرفي)
+        title_section = f"""## العنوان المُختار (chosen_title)
 
-{chosen_title}
+"{chosen_title}"
+
+⚠️ تذكير: أي كلمة وردت حرفياً بالعنوان أعلاه **ممنوع** استخدامها بنص أي ثمبنيل.
 """
 
         user_prompt = f"""{analysis_section}
@@ -88,9 +90,10 @@ class ThumbnailAgent:
 
 ## المطلوب
 
-بناءً على التحليل والعنوان أعلاه:
-- ولّد 5 أفكار لنص الثمبنيل (5-25 حرف لكل فكرة)
-- أضف ملاحظة بصرية لكل فكرة
+بناءً على التحليل والعنوان أعلاه، وبتطبيق كل مبادئ التصميم المحترف في System Prompt:
+- ولّد 10 أفكار (5 بحد أقصى 4 كلمات، ثم 5 حتى 6 كلمات)
+- لكل فكرة، اكتب بريف تصميم بصري احترافي كامل
+- التزم بقاعدة عدم تكرار كلمات العنوان
 - اختر أقواها كتوصية
 - أرجع JSON فقط بالشكل المحدد في System Prompt
 """
@@ -108,7 +111,7 @@ class ThumbnailAgent:
             prompt=user_prompt,
             task=TaskType.THUMBNAIL_TEXT,
             system=self.system_prompt,
-            max_tokens=2000,
+            max_tokens=4000,
         )
 
         try:
