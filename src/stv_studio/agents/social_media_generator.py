@@ -122,7 +122,7 @@ class SocialMediaAgent:
         analysis: Optional[AnalysisResult] = None,
         context_block: str = "",
     ) -> SocialMediaResult:
-        user_prompt = context_block + "
+        user_prompt = context_block + "\n\n" + self._build_user_prompt(transcript, analysis)
 
 " + self._build_user_prompt(transcript, analysis)
 

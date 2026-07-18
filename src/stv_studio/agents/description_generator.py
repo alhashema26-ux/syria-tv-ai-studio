@@ -125,7 +125,7 @@ class DescriptionAgent:
         Returns:
             DescriptionResult
         """
-        user_prompt = context_block + "
+        user_prompt = context_block + "\n\n" + self._build_user_prompt(analysis, chosen_title)
 
 " + self._build_user_prompt(analysis, chosen_title)
 
