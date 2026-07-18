@@ -55,6 +55,7 @@ async def process_transcript(
     include_description: str = Form(default=None),
     include_thumbnail: str = Form(default=None),
     include_evaluation: str = Form(default=None),
+    include_social_media: str = Form(default=None),
 ):
     job_id = uuid.uuid4().hex[:12]
     JOBS[job_id] = {"status": "running", "result": None, "error": None}
@@ -64,9 +65,9 @@ async def process_transcript(
         "include_description": bool(include_description),
         "include_thumbnail": bool(include_thumbnail),
         "include_evaluation": bool(include_evaluation),
+        "include_social_media": bool(include_social_media),
     }
 
-    # نشغّل المعالجة كـ task منفصل، ما ننتظرها هون
     asyncio.create_task(run_job(job_id, transcript, options))
 
     return templates.TemplateResponse(
@@ -124,6 +125,7 @@ async def history_detail(request: Request, run_id: str):
         "description": data.get("description"),
         "thumbnail": data.get("thumbnail"),
         "evaluation": data.get("evaluation"),
+        "social_media": data.get("social_media"),
         "raw_text": json.dumps(data, ensure_ascii=False, indent=2),
     }
 

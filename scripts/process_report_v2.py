@@ -15,6 +15,7 @@ from stv_studio.agents.title_generator import TitleAgent
 from stv_studio.agents.description_generator import DescriptionAgent
 from stv_studio.agents.thumbnail_generator import ThumbnailAgent
 from stv_studio.agents.quality_evaluator import QualityEvaluator
+from stv_studio.agents.social_media_generator import SocialMediaAgent
 from stv_studio.utils.output_saver import OutputSaver
 from stv_studio.utils.checkpoint import CheckpointManager
 
@@ -25,6 +26,7 @@ async def process_structured(
     include_description: bool = True,
     include_thumbnail: bool = True,
     include_evaluation: bool = True,
+    include_social_media: bool = False,
     run_id: str = None,
 ) -> dict:
     """
@@ -100,7 +102,19 @@ async def process_structured(
             cp.mark_failed("evaluation", str(e))
             raise
 
-    # حفظ نسخة Markdown أرشيفية أيضاً (بدون ما نعتمد عليها للعرض)
+    social_media_result = None
+
+    # الخطوة 6: السوشيال ميديا
+    if include_social_media:
+        try:
+            social_agent = SocialMediaAgent(router=analyzer.router)
+            social_media_result = await social_agent.generate(transcript, analysis)
+            cp.save_step("social_media", social_media_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
+        except Exception as e:
+            cp.mark_failed("social_media", str(e))
+            raise
+
+    # حفظ نسخة Markdown أرشيفية
     stats = analyzer.router.get_stats()
     saver = OutputSaver()
     filepath = saver.save_full_report(
@@ -151,6 +165,7 @@ async def process_structured(
         "description": desc_result,
         "thumbnail": thumb_result,
         "evaluation": eval_result,
+        "social_media": social_media_result,
         "raw_text": filepath.read_text(encoding="utf-8"),
         "filepath": str(filepath),
     }

@@ -33,6 +33,14 @@
             --shadow-lg: 0 12px 32px rgba(15, 23, 41, 0.14);
             --radius: 14px;
             --radius-sm: 8px;
+
+            /* ألوان المنصات */
+            --fb: #1877f2;
+            --ig: #e1306c;
+            --x: #000000;
+            --tg: #229ed9;
+            --wa: #25d366;
+            --tt: #010101;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -62,12 +70,7 @@
             height: 4px;
             background: linear-gradient(90deg, var(--orange) 0%, var(--orange-light) 50%, var(--orange) 100%);
         }
-        header h1 {
-            font-size: 24px;
-            font-weight: 900;
-            margin-bottom: 6px;
-            letter-spacing: -0.3px;
-        }
+        header h1 { font-size: 24px; font-weight: 900; margin-bottom: 6px; letter-spacing: -0.3px; }
         header h1 span { color: var(--orange); }
         header p { color: #b8c2d9; font-size: 13.5px; font-weight: 400; }
         header a {
@@ -118,9 +121,7 @@
             transition: all 0.2s ease;
         }
         .checkbox-item:hover { background: white; border-color: var(--orange); box-shadow: var(--shadow-sm); }
-        .checkbox-item input {
-            width: 18px; height: 18px; cursor: pointer; accent-color: var(--orange);
-        }
+        .checkbox-item input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--orange); }
         .checkbox-item.required { opacity: 0.55; }
         .checkbox-item.required input { cursor: not-allowed; }
         .note { font-size: 12px; color: var(--gray-400); margin-top: 10px; }
@@ -178,42 +179,24 @@
             content: "⭐"; position: absolute; top: -10px; left: -10px;
             font-size: 90px; opacity: 0.06;
         }
-        .main-title-box .label {
-            font-size: 12px; color: var(--orange-light); margin-bottom: 8px;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-        }
+        .main-title-box .label { font-size: 12px; color: var(--orange-light); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .main-title-box .title-text { font-size: 23px; font-weight: 800; line-height: 1.5; }
 
         .analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px; }
-        .analysis-item {
-            background: var(--gray-50); border: 1.5px solid var(--gray-200);
-            border-radius: 10px; padding: 14px 18px; transition: all 0.2s ease;
-        }
+        .analysis-item { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 14px 18px; transition: all 0.2s ease; }
         .analysis-item:hover { border-color: var(--orange); }
         .analysis-item .k { font-size: 11px; color: var(--gray-600); margin-bottom: 5px; font-weight: 600; }
         .analysis-item .v { font-size: 14.5px; font-weight: 800; color: var(--navy); }
 
-        .title-option {
-            background: var(--gray-50); border: 1.5px solid var(--gray-200);
-            border-radius: 12px; padding: 16px 20px; margin-bottom: 10px;
-            transition: all 0.2s ease;
-        }
+        .title-option { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; transition: all 0.2s ease; }
         .title-option:hover { box-shadow: var(--shadow-sm); }
         .title-option.recommended { background: #fff7ed; border-color: var(--orange); border-width: 2px; }
-        .title-option .style-tag {
-            font-size: 11px; background: var(--gray-200); color: var(--gray-600);
-            padding: 3px 12px; border-radius: 12px; display: inline-block;
-            margin-bottom: 8px; font-weight: 700;
-        }
+        .title-option .style-tag { font-size: 11px; background: var(--gray-200); color: var(--gray-600); padding: 3px 12px; border-radius: 12px; display: inline-block; margin-bottom: 8px; font-weight: 700; }
         .title-option.recommended .style-tag { background: var(--orange); color: white; }
         .title-option .title-text { font-size: 16.5px; font-weight: 700; margin-bottom: 5px; color: var(--navy); }
         .title-option .rationale { font-size: 13px; color: var(--gray-600); }
 
-        .desc-box {
-            background: var(--gray-50); border: 1.5px solid var(--gray-200);
-            border-radius: 12px; padding: 20px; white-space: pre-wrap;
-            font-size: 14.5px; margin-bottom: 16px; line-height: 1.9;
-        }
+        .desc-box { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 20px; white-space: pre-wrap; font-size: 14.5px; margin-bottom: 16px; line-height: 1.9; }
         .tags { display: flex; flex-wrap: wrap; gap: 7px; }
         .tag { background: #e0e7ff; color: #3730a3; padding: 5px 13px; border-radius: 14px; font-size: 12.5px; font-weight: 600; }
         .hashtag { background: var(--success-bg); color: #065f46; padding: 5px 13px; border-radius: 14px; font-size: 12.5px; font-weight: 600; }
@@ -230,26 +213,14 @@
         .tags-block-title { font-size: 12.5px; font-weight: 800; color: var(--gray-600); }
 
         .thumb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
-        .thumb-card {
-            background: var(--gray-50); border: 1.5px solid var(--gray-200);
-            border-radius: 10px; padding: 16px; text-align: center;
-            transition: all 0.2s ease;
-        }
+        .thumb-card { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 16px; text-align: center; transition: all 0.2s ease; }
         .thumb-card:hover { box-shadow: var(--shadow-sm); }
         .thumb-card.recommended { background: #fff7ed; border-color: var(--orange); border-width: 2px; }
         .thumb-card .thumb-text { font-size: 15px; font-weight: 800; color: var(--navy); }
         .thumb-card .word-count { font-size: 11px; color: var(--gray-400); margin-top: 5px; }
 
-        .eval-score-box {
-            display: flex; align-items: center; gap: 22px;
-            background: var(--gray-50); border-radius: 14px; padding: 22px; margin-bottom: 18px;
-        }
-        .eval-score-circle {
-            width: 84px; height: 84px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 25px; font-weight: 900; color: white; flex-shrink: 0;
-            box-shadow: var(--shadow-sm);
-        }
+        .eval-score-box { display: flex; align-items: center; gap: 22px; background: var(--gray-50); border-radius: 14px; padding: 22px; margin-bottom: 18px; }
+        .eval-score-circle { width: 84px; height: 84px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 25px; font-weight: 900; color: white; flex-shrink: 0; box-shadow: var(--shadow-sm); }
         .eval-verdict { font-size: 15.5px; font-weight: 800; margin-bottom: 5px; color: var(--navy); }
         .eval-ready { font-size: 13px; font-weight: 600; }
         .criterion { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--gray-200); gap: 14px; }
@@ -266,18 +237,187 @@
         .sw-box.weaknesses .sw-title { color: #991b1b; }
         .sw-box li { font-size: 12.5px; margin-bottom: 6px; margin-right: 18px; line-height: 1.6; }
 
-        .copy-btn {
-            background: var(--success); padding: 10px 20px; font-size: 13px;
-            margin: 0; border-radius: 10px; box-shadow: 0 3px 10px rgba(5, 150, 105, 0.3);
-        }
+        .copy-btn { background: var(--success); padding: 10px 20px; font-size: 13px; margin: 0; border-radius: 10px; box-shadow: 0 3px 10px rgba(5, 150, 105, 0.3); }
         .copy-btn:hover { background: #047857; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4); }
         .actions-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 18px; }
+
+        /* ===== قسم السوشيال ميديا ===== */
+        .sm-classification {
+            background: var(--gray-50);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .sm-classification .sm-badge {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .sm-classification .sm-badge span {
+            color: var(--orange);
+            font-weight: 800;
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .platform-card {
+            border: 1.5px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease;
+        }
+        .platform-card:hover { box-shadow: var(--shadow-md); }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            font-weight: 800;
+            font-size: 14px;
+            color: white;
+        }
+        .platform-header .platform-icon { font-size: 18px; }
+
+        .platform-card.platform-facebook .platform-header { background: var(--fb); }
+        .platform-card.platform-instagram .platform-header { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
+        .platform-card.platform-x_twitter .platform-header { background: #000; }
+        .platform-card.platform-telegram .platform-header { background: var(--tg); }
+        .platform-card.platform-whatsapp .platform-header { background: var(--wa); }
+        .platform-card.platform-tiktok .platform-header { background: #010101; }
+
+        .platform-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: auto;
+        }
+        .platform-nav-label {
+            font-size: 11px;
+            opacity: 0.85;
+            font-weight: 600;
+        }
+        .nav-btn {
+            background: rgba(255,255,255,0.20);
+            border: 1px solid rgba(255,255,255,0.30);
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            margin-top: 0;
+            box-shadow: none;
+            transition: background 0.15s ease;
+            font-family: inherit;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.35); transform: none; box-shadow: none; }
+
+        .platform-body { padding: 14px 16px; }
+
+        .platform-text-area {
+            background: var(--gray-50);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: var(--gray-800);
+            min-height: 80px;
+            font-family: inherit;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 10px;
+        }
+
+        .x-char-counter {
+            font-size: 11px;
+            font-weight: 700;
+            text-align: left;
+            margin-top: -6px;
+            margin-bottom: 8px;
+            padding: 0 2px;
+        }
+        .x-char-ok { color: var(--success); }
+        .x-char-warn { color: var(--danger); }
+
+        .platform-hashtags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .sm-hashtag {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .platform-actions {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid var(--gray-200);
+            padding-top: 12px;
+        }
+        .sm-copy-btn {
+            flex: 1;
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s ease;
+            margin: 0;
+            box-shadow: none;
+        }
+        .sm-copy-btn:hover { background: var(--orange); transform: none; box-shadow: none; }
+
+        .editor-notes-box {
+            margin-top: 20px;
+            background: #fffbeb;
+            border: 1.5px solid #fde68a;
+            border-radius: 10px;
+            padding: 16px 18px;
+        }
+        .editor-notes-box .en-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+        .editor-notes-box ul { padding-right: 18px; }
+        .editor-notes-box li { font-size: 13px; color: #78350f; margin-bottom: 6px; line-height: 1.7; }
 
         @media (max-width: 640px) {
             body { padding: 12px; }
             header { flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px; }
             .card { padding: 22px; }
             .strengths-weaknesses { grid-template-columns: 1fr; }
+            .platforms-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -317,6 +457,10 @@
                         <label class="checkbox-item">
                             <input type="checkbox" name="include_evaluation" value="1" checked>
                             تقييم الجودة المستقل (GPT)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="include_social_media" value="1">
+                            📱 حزمة السوشيال ميديا (6 منصات)
                         </label>
                     </div>
                     <div class="note">💡 التقييم المستقل يحتاج الوصف والثمبنيل ليعمل بدقة كاملة.</div>
@@ -458,32 +602,313 @@
             </div>
             {% endif %}
 
+            {% if result.social_media %}
+            <div class="section">
+                <div class="section-title">📱 حزمة السوشيال ميديا</div>
+
+                <div class="sm-classification">
+                    <div class="sm-badge">نوع الخبر: <span>{{ result.social_media.classification.news_type }}</span></div>
+                    <div class="sm-badge">الزاوية: <span>{{ result.social_media.classification.chosen_angle }}</span></div>
+                    <div class="sm-badge">الجمهور: <span>{{ result.social_media.classification.target_audience }}</span></div>
+                </div>
+
+                <div class="platforms-grid">
+
+                    <!-- Facebook -->
+                    <div class="platform-card platform-facebook">
+                        <div class="platform-header">
+                            <span class="platform-icon">📘</span>
+                            <span>Facebook</span>
+                            <div class="platform-nav">
+                                <span class="platform-nav-label" id="fb-label">1/3</span>
+                                <button class="nav-btn" onclick="prevVariant('fb')">‹</button>
+                                <button class="nav-btn" onclick="nextVariant('fb')">›</button>
+                            </div>
+                        </div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="fb-title-text">{{ result.social_media.facebook.titles[0] }}</div>
+                            <div class="platform-text-area" id="fb-caption-text">{{ result.social_media.facebook.captions[0] }}</div>
+                            <div class="platform-hashtags" id="fb-hashtags">
+                                {% for h in result.social_media.facebook.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}
+                            </div>
+                            <div class="platform-actions">
+                                <button class="sm-copy-btn" onclick="copyPlatformText('fb-title-text')">نسخ العنوان</button>
+                                <button class="sm-copy-btn" onclick="copyPlatformText('fb-caption-text')">نسخ الكابشن</button>
+                                <button class="sm-copy-btn" onclick="copyPlatformHashtags('fb')">نسخ #</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instagram -->
+                    <div class="platform-card platform-instagram">
+                        <div class="platform-header">
+                            <span class="platform-icon">📸</span>
+                            <span>Instagram</span>
+                            <div class="platform-nav">
+                                <span class="platform-nav-label" id="ig-label">1/3</span>
+                                <button class="nav-btn" onclick="prevVariant('ig')">‹</button>
+                                <button class="nav-btn" onclick="nextVariant('ig')">›</button>
+                            </div>
+                        </div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="ig-hook-text">{{ result.social_media.instagram.hooks[0].text }}</div>
+                            <div class="platform-text-area" id="ig-caption-text">{{ result.social_media.instagram.full_caption }}</div>
+                            <div class="platform-hashtags" id="ig-hashtags">
+                                {% for h in result.social_media.instagram.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}
+                            </div>
+                            <div class="platform-actions">
+                                <button class="sm-copy-btn" onclick="copyPlatformText('ig-hook-text')">نسخ الهوك</button>
+                                <button class="sm-copy-btn" onclick="copyPlatformText('ig-caption-text')">نسخ الكابشن</button>
+                                <button class="sm-copy-btn" onclick="copyPlatformHashtags('ig')">نسخ #</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- X (Twitter) -->
+                    <div class="platform-card platform-x_twitter">
+                        <div class="platform-header">
+                            <span class="platform-icon">✖️</span>
+                            <span>X (Twitter)</span>
+                            <div class="platform-nav">
+                                <span class="platform-nav-label" id="x-label">1/3</span>
+                                <button class="nav-btn" onclick="prevVariant('x')">‹</button>
+                                <button class="nav-btn" onclick="nextVariant('x')">›</button>
+                            </div>
+                        </div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="x-tweet-text">{{ result.social_media.x_twitter.tweets[0] }}</div>
+                            <div class="x-char-counter" id="x-char-count"></div>
+                            <div class="platform-hashtags" id="x-hashtags">
+                                {% for h in result.social_media.x_twitter.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}
+                            </div>
+                            <div class="platform-actions">
+                                <button class="sm-copy-btn" onclick="copyPlatformText('x-tweet-text')">نسخ التغريدة</button>
+                                <button class="sm-copy-btn" onclick="copyPlatformHashtags('x')">نسخ #</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Telegram -->
+                    <div class="platform-card platform-telegram">
+                        <div class="platform-header">
+                            <span class="platform-icon">✈️</span>
+                            <span>Telegram</span>
+                            <div class="platform-nav">
+                                <span class="platform-nav-label" id="tg-label">1/3</span>
+                                <button class="nav-btn" onclick="prevVariant('tg')">‹</button>
+                                <button class="nav-btn" onclick="nextVariant('tg')">›</button>
+                            </div>
+                        </div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="tg-caption-text">{{ result.social_media.telegram.captions[0] }}</div>
+                            <div class="platform-hashtags" id="tg-hashtags">
+                                {% for h in result.social_media.telegram.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}
+                            </div>
+                            <div class="platform-actions">
+                                <button class="sm-copy-btn" onclick="copyPlatformText('tg-caption-text')">نسخ النص</button>
+                                <button class="sm-copy-btn" onclick="copyPlatformHashtags('tg')">نسخ #</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div class="platform-card platform-whatsapp">
+                        <div class="platform-header">
+                            <span class="platform-icon">💬</span>
+                            <span>WhatsApp</span>
+                            <div class="platform-nav">
+                                <span class="platform-nav-label" id="wa-label">1/3</span>
+                                <button class="nav-btn" onclick="prevVariant('wa')">‹</button>
+                                <button class="nav-btn" onclick="nextVariant('wa')">›</button>
+                            </div>
+                        </div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="wa-caption-text">{{ result.social_media.whatsapp.captions[0] }}</div>
+                            <div class="platform-actions">
+                                <button class="sm-copy-btn" onclick="copyPlatformText('wa-caption-text')">نسخ النص</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TikTok -->
+                    <div class="platform-card platform-tiktok">
+                        <div class="platform-header">
+                            <span class="platform-icon">🎵</span>
+                            <span>TikTok</span>
+                            <div class="platform-nav">
+                                <span class="platform-nav-label" id="tt-label">1/3</span>
+                                <button class="nav-btn" onclick="prevVariant('tt')">‹</button>
+                                <button class="nav-btn" onclick="nextVariant('tt')">›</button>
+                            </div>
+                        </div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="tt-hook-text">{{ result.social_media.tiktok.hooks[0].text }}</div>
+                            <div class="platform-text-area" id="tt-caption-text">{{ result.social_media.tiktok.full_caption }}</div>
+                            <div class="platform-hashtags" id="tt-hashtags">
+                                {% for h in result.social_media.tiktok.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}
+                            </div>
+                            <div class="platform-actions">
+                                <button class="sm-copy-btn" onclick="copyPlatformText('tt-hook-text')">نسخ الهوك</button>
+                                <button class="sm-copy-btn" onclick="copyPlatformText('tt-caption-text')">نسخ الكابشن</button>
+                                <button class="sm-copy-btn" onclick="copyPlatformHashtags('tt')">نسخ #</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {% if result.social_media.editor_notes %}
+                <div class="editor-notes-box">
+                    <div class="en-title">📝 ملاحظات المحرر</div>
+                    <ul>
+                        {% for note in result.social_media.editor_notes %}
+                        <li>{{ note }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
             <textarea id="rawContent" style="position:absolute; left:-9999px;">{{ result.raw_text }}</textarea>
         </div>
         {% endif %}
     </div>
 
     <script>
+        // ===== نموذج المعالجة =====
         document.getElementById('reportForm').addEventListener('submit', function() {
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('submitBtn').textContent = '⏳ جارٍ المعالجة...';
             document.getElementById('loadingMsg').style.display = 'block';
         });
 
+        // ===== نسخ التقرير كاملاً =====
         function copyResult() {
             const text = document.getElementById('rawContent').value;
             navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ التقرير كاملاً!'));
         }
 
+        // ===== نسخ الكلمات المفتاحية والهاشتاغات =====
         function copyKeywords() {
             const text = document.getElementById('keywordsRaw').value;
-            navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ الكلمات المفتاحية! الصقها مباشرة في خانة الكلمات المفتاحية بيوتيوب.'));
+            navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ الكلمات المفتاحية!'));
         }
 
         function copyHashtags() {
             const text = document.getElementById('hashtagsRaw').value;
             navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ الهاشتاغات!'));
         }
+
+        // ===== السوشيال ميديا: بيانات البدائل =====
+        const smData = {
+            fb: {
+                titles: {{ result.social_media.facebook.titles | tojson if result.social_media else '[]' }},
+                captions: {{ result.social_media.facebook.captions | tojson if result.social_media else '[]' }},
+                hashtags: {{ result.social_media.facebook.hashtags | tojson if result.social_media else '[]' }},
+                current: 0
+            },
+            ig: {
+                hooks: {{ result.social_media.instagram.hooks | map(attribute='text') | list | tojson if result.social_media else '[]' }},
+                caption: {{ result.social_media.instagram.full_caption | tojson if result.social_media else '""' }},
+                hashtags: {{ result.social_media.instagram.hashtags | tojson if result.social_media else '[]' }},
+                current: 0
+            },
+            x: {
+                tweets: {{ result.social_media.x_twitter.tweets | tojson if result.social_media else '[]' }},
+                hashtags: {{ result.social_media.x_twitter.hashtags | tojson if result.social_media else '[]' }},
+                current: 0
+            },
+            tg: {
+                captions: {{ result.social_media.telegram.captions | tojson if result.social_media else '[]' }},
+                hashtags: {{ result.social_media.telegram.hashtags | tojson if result.social_media else '[]' }},
+                current: 0
+            },
+            wa: {
+                captions: {{ result.social_media.whatsapp.captions | tojson if result.social_media else '[]' }},
+                current: 0
+            },
+            tt: {
+                hooks: {{ result.social_media.tiktok.hooks | map(attribute='text') | list | tojson if result.social_media else '[]' }},
+                caption: {{ result.social_media.tiktok.full_caption | tojson if result.social_media else '""' }},
+                hashtags: {{ result.social_media.tiktok.hashtags | tojson if result.social_media else '[]' }},
+                current: 0
+            }
+        };
+
+        // ===== تحديث عداد X =====
+        function updateXCounter() {
+            const el = document.getElementById('x-tweet-text');
+            const counter = document.getElementById('x-char-count');
+            if (!el || !counter) return;
+            const len = el.textContent.length;
+            counter.textContent = len + '/280';
+            counter.className = 'x-char-counter ' + (len > 280 ? 'x-char-warn' : 'x-char-ok');
+        }
+
+        // ===== التنقل بين البدائل =====
+        function renderPlatform(platform) {
+            const d = smData[platform];
+            if (!d) return;
+            const idx = d.current;
+            const total = (d.titles || d.hooks || d.tweets || d.captions).length;
+
+            const label = document.getElementById(platform + '-label');
+            if (label) label.textContent = (idx + 1) + '/' + total;
+
+            if (platform === 'fb') {
+                document.getElementById('fb-title-text').textContent = d.titles[idx] || '';
+                document.getElementById('fb-caption-text').textContent = d.captions[idx] || '';
+            } else if (platform === 'ig') {
+                document.getElementById('ig-hook-text').textContent = d.hooks[idx] || '';
+            } else if (platform === 'x') {
+                document.getElementById('x-tweet-text').textContent = d.tweets[idx] || '';
+                updateXCounter();
+            } else if (platform === 'tg') {
+                document.getElementById('tg-caption-text').textContent = d.captions[idx] || '';
+            } else if (platform === 'wa') {
+                document.getElementById('wa-caption-text').textContent = d.captions[idx] || '';
+            } else if (platform === 'tt') {
+                document.getElementById('tt-hook-text').textContent = d.hooks[idx] || '';
+            }
+        }
+
+        function nextVariant(platform) {
+            const d = smData[platform];
+            if (!d) return;
+            const total = (d.titles || d.hooks || d.tweets || d.captions).length;
+            d.current = (d.current + 1) % total;
+            renderPlatform(platform);
+        }
+
+        function prevVariant(platform) {
+            const d = smData[platform];
+            if (!d) return;
+            const total = (d.titles || d.hooks || d.tweets || d.captions).length;
+            d.current = (d.current - 1 + total) % total;
+            renderPlatform(platform);
+        }
+
+        // ===== نسخ نص منصة =====
+        function copyPlatformText(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            navigator.clipboard.writeText(el.textContent.trim())
+                .then(() => alert('✅ تم النسخ!'));
+        }
+
+        // ===== نسخ هاشتاغات منصة =====
+        function copyPlatformHashtags(platform) {
+            const d = smData[platform];
+            if (!d || !d.hashtags || !d.hashtags.length) return;
+            navigator.clipboard.writeText(d.hashtags.join(' '))
+                .then(() => alert('✅ تم نسخ الهاشتاغات!'));
+        }
+
+        // ===== تهيئة عداد X عند التحميل =====
+        document.addEventListener('DOMContentLoaded', function() {
+            updateXCounter();
+        });
     </script>
 </body>
 </html>
