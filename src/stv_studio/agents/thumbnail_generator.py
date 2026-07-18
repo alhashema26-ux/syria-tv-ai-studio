@@ -109,7 +109,7 @@ class ThumbnailAgent:
             prompt=user_prompt,
             task=TaskType.THUMBNAIL_TEXT,
             system=self.system_prompt,
-            max_tokens=3000,
+            max_tokens=6000,
         )
 
         try:
