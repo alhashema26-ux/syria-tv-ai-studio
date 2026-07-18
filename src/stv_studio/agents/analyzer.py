@@ -78,7 +78,7 @@ class TranscriptAnalyzer:
         # لم نجد JSON صالح
         raise ValueError(f"No valid JSON found in response:\n{text[:500]}")
     
-    async def analyze(self, transcript: str) -> AnalysisResult:
+    async def analyze(self, transcript: str, context_block: str = "") -> AnalysisResult:
         """
         تحليل نص transcript وإرجاع AnalysisResult منظم.
         
@@ -96,7 +96,9 @@ class TranscriptAnalyzer:
             raise ValueError("Transcript cannot be empty")
         
         # بناء الرسالة الكاملة
-        user_prompt = f"""حلّل هذا النص الإخباري:
+        user_prompt = f"""{context_block}
+
+حلّل هذا النص الإخباري:
 
 <transcript>
 {transcript.strip()}

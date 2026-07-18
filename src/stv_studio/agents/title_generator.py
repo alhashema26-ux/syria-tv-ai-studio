@@ -132,6 +132,7 @@ class TitleAgent:
         self,
         analysis: AnalysisResult,
         k: int = DEFAULT_K,
+        context_block: str = "",
     ) -> TitleGenerationResult:
         """
         توليد 10 عناوين بناءً على AnalysisResult.
@@ -152,7 +153,9 @@ class TitleAgent:
         )
         print(f"[RAG] Retrieved {len(reference_titles)} reference titles")
         # الخطوة 2: بناء الـ user prompt
-        user_prompt = self._build_user_prompt(analysis, reference_titles)
+        user_prompt = context_block + "
+
+" + self._build_user_prompt(analysis, reference_titles)
         
         # الخطوة 3: استدعاء Claude Sonnet 5 عبر Router
         response = await self.router.generate(

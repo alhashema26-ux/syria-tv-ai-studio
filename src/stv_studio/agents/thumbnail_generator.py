@@ -102,8 +102,11 @@ class ThumbnailAgent:
         self,
         analysis: AnalysisResult,
         chosen_title: str,
+        context_block: str = "",
     ) -> ThumbnailResult:
-        user_prompt = self._build_user_prompt(analysis, chosen_title)
+        user_prompt = context_block + "
+
+" + self._build_user_prompt(analysis, chosen_title)
 
         response = await self.router.generate(
             prompt=user_prompt,

@@ -102,19 +102,19 @@ async def process_structured(
             cp.mark_failed("evaluation", str(e))
             raise
 
-    social_media_result = None
+    social_result = None
 
-    # الخطوة 6: السوشيال ميديا
+    # الخطوة 6: حزمة السوشيال ميديا (اختياري، افتراضياً معطّل — محرك ثقيل)
     if include_social_media:
         try:
             social_agent = SocialMediaAgent(router=analyzer.router)
-            social_media_result = await social_agent.generate(transcript, analysis)
-            cp.save_step("social_media", social_media_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
+            social_result = await social_agent.generate(transcript, analysis)
+            cp.save_step("social_media", social_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
         except Exception as e:
             cp.mark_failed("social_media", str(e))
             raise
 
-    # حفظ نسخة Markdown أرشيفية
+    # حفظ نسخة Markdown أرشيفية أيضاً (بدون ما نعتمد عليها للعرض)
     stats = analyzer.router.get_stats()
     saver = OutputSaver()
     filepath = saver.save_full_report(
@@ -126,7 +126,7 @@ async def process_structured(
         output_tokens=stats["total_output_tokens"],
     )
 
-    if desc_result or thumb_result or eval_result:
+    if desc_result or thumb_result or eval_result or social_result:
         with open(filepath, "a", encoding="utf-8") as f:
             if desc_result:
                 f.write("\n---\n\n## 📄 الوصف والكلمات المفتاحية\n\n")
@@ -155,6 +155,25 @@ async def process_structured(
                     f.write("\n### نقاط الضعف\n\n")
                     for w in eval_result.weaknesses:
                         f.write(f"- {w}\n")
+            if social_result:
+                f.write("\n---\n\n## 📱 حزمة السوشيال ميديا\n\n")
+                f.write(f"**التصنيف:** {social_result.classification.news_type} | {social_result.classification.chosen_angle}\n\n")
+                f.write("### Facebook\n")
+                for t in social_result.facebook.captions:
+                    f.write(f"- {t}\n")
+                f.write("\n### Instagram\n")
+                f.write(f"{social_result.instagram.full_caption}\n\n")
+                f.write("### X (Twitter)\n")
+                for t in social_result.x_twitter.tweets:
+                    f.write(f"- {t}\n")
+                f.write("\n### Telegram\n")
+                for t in social_result.telegram.captions:
+                    f.write(f"- {t}\n")
+                f.write("\n### WhatsApp\n")
+                for t in social_result.whatsapp.captions:
+                    f.write(f"- {t}\n")
+                f.write("\n### TikTok\n")
+                f.write(f"{social_result.tiktok.full_caption}\n\n")
 
     cp.mark_complete()
 
@@ -165,7 +184,7 @@ async def process_structured(
         "description": desc_result,
         "thumbnail": thumb_result,
         "evaluation": eval_result,
-        "social_media": social_media_result,
+        "social_media": social_result,
         "raw_text": filepath.read_text(encoding="utf-8"),
         "filepath": str(filepath),
     }
