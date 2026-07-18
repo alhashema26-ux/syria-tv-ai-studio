@@ -71,7 +71,7 @@ class TelegramContent(BaseModel):
 class WhatsAppContent(BaseModel):
     # 80-250 حرف + هامش
     captions: list[str] = Field(..., min_length=3, max_length=3)
-    emojis_used: list[str] = Field(default_factory=list, max_length=2)
+    emojis_used: list[str] = Field(default_factory=list, max_length=5)
 
 
 class TikTokHook(BaseModel):
@@ -97,7 +97,7 @@ class SocialMediaResult(BaseModel):
     telegram: TelegramContent
     whatsapp: WhatsAppContent
     tiktok: TikTokContent
-    editor_notes: list[str] = Field(..., min_length=1, max_length=4)
+    editor_notes: list[str] = Field(..., min_length=1, max_length=10)
 
     def validate_x_char_limits(self) -> list[str]:
         """
