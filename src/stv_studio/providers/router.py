@@ -27,6 +27,7 @@ class TaskType(str, Enum):
     KEYWORDS = "keywords"
     QUALITY_EVALUATION = "quality_evaluation"
     GENERAL = "general"
+    SOCIAL_MEDIA_GENERATION = "social_media_generation"
 
 
 class LLMRouter:
@@ -41,6 +42,7 @@ class LLMRouter:
         TaskType.KEYWORDS:            ("gemini", "gemini-3.1-flash-lite"),
         TaskType.QUALITY_EVALUATION:  ("openai", "gpt-5.6-terra"),
         TaskType.GENERAL:             ("anthropic", "claude-sonnet-5"),
+        TaskType.SOCIAL_MEDIA_GENERATION: ("anthropic", "claude-sonnet-5"),
     }
     
     def __init__(self):
