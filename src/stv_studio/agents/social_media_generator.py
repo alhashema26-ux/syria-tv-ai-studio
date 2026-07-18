@@ -57,6 +57,46 @@ class SocialMediaAgent:
 
         raise ValueError(f"No valid JSON found in response:\n{text[:500]}")
 
+    def _normalize_news_type(self, data: dict) -> dict:
+        """
+        يطبّع قيمة news_type لأقرب قيمة من الست المحصورة،
+        لأنه Claude أحياناً يستخدم تنسيق مختلف قليلاً لنفس المعنى
+        (مثال: "تقرير / تحليل" بدل "تقرير-تحليل").
+        """
+        valid_values = [
+            "عاجل",
+            "تقرير-تحليل",
+            "مداخلة-تصريح",
+            "متابعة-تطور",
+            "إنساني-قصة",
+            "اقتصادي-أرقام",
+        ]
+
+        if "classification" not in data or "news_type" not in data["classification"]:
+            return data
+
+        raw = data["classification"]["news_type"].strip()
+
+        if raw in valid_values:
+            return data
+
+        # تطبيع: إزالة المسافات حول الفواصل، توحيد / إلى -
+        cleaned = raw.replace(" / ", "-").replace("/", "-").replace(" ", "")
+
+        if cleaned in valid_values:
+            data["classification"]["news_type"] = cleaned
+            return data
+
+        # مطابقة جزئية (احتياطي أخير) — لو الكلمة الأولى تطابق
+        for valid in valid_values:
+            first_part = valid.split("-")[0]
+            if raw.startswith(first_part):
+                data["classification"]["news_type"] = valid
+                return data
+
+        # لو ما لقينا تطابق، نسيبها كما هي — Pydantic رح يرفضها بوضوح
+        return data
+
     def _build_user_prompt(
         self,
         transcript: str,
@@ -103,6 +143,8 @@ class SocialMediaAgent:
             data = json.loads(json_text)
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON:\n{json_text[:1000]}\n\nError: {e}")
+
+        data = self._normalize_news_type(data)
 
         try:
             result = SocialMediaResult(**data)
