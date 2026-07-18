@@ -1,10 +1,6 @@
 """
 Process Report V2 - نسخة منظّمة للواجهة الويب
-====================================================
-نفس منطق process_report.py، لكن يرجع بيانات منظّمة (dict)
-بدل مسار ملف نصي، لعرضها بصرياً بصفحة الويب.
 """
-
 import sys
 from pathlib import Path
 
@@ -20,25 +16,39 @@ from stv_studio.utils.output_saver import OutputSaver
 from stv_studio.utils.checkpoint import CheckpointManager
 
 
-async def process_structured(
-    transcript: str,
-    include_titles: bool = True,
-    include_description: bool = True,
-    include_thumbnail: bool = True,
-    include_evaluation: bool = True,
-    include_social_media: bool = False,
-    run_id: str = None,
-) -> dict:
-    """
-    يشغّل الـ Pipeline بخطوات مختارة، ويرجع dict منظّم بكل النتائج
-    (objects حقيقية، جاهزة للعرض بـ Jinja2 مباشرة).
-    """
-    cp = CheckpointManager(run_id=run_id)
-    analyzer = TranscriptAnalyzer()
+def _build_context_block(content_type, program_name):
+    if not content_type and not program_name:
+        return ""
+    parts = ["\n## السياق التحريري\n"]
+    if content_type:
+        parts.append(f"- **نوع النص:** {content_type}")
+    if program_name:
+        parts.append(f"- **البرنامج:** {program_name}")
+    parts.append("\nضع هذا السياق في الاعتبار عند توليد كل مخرجاتك.\n")
+    return "\n".join(parts)
 
-    # الخطوة 1: التحليل (إلزامي دائماً)
+
+async def process_structured(
+    transcript,
+    content_type=None,
+    program_name=None,
+    include_titles=True,
+    include_description=True,
+    include_thumbnail=True,
+    include_evaluation=True,
+    include_social_media=False,
+    run_id=None,
+):
+    cp = CheckpointManager(run_id=run_id)
+    cp._data["content_type"] = content_type
+    cp._data["program_name"] = program_name
+    cp._write()
+
+    analyzer = TranscriptAnalyzer()
+    context_block = _build_context_block(content_type, program_name)
+
     try:
-        analysis = await analyzer.analyze(transcript)
+        analysis = await analyzer.analyze(transcript, context_block=context_block)
         cp.save_step("analysis", analysis.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
     except Exception as e:
         cp.mark_failed("analysis", str(e))
@@ -47,11 +57,10 @@ async def process_structured(
     titles_result = None
     chosen_title = analysis.title_focus or analysis.topic[:70]
 
-    # الخطوة 2: العناوين
     if include_titles:
         try:
             title_agent = TitleAgent(router=analyzer.router)
-            titles_result = await title_agent.generate(analysis)
+            titles_result = await title_agent.generate(analysis, context_block=context_block)
             chosen_title = titles_result.titles[titles_result.recommended.index].text
             cp.save_step("titles", titles_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
         except Exception as e:
@@ -60,11 +69,10 @@ async def process_structured(
 
     desc_result = None
 
-    # الخطوة 3: الوصف
     if include_description:
         try:
             desc_agent = DescriptionAgent(router=analyzer.router)
-            desc_result = await desc_agent.generate(analysis, chosen_title)
+            desc_result = await desc_agent.generate(analysis, chosen_title, context_block=context_block)
             cp.save_step("description", desc_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
         except Exception as e:
             cp.mark_failed("description", str(e))
@@ -73,11 +81,10 @@ async def process_structured(
     thumb_result = None
     chosen_thumbnail = None
 
-    # الخطوة 4: الثمبنيل
     if include_thumbnail:
         try:
             thumb_agent = ThumbnailAgent(router=analyzer.router)
-            thumb_result = await thumb_agent.generate(analysis, chosen_title)
+            thumb_result = await thumb_agent.generate(analysis, chosen_title, context_block=context_block)
             chosen_thumbnail = thumb_result.options[thumb_result.recommended_index]
             cp.save_step("thumbnail", thumb_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
         except Exception as e:
@@ -86,7 +93,6 @@ async def process_structured(
 
     eval_result = None
 
-    # الخطوة 5: التقييم المستقل
     if include_evaluation:
         try:
             evaluator = QualityEvaluator(router=analyzer.router)
@@ -94,7 +100,7 @@ async def process_structured(
                 transcript=transcript,
                 analysis=analysis,
                 chosen_title=chosen_title,
-                description=desc_result.description if desc_result else "لا يوجد وصف (لم يُطلب)",
+                description=desc_result.description if desc_result else "لا يوجد وصف",
                 chosen_thumbnail=chosen_thumbnail,
             )
             cp.save_step("evaluation", eval_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
@@ -102,19 +108,17 @@ async def process_structured(
             cp.mark_failed("evaluation", str(e))
             raise
 
-    social_result = None
+    social_media_result = None
 
-    # الخطوة 6: حزمة السوشيال ميديا (اختياري، افتراضياً معطّل — محرك ثقيل)
     if include_social_media:
         try:
             social_agent = SocialMediaAgent(router=analyzer.router)
-            social_result = await social_agent.generate(transcript, analysis)
-            cp.save_step("social_media", social_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
+            social_media_result = await social_agent.generate(transcript, analysis, context_block=context_block)
+            cp.save_step("social_media", social_media_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
         except Exception as e:
             cp.mark_failed("social_media", str(e))
             raise
 
-    # حفظ نسخة Markdown أرشيفية أيضاً (بدون ما نعتمد عليها للعرض)
     stats = analyzer.router.get_stats()
     saver = OutputSaver()
     filepath = saver.save_full_report(
@@ -126,65 +130,18 @@ async def process_structured(
         output_tokens=stats["total_output_tokens"],
     )
 
-    if desc_result or thumb_result or eval_result or social_result:
-        with open(filepath, "a", encoding="utf-8") as f:
-            if desc_result:
-                f.write("\n---\n\n## 📄 الوصف والكلمات المفتاحية\n\n")
-                f.write(f"### الوصف\n{desc_result.description}\n\n")
-                f.write(f"### الكلمات المفتاحية ({len(desc_result.keywords)})\n")
-                f.write(", ".join(desc_result.keywords) + "\n\n")
-                f.write(f"### الهاشتاغات ({len(desc_result.hashtags)})\n")
-                f.write(" ".join(desc_result.hashtags) + "\n")
-            if thumb_result:
-                f.write("\n---\n\n## 🖼️ أفكار نص الثمبنيل\n\n")
-                for i, opt in enumerate(thumb_result.options):
-                    marker = " ⭐" if i == thumb_result.recommended_index else ""
-                    f.write(f"**{i}. {opt.text}**{marker} ({opt.word_count} كلمات)\n\n")
-            if eval_result:
-                f.write("\n---\n\n## 🔍 تقييم الجودة المستقل (GPT)\n\n")
-                f.write(f"**التقييم الإجمالي:** {eval_result.overall_score}/100\n\n")
-                f.write(f"**الحكم:** {eval_result.verdict}\n\n")
-                f.write(f"**جاهز للنشر:** {'✅ نعم' if eval_result.ready_to_publish else '❌ لا'}\n\n")
-                f.write("### المعايير التفصيلية\n\n")
-                for c in eval_result.criteria:
-                    f.write(f"- **{c.name}:** {c.score}/100 — {c.comment}\n")
-                f.write("\n### نقاط القوة\n\n")
-                for s in eval_result.strengths:
-                    f.write(f"- {s}\n")
-                if eval_result.weaknesses:
-                    f.write("\n### نقاط الضعف\n\n")
-                    for w in eval_result.weaknesses:
-                        f.write(f"- {w}\n")
-            if social_result:
-                f.write("\n---\n\n## 📱 حزمة السوشيال ميديا\n\n")
-                f.write(f"**التصنيف:** {social_result.classification.news_type} | {social_result.classification.chosen_angle}\n\n")
-                f.write("### Facebook\n")
-                for t in social_result.facebook.captions:
-                    f.write(f"- {t}\n")
-                f.write("\n### Instagram\n")
-                f.write(f"{social_result.instagram.full_caption}\n\n")
-                f.write("### X (Twitter)\n")
-                for t in social_result.x_twitter.tweets:
-                    f.write(f"- {t}\n")
-                f.write("\n### Telegram\n")
-                for t in social_result.telegram.captions:
-                    f.write(f"- {t}\n")
-                f.write("\n### WhatsApp\n")
-                for t in social_result.whatsapp.captions:
-                    f.write(f"- {t}\n")
-                f.write("\n### TikTok\n")
-                f.write(f"{social_result.tiktok.full_caption}\n\n")
-
     cp.mark_complete()
 
     return {
         "cost": stats["total_cost_usd"],
+        "content_type": content_type,
+        "program_name": program_name,
         "analysis": analysis,
         "titles": titles_result,
         "description": desc_result,
         "thumbnail": thumb_result,
         "evaluation": eval_result,
-        "social_media": social_result,
+        "social_media": social_media_result,
         "raw_text": filepath.read_text(encoding="utf-8"),
         "filepath": str(filepath),
     }
