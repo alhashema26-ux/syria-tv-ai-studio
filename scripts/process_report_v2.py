@@ -19,12 +19,29 @@ from stv_studio.utils.checkpoint import CheckpointManager
 def _build_context_block(content_type, program_name):
     if not content_type and not program_name:
         return ""
+    
+    from pathlib import Path
+    import sys
+    PROJECT_ROOT = Path(__file__).parent.parent
+    programs_dir = PROJECT_ROOT / "src" / "stv_studio" / "prompts" / "programs"
+    
     parts = ["\n## السياق التحريري\n"]
+    
     if content_type:
         parts.append(f"- **نوع النص:** {content_type}")
+    
     if program_name:
         parts.append(f"- **البرنامج:** {program_name}")
-    parts.append("\nضع هذا السياق في الاعتبار عند توليد كل مخرجاتك.\n")
+        
+        # قراءة بروفايل البرنامج إن وجد
+        safe_name = program_name.replace(" ", "_").replace("/", "_").replace("-", "_")
+        profile_path = programs_dir / f"{safe_name}.md"
+        
+        if profile_path.exists():
+            profile_content = profile_path.read_text(encoding="utf-8")
+            parts.append(f"\n## بروفايل البرنامج\n{profile_content}")
+        
+    parts.append("\nضع هذا السياق في الاعتبار عند توليد كل مخرجاتك — أسلوب العنوان والوصف والسوشيال ميديا يجب أن يتناسب مع نوع هذا المحتوى والبرنامج المذكور.\n")
     return "\n".join(parts)
 
 
