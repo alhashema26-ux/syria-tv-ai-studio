@@ -492,7 +492,66 @@
     function prevVariant(platform) { const d=smData[platform]; if(!d) return; const total=(d.titles||d.hooks||d.tweets||d.captions).length; d.current=(d.current-1+total)%total; renderPlatform(platform); }
     function copyPlatformText(elementId) { const el=document.getElementById(elementId); if(!el) return; navigator.clipboard.writeText(el.textContent.trim()).then(()=>alert('✅ تم النسخ!')); }
     function copyPlatformHashtags(platform) { const d=smData[platform]; if(!d||!d.hashtags||!d.hashtags.length) return; navigator.clipboard.writeText(d.hashtags.join(' ')).then(()=>alert('✅ تم نسخ الهاشتاغات!')); }
-    document.addEventListener('DOMContentLoaded', function() { updateXCounter(); });
+    let chatHistory = [];
+    let chatContext = "";
+    function buildChatContext() { const raw = document.getElementById('rawContent'); if (raw) chatContext = raw.value.substring(0, 3000); }
+    function getModelBadgeClass(m) { if (m==="claude") return "badge-claude"; if (m==="gpt") return "badge-gpt"; return "badge-gemini"; }
+    function addMessage(role, text, modelName) {
+        const container = document.getElementById('chatMessages');
+        const empty = document.getElementById('chatEmpty');
+        if (empty) empty.style.display = 'none';
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble ' + role;
+        if (role === 'assistant' && modelName) {
+            const model = document.getElementById('chatModelSelect').value;
+            const badge = document.createElement('div');
+            badge.className = 'chat-model-badge ' + getModelBadgeClass(model);
+            badge.textContent = modelName;
+            bubble.appendChild(badge);
+        }
+        const textEl = document.createElement('div');
+        textEl.className = 'chat-bubble-text';
+        textEl.textContent = text;
+        bubble.appendChild(textEl);
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
+    }
+    function addThinking() {
+        const container = document.getElementById('chatMessages');
+        const el = document.createElement('div');
+        el.className = 'chat-thinking'; el.id = 'chatThinking'; el.textContent = 'جارٍ التفكير...';
+        container.appendChild(el); container.scrollTop = container.scrollHeight;
+    }
+    function removeThinking() { const el = document.getElementById('chatThinking'); if (el) el.remove(); }
+    async function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const btn = document.getElementById('chatSendBtn');
+        const model = document.getElementById('chatModelSelect').value;
+        const message = input.value.trim();
+        if (!message) return;
+        if (!chatContext) buildChatContext();
+        addMessage('user', message);
+        chatHistory.push({role: 'user', content: message});
+        input.value = ''; input.style.height = 'auto'; btn.disabled = true; addThinking();
+        try {
+            const res = await fetch('/chat', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message, model, context: chatContext, history: chatHistory.slice(-10)}),
+            });
+            const data = await res.json(); removeThinking();
+            if (data.error) { addMessage('assistant', 'خطأ: ' + data.error, ''); }
+            else { addMessage('assistant', data.reply, data.model_name); chatHistory.push({role: 'assistant', content: data.reply}); }
+        } catch(e) { removeThinking(); addMessage('assistant', 'تعذر الاتصال.', ''); }
+        btn.disabled = false; input.focus();
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        updateXCounter(); buildChatContext();
+        const ci = document.getElementById('chatInput');
+        if (ci) {
+            ci.addEventListener('keydown', function(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } });
+            ci.addEventListener('input', function() { this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,120)+'px'; });
+        }
+    });
 </script>
 </body>
 </html>
