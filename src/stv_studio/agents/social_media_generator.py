@@ -124,7 +124,6 @@ class SocialMediaAgent:
     ) -> SocialMediaResult:
         user_prompt = context_block + "\n\n" + self._build_user_prompt(transcript, analysis)
 
-" + self._build_user_prompt(transcript, analysis)
 
         response = await self.router.generate(
             prompt=user_prompt,
