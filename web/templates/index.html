@@ -257,7 +257,7 @@
                 </div>
             </div>
 
-            <textarea name="transcript" placeholder="الصق نص التقرير الإخباري هنا...">{{ transcript or "" }}</textarea>
+            <textarea name="transcript" placeholder="الصق نص التقرير الإخباري هنا..."></textarea>
 
             <div class="options-section">
                 <div class="options-title">🎯 ماذا تريد أن يولّد النظام؟</div>
@@ -276,198 +276,9 @@
         </form>
     </div>
 
-    {% if error %}<div class="card"><div class="error">❌ حدث خطأ: {{ error }}</div></div>{% endif %}
+    
 
-    {% if result %}
-    <div class="card">
-        <div class="actions-bar">
-            <button class="copy-btn" onclick="copyResult()">📋 نسخ التقرير كاملاً</button>
-        </div>
-        <div class="result-meta">
-            <span class="badge badge-cost">💰 التكلفة: ${{ "%.4f"|format(result.cost) }}</span>
-            {% if result.evaluation %}<span class="badge {% if result.evaluation.overall_score >= 80 %}badge-quality-high{% elif result.evaluation.overall_score >= 60 %}badge-quality-mid{% else %}badge-quality-low{% endif %}">📊 الجودة: {{ result.evaluation.overall_score }}/100</span>{% endif %}
-            {% if result.content_type %}<span class="badge badge-context">📝 {{ result.content_type }}</span>{% endif %}
-            {% if result.program_name %}<span class="badge badge-context">📺 {{ result.program_name }}</span>{% endif %}
-        </div>
-
-        {% if result.titles %}
-        <div class="main-title-box">
-            <div class="label">⭐ العنوان الموصى به</div>
-            <div class="title-text">{{ result.titles.titles[result.titles.recommended.index].text }}</div>
-        </div>
-        {% endif %}
-
-        <div class="section">
-            <div class="section-title">🔍 التحليل</div>
-            <div class="analysis-grid">
-                <div class="analysis-item"><div class="k">التصنيف</div><div class="v">{{ result.analysis.category }}</div></div>
-                <div class="analysis-item"><div class="k">النبرة</div><div class="v">{{ result.analysis.tone }}</div></div>
-                <div class="analysis-item"><div class="k">الشعور</div><div class="v">{{ result.analysis.emotion }}</div></div>
-                <div class="analysis-item"><div class="k">الأولوية</div><div class="v">{{ result.analysis.urgency_level or "—" }}</div></div>
-            </div>
-            <div class="desc-box">{{ result.analysis.summary }}</div>
-        </div>
-
-        {% if result.titles %}
-        <div class="section">
-            <div class="section-title">🎯 العناوين المقترحة ({{ result.titles.titles|length }})</div>
-            {% for t in result.titles.titles %}
-            <div class="title-option {% if loop.index0 == result.titles.recommended.index %}recommended{% endif %}">
-                <span class="style-tag">{{ t.style }}</span>
-                {% if loop.index0 == result.titles.recommended.index %}<span class="style-tag" style="background:var(--orange);color:white;">⭐ موصى به</span>{% endif %}
-                <div class="title-text">{{ t.text }}</div>
-                <div class="rationale">{{ t.rationale }}</div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {% if result.description %}
-        <div class="section">
-            <div class="section-title">📄 الوصف والكلمات المفتاحية</div>
-            <div class="desc-box">{{ result.description.description }}</div>
-            <div class="tags-block">
-                <div class="tags-block-header"><span class="tags-block-title">🔑 الكلمات المفتاحية ({{ result.description.keywords|length }})</span><button class="mini-copy-btn" onclick="copyKeywords()">📋 نسخ للصق في يوتيوب</button></div>
-                <div class="tags">{% for kw in result.description.keywords %}<span class="tag">{{ kw }}</span>{% endfor %}</div>
-            </div>
-            <div class="tags-block">
-                <div class="tags-block-header"><span class="tags-block-title">#️⃣ الهاشتاغات ({{ result.description.hashtags|length }})</span><button class="mini-copy-btn" onclick="copyHashtags()">📋 نسخ الهاشتاغات</button></div>
-                <div class="tags">{% for h in result.description.hashtags %}<span class="hashtag">{{ h }}</span>{% endfor %}</div>
-            </div>
-            <textarea id="keywordsRaw" style="position:absolute;left:-9999px;">{{ result.description.keywords|join(", ") }}</textarea>
-            <textarea id="hashtagsRaw" style="position:absolute;left:-9999px;">{{ result.description.hashtags|join(" ") }}</textarea>
-        </div>
-        {% endif %}
-
-        {% if result.thumbnail %}
-        <div class="section">
-            <div class="section-title">🖼️ أفكار نص الثمبنيل ({{ result.thumbnail.options|length }})</div>
-            <div class="thumb-grid">
-                {% for opt in result.thumbnail.options %}
-                <div class="thumb-card {% if loop.index0 == result.thumbnail.recommended_index %}recommended{% endif %}">
-                    <div class="thumb-text">{{ opt.text }} {% if loop.index0 == result.thumbnail.recommended_index %}⭐{% endif %}</div>
-                    <div class="word-count">{{ opt.word_count }} كلمات</div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
-        {% if result.evaluation %}
-        <div class="section">
-            <div class="section-title">🔍 تقييم الجودة المستقل (GPT)</div>
-            <div class="eval-score-box">
-                <div class="eval-score-circle" style="background: {% if result.evaluation.overall_score >= 80 %}var(--success){% elif result.evaluation.overall_score >= 60 %}var(--warning){% else %}var(--danger){% endif %};">{{ result.evaluation.overall_score }}</div>
-                <div><div class="eval-verdict">{{ result.evaluation.verdict }}</div><div class="eval-ready">{% if result.evaluation.ready_to_publish %}✅ جاهز للنشر{% else %}❌ يحتاج مراجعة{% endif %}</div></div>
-            </div>
-            {% for c in result.evaluation.criteria %}
-            <div class="criterion"><div class="c-name">{{ c.name }}</div><div class="c-comment">{{ c.comment }}</div><div class="c-score">{{ c.score }}/100</div></div>
-            {% endfor %}
-            <div class="strengths-weaknesses">
-                <div class="sw-box strengths"><div class="sw-title">✅ نقاط القوة</div><ul>{% for s in result.evaluation.strengths %}<li>{{ s }}</li>{% endfor %}</ul></div>
-                {% if result.evaluation.weaknesses %}<div class="sw-box weaknesses"><div class="sw-title">⚠️ نقاط الضعف</div><ul>{% for w in result.evaluation.weaknesses %}<li>{{ w }}</li>{% endfor %}</ul></div>{% endif %}
-            </div>
-        </div>
-        {% endif %}
-
-        {% if result.social_media %}
-        <div class="section">
-            <div class="section-title">📱 حزمة السوشيال ميديا</div>
-            <div class="sm-classification">
-                <div class="sm-badge">نوع الخبر: <span>{{ result.social_media.classification.news_type }}</span></div>
-                <div class="sm-badge">الزاوية: <span>{{ result.social_media.classification.chosen_angle }}</span></div>
-                <div class="sm-badge">الجمهور: <span>{{ result.social_media.classification.target_audience }}</span></div>
-            </div>
-            <div class="platforms-grid">
-                <div class="platform-card platform-facebook">
-                    <div class="platform-header"><span class="platform-icon">📘</span><span>Facebook</span><div class="platform-nav"><span class="platform-nav-label" id="fb-label">1/3</span><button class="nav-btn" onclick="prevVariant('fb')">‹</button><button class="nav-btn" onclick="nextVariant('fb')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="fb-title-text">{{ result.social_media.facebook.titles[0] }}</div>
-                        <div class="platform-text-area" id="fb-caption-text">{{ result.social_media.facebook.captions[0] }}</div>
-                        <div class="platform-hashtags" id="fb-hashtags">{% for h in result.social_media.facebook.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('fb-title-text')">نسخ العنوان</button><button class="sm-copy-btn" onclick="copyPlatformText('fb-caption-text')">نسخ الكابشن</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('fb')">نسخ #</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-instagram">
-                    <div class="platform-header"><span class="platform-icon">📸</span><span>Instagram</span><div class="platform-nav"><span class="platform-nav-label" id="ig-label">1/3</span><button class="nav-btn" onclick="prevVariant('ig')">‹</button><button class="nav-btn" onclick="nextVariant('ig')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="ig-hook-text">{{ result.social_media.instagram.hooks[0].text }}</div>
-                        <div class="platform-text-area" id="ig-caption-text">{{ result.social_media.instagram.full_caption }}</div>
-                        <div class="platform-hashtags" id="ig-hashtags">{% for h in result.social_media.instagram.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('ig-hook-text')">نسخ الهوك</button><button class="sm-copy-btn" onclick="copyPlatformText('ig-caption-text')">نسخ الكابشن</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('ig')">نسخ #</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-x_twitter">
-                    <div class="platform-header"><span class="platform-icon">✖️</span><span>X (Twitter)</span><div class="platform-nav"><span class="platform-nav-label" id="x-label">1/3</span><button class="nav-btn" onclick="prevVariant('x')">‹</button><button class="nav-btn" onclick="nextVariant('x')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="x-tweet-text">{{ result.social_media.x_twitter.tweets[0] }}</div>
-                        <div class="x-char-counter" id="x-char-count"></div>
-                        <div class="platform-hashtags" id="x-hashtags">{% for h in result.social_media.x_twitter.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('x-tweet-text')">نسخ التغريدة</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('x')">نسخ #</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-telegram">
-                    <div class="platform-header"><span class="platform-icon">✈️</span><span>Telegram</span><div class="platform-nav"><span class="platform-nav-label" id="tg-label">1/3</span><button class="nav-btn" onclick="prevVariant('tg')">‹</button><button class="nav-btn" onclick="nextVariant('tg')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="tg-caption-text">{{ result.social_media.telegram.captions[0] }}</div>
-                        <div class="platform-hashtags" id="tg-hashtags">{% for h in result.social_media.telegram.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('tg-caption-text')">نسخ النص</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('tg')">نسخ #</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-whatsapp">
-                    <div class="platform-header"><span class="platform-icon">💬</span><span>WhatsApp</span><div class="platform-nav"><span class="platform-nav-label" id="wa-label">1/3</span><button class="nav-btn" onclick="prevVariant('wa')">‹</button><button class="nav-btn" onclick="nextVariant('wa')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="wa-caption-text">{{ result.social_media.whatsapp.captions[0] }}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('wa-caption-text')">نسخ النص</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-tiktok">
-                    <div class="platform-header"><span class="platform-icon">🎵</span><span>TikTok</span><div class="platform-nav"><span class="platform-nav-label" id="tt-label">1/3</span><button class="nav-btn" onclick="prevVariant('tt')">‹</button><button class="nav-btn" onclick="nextVariant('tt')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="tt-hook-text">{{ result.social_media.tiktok.hooks[0].text }}</div>
-                        <div class="platform-text-area" id="tt-caption-text">{{ result.social_media.tiktok.full_caption }}</div>
-                        <div class="platform-hashtags" id="tt-hashtags">{% for h in result.social_media.tiktok.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('tt-hook-text')">نسخ الهوك</button><button class="sm-copy-btn" onclick="copyPlatformText('tt-caption-text')">نسخ الكابشن</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('tt')">نسخ #</button></div>
-                    </div>
-                </div>
-            </div>
-            {% if result.social_media.editor_notes %}
-            <div class="editor-notes-box">
-                <div class="en-title">📝 ملاحظات المحرر</div>
-                <ul>{% for note in result.social_media.editor_notes %}<li>{{ note }}</li>{% endfor %}</ul>
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        <textarea id="rawContent" style="position:absolute;left:-9999px;">{{ result.raw_text }}</textarea>
-    </div>
-
-    {% if result %}
-    <div class="card">
-        <div class="chat-section">
-            <div class="chat-header">
-                <div class="chat-title">💬 شات مع المحرر الذكي</div>
-                <div class="chat-model-select">
-                    <label>النموذج:</label>
-                    <select id="chatModelSelect">
-                        <option value="claude">🟣 Claude Sonnet</option>
-                        <option value="gpt">🟢 GPT</option>
-                        <option value="gemini">🔵 Gemini Flash</option>
-                    </select>
-                </div>
-            </div>
-            <div class="chat-messages" id="chatMessages">
-                <div class="chat-empty" id="chatEmpty">اسألني عن التقرير، اطلب بديلاً، أو ناقش أي مخرج...</div>
-            </div>
-            <div class="chat-input-row">
-                <textarea class="chat-input" id="chatInput" placeholder="اكتب سؤالك أو طلبك هنا..." rows="1"></textarea>
-                <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">إرسال</button>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-    {% endif %}
+    
 </div>
 <script>
     document.getElementById('reportForm').addEventListener('submit', function() {
@@ -479,12 +290,12 @@
     function copyKeywords() { navigator.clipboard.writeText(document.getElementById('keywordsRaw').value).then(() => alert('✅ تم نسخ الكلمات المفتاحية!')); }
     function copyHashtags() { navigator.clipboard.writeText(document.getElementById('hashtagsRaw').value).then(() => alert('✅ تم نسخ الهاشتاغات!')); }
     const smData = {
-        fb: { titles: {{ result.social_media.facebook.titles | tojson if result.social_media else '[]' }}, captions: {{ result.social_media.facebook.captions | tojson if result.social_media else '[]' }}, hashtags: {{ result.social_media.facebook.hashtags | tojson if result.social_media else '[]' }}, current: 0 },
-        ig: { hooks: {{ result.social_media.instagram.hooks | map(attribute='text') | list | tojson if result.social_media else '[]' }}, caption: {{ result.social_media.instagram.full_caption | tojson if result.social_media else '""' }}, hashtags: {{ result.social_media.instagram.hashtags | tojson if result.social_media else '[]' }}, current: 0 },
-        x: { tweets: {{ result.social_media.x_twitter.tweets | tojson if result.social_media else '[]' }}, hashtags: {{ result.social_media.x_twitter.hashtags | tojson if result.social_media else '[]' }}, current: 0 },
-        tg: { captions: {{ result.social_media.telegram.captions | tojson if result.social_media else '[]' }}, hashtags: {{ result.social_media.telegram.hashtags | tojson if result.social_media else '[]' }}, current: 0 },
-        wa: { captions: {{ result.social_media.whatsapp.captions | tojson if result.social_media else '[]' }}, current: 0 },
-        tt: { hooks: {{ result.social_media.tiktok.hooks | map(attribute='text') | list | tojson if result.social_media else '[]' }}, caption: {{ result.social_media.tiktok.full_caption | tojson if result.social_media else '""' }}, hashtags: {{ result.social_media.tiktok.hashtags | tojson if result.social_media else '[]' }}, current: 0 }
+        fb: { titles: [], captions: [], hashtags: [], current: 0 },
+        ig: { hooks: [], caption: &#34;&#34;, hashtags: [], current: 0 },
+        x: { tweets: [], hashtags: [], current: 0 },
+        tg: { captions: [], hashtags: [], current: 0 },
+        wa: { captions: [], current: 0 },
+        tt: { hooks: [], caption: &#34;&#34;, hashtags: [], current: 0 }
     };
     function updateXCounter() { const el = document.getElementById('x-tweet-text'); const counter = document.getElementById('x-char-count'); if (!el || !counter) return; const len = el.textContent.length; counter.textContent = len + '/280'; counter.className = 'x-char-counter ' + (len > 280 ? 'x-char-warn' : 'x-char-ok'); }
     function renderPlatform(platform) { const d = smData[platform]; if (!d) return; const idx = d.current; const total = (d.titles || d.hooks || d.tweets || d.captions).length; const label = document.getElementById(platform + '-label'); if (label) label.textContent = (idx+1)+'/'+total; if (platform==='fb') { document.getElementById('fb-title-text').textContent=d.titles[idx]||''; document.getElementById('fb-caption-text').textContent=d.captions[idx]||''; } else if (platform==='ig') { document.getElementById('ig-hook-text').textContent=d.hooks[idx]||''; } else if (platform==='x') { document.getElementById('x-tweet-text').textContent=d.tweets[idx]||''; updateXCounter(); } else if (platform==='tg') { document.getElementById('tg-caption-text').textContent=d.captions[idx]||''; } else if (platform==='wa') { document.getElementById('wa-caption-text').textContent=d.captions[idx]||''; } else if (platform==='tt') { document.getElementById('tt-hook-text').textContent=d.hooks[idx]||''; } }
@@ -492,66 +303,98 @@
     function prevVariant(platform) { const d=smData[platform]; if(!d) return; const total=(d.titles||d.hooks||d.tweets||d.captions).length; d.current=(d.current-1+total)%total; renderPlatform(platform); }
     function copyPlatformText(elementId) { const el=document.getElementById(elementId); if(!el) return; navigator.clipboard.writeText(el.textContent.trim()).then(()=>alert('✅ تم النسخ!')); }
     function copyPlatformHashtags(platform) { const d=smData[platform]; if(!d||!d.hashtags||!d.hashtags.length) return; navigator.clipboard.writeText(d.hashtags.join(' ')).then(()=>alert('✅ تم نسخ الهاشتاغات!')); }
+    document.addEventListener('DOMContentLoaded', function() { updateXCounter(); });
+    // ===== الشات =====
     let chatHistory = [];
-    let chatContext = "";
-    function buildChatContext() { const raw = document.getElementById('rawContent'); if (raw) chatContext = raw.value.substring(0, 3000); }
-    function getModelBadgeClass(m) { if (m==="claude") return "badge-claude"; if (m==="gpt") return "badge-gpt"; return "badge-gemini"; }
-    function addMessage(role, text, modelName) {
-        const container = document.getElementById('chatMessages');
+
+    function buildContext() {
+        const raw = document.getElementById('rawContent');
+        return raw ? raw.value.substring(0, 3000) : '';
+    }
+
+    function addBubble(role, text, modelName) {
         const empty = document.getElementById('chatEmpty');
-        if (empty) empty.style.display = 'none';
+        if (empty) empty.remove();
+
+        const messages = document.getElementById('chatMessages');
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble ' + role;
+
         if (role === 'assistant' && modelName) {
-            const model = document.getElementById('chatModelSelect').value;
             const badge = document.createElement('div');
-            badge.className = 'chat-model-badge ' + getModelBadgeClass(model);
+            badge.className = 'chat-model-badge';
+            badge.style.background = modelName.includes('Claude') ? '#e9d5ff' : modelName.includes('GPT') ? '#d1fae5' : '#dbeafe';
+            badge.style.color = modelName.includes('Claude') ? '#6b21a8' : modelName.includes('GPT') ? '#065f46' : '#1e40af';
             badge.textContent = modelName;
             bubble.appendChild(badge);
         }
+
         const textEl = document.createElement('div');
         textEl.className = 'chat-bubble-text';
         textEl.textContent = text;
         bubble.appendChild(textEl);
-        container.appendChild(bubble);
-        container.scrollTop = container.scrollHeight;
+        messages.appendChild(bubble);
+        messages.scrollTop = messages.scrollHeight;
     }
+
     function addThinking() {
-        const container = document.getElementById('chatMessages');
-        const el = document.createElement('div');
-        el.className = 'chat-thinking'; el.id = 'chatThinking'; el.textContent = 'جارٍ التفكير...';
-        container.appendChild(el); container.scrollTop = container.scrollHeight;
+        const messages = document.getElementById('chatMessages');
+        const thinking = document.createElement('div');
+        thinking.className = 'chat-thinking';
+        thinking.id = 'chatThinking';
+        thinking.textContent = '⏳ جارٍ التفكير...';
+        messages.appendChild(thinking);
+        messages.scrollTop = messages.scrollHeight;
     }
-    function removeThinking() { const el = document.getElementById('chatThinking'); if (el) el.remove(); }
+
+    function removeThinking() {
+        const t = document.getElementById('chatThinking');
+        if (t) t.remove();
+    }
+
     async function sendChatMessage() {
         const input = document.getElementById('chatInput');
-        const btn = document.getElementById('chatSendBtn');
-        const model = document.getElementById('chatModelSelect').value;
         const message = input.value.trim();
         if (!message) return;
-        if (!chatContext) buildChatContext();
-        addMessage('user', message);
-        chatHistory.push({role: 'user', content: message});
-        input.value = ''; input.style.height = 'auto'; btn.disabled = true; addThinking();
+
+        const model = document.getElementById('chatModel').value;
+        const btn = document.querySelector('.chat-send-btn');
+
+        input.value = '';
+        btn.disabled = true;
+        addBubble('user', message, null);
+        chatHistory.push({ role: 'user', content: message });
+        addThinking();
+
         try {
             const res = await fetch('/chat', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message, model, context: chatContext, history: chatHistory.slice(-10)}),
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message,
+                    model: model,
+                    context: buildContext(),
+                    history: chatHistory.slice(-10)
+                })
             });
-            const data = await res.json(); removeThinking();
-            if (data.error) { addMessage('assistant', 'خطأ: ' + data.error, ''); }
-            else { addMessage('assistant', data.reply, data.model_name); chatHistory.push({role: 'assistant', content: data.reply}); }
-        } catch(e) { removeThinking(); addMessage('assistant', 'تعذر الاتصال.', ''); }
-        btn.disabled = false; input.focus();
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        updateXCounter(); buildChatContext();
-        const ci = document.getElementById('chatInput');
-        if (ci) {
-            ci.addEventListener('keydown', function(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } });
-            ci.addEventListener('input', function() { this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,120)+'px'; });
+
+            const data = await res.json();
+            removeThinking();
+
+            if (data.error) {
+                addBubble('assistant', '❌ خطأ: ' + data.error, null);
+            } else {
+                addBubble('assistant', data.reply, data.model_name);
+                chatHistory.push({ role: 'assistant', content: data.reply });
+            }
+        } catch (e) {
+            removeThinking();
+            addBubble('assistant', '❌ تعذّر الاتصال بالخادم', null);
         }
-    });
+
+        btn.disabled = false;
+        input.focus();
+    }
 </script>
 </body>
 </html>
