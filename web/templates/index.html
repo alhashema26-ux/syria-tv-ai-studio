@@ -150,6 +150,33 @@
         .editor-notes-box .en-title { font-size: 13px; font-weight: 800; color: #92400e; margin-bottom: 10px; }
         .editor-notes-box ul { padding-right: 18px; }
         .editor-notes-box li { font-size: 13px; color: #78350f; margin-bottom: 6px; line-height: 1.7; }
+        
+        .chat-section { margin-top: 32px; border-top: 2.5px solid var(--gray-200); padding-top: 28px; }
+        .chat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; }
+        .chat-title { font-size: 15.5px; font-weight: 800; color: var(--navy); }
+        .chat-model-select { display: flex; align-items: center; gap: 10px; }
+        .chat-model-select label { font-size: 12.5px; font-weight: 700; color: var(--gray-600); }
+        .chat-model-select select { padding: 8px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: inherit; color: var(--gray-800); background: var(--gray-50); cursor: pointer; }
+        .chat-model-select select:focus { outline: none; border-color: var(--orange); }
+        .chat-messages { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 16px; min-height: 200px; max-height: 500px; overflow-y: auto; margin-bottom: 14px; display: flex; flex-direction: column; gap: 14px; }
+        .chat-empty { text-align: center; color: var(--gray-400); font-size: 13.5px; margin: auto; padding: 30px 0; }
+        .chat-bubble { display: flex; flex-direction: column; gap: 4px; max-width: 85%; }
+        .chat-bubble.user { align-self: flex-start; }
+        .chat-bubble.assistant { align-self: flex-end; }
+        .chat-bubble-text { padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; }
+        .chat-bubble.user .chat-bubble-text { background: var(--navy); color: white; border-radius: 12px 12px 4px 12px; }
+        .chat-bubble.assistant .chat-bubble-text { background: white; border: 1.5px solid var(--gray-200); color: var(--gray-800); border-radius: 12px 12px 12px 4px; }
+        .chat-model-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; margin-bottom: 4px; }
+        .badge-claude { background: #f3e8ff; color: #6b21a8; }
+        .badge-gpt { background: #d1fae5; color: #065f46; }
+        .badge-gemini { background: #dbeafe; color: #1e40af; }
+        .chat-input-row { display: flex; gap: 10px; align-items: flex-end; }
+        .chat-input { flex: 1; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 14px; font-family: inherit; resize: none; min-height: 48px; max-height: 120px; transition: border-color 0.2s ease; color: var(--gray-800); }
+        .chat-input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(249,115,22,0.10); }
+        .chat-send-btn { background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; margin: 0; transition: all 0.2s ease; white-space: nowrap; }
+        .chat-send-btn:hover { transform: translateY(-1px); }
+        .chat-send-btn:disabled { background: var(--gray-400); cursor: wait; transform: none; }
+        .chat-thinking { align-self: flex-end; padding: 10px 16px; background: white; border: 1.5px solid var(--gray-200); border-radius: 12px; font-size: 13px; color: var(--gray-400); font-style: italic; }
         @media (max-width: 640px) { body { padding: 12px; } header { flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px; } .card { padding: 22px; } .strengths-weaknesses { grid-template-columns: 1fr; } .platforms-grid { grid-template-columns: 1fr; } .context-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -415,6 +442,31 @@
 
         <textarea id="rawContent" style="position:absolute;left:-9999px;">{{ result.raw_text }}</textarea>
     </div>
+
+    {% if result %}
+    <div class="card">
+        <div class="chat-section">
+            <div class="chat-header">
+                <div class="chat-title">💬 شات مع المحرر الذكي</div>
+                <div class="chat-model-select">
+                    <label>النموذج:</label>
+                    <select id="chatModelSelect">
+                        <option value="claude">🟣 Claude Sonnet</option>
+                        <option value="gpt">🟢 GPT</option>
+                        <option value="gemini">🔵 Gemini Flash</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-empty" id="chatEmpty">اسألني عن التقرير، اطلب بديلاً، أو ناقش أي مخرج...</div>
+            </div>
+            <div class="chat-input-row">
+                <textarea class="chat-input" id="chatInput" placeholder="اكتب سؤالك أو طلبك هنا..." rows="1"></textarea>
+                <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">إرسال</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     {% endif %}
 </div>
 <script>

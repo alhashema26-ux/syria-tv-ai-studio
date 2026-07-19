@@ -134,6 +134,47 @@ async def history_detail(request: Request, run_id: str):
     )
 
 
+
+@app.post("/chat")
+async def chat(request: Request):
+    from stv_studio.config import settings
+    body = await request.json()
+    message = body.get("message", "").strip()
+    model_choice = body.get("model", "claude")
+    context = body.get("context", "")
+    history = body.get("history", [])
+    if not message:
+        return JSONResponse({"error": "الرسالة فارغة"}, status_code=400)
+    system_prompt = "أنت مساعد تحريري خبير في تلفزيون سوريا.\n\nالسياق:\n" + context + "\n\nاللغة: العربية. الأسلوب: مهني ومباشر."
+    messages = [{"role": h["role"], "content": h["content"]} for h in history]
+    messages.append({"role": "user", "content": message})
+    try:
+        if model_choice == "claude":
+            from anthropic import Anthropic
+            client = Anthropic(api_key=settings.anthropic_api_key.get_secret_value())
+            response = client.messages.create(model="claude-sonnet-4-6", max_tokens=2000, system=system_prompt, messages=messages)
+            reply = response.content[0].text
+            model_name = "Claude Sonnet"
+        elif model_choice == "gpt":
+            from openai import OpenAI
+            client = OpenAI(api_key=settings.openai_api_key.get_secret_value())
+            response = client.chat.completions.create(model="gpt-5.6-terra", messages=[{"role": "system", "content": system_prompt}] + messages, max_completion_tokens=2000)
+            reply = response.choices[0].message.content
+            model_name = "GPT"
+        elif model_choice == "gemini":
+            from google import genai
+            from google.genai import types as gt
+            client = genai.Client(api_key=settings.google_api_key.get_secret_value())
+            full = system_prompt + "\n\n" + "\n".join([m["role"] + ": " + m["content"] for m in messages])
+            response = client.models.generate_content(model="gemini-3.1-flash-lite", contents=full, config=gt.GenerateContentConfig(max_output_tokens=2000))
+            reply = response.text
+            model_name = "Gemini Flash"
+        else:
+            return JSONResponse({"error": "نموذج غير معروف"}, status_code=400)
+        return JSONResponse({"reply": reply, "model_name": model_name})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
 if __name__ == "__main__":
     import os
     import uvicorn
