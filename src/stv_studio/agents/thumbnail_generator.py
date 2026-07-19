@@ -101,12 +101,10 @@ class ThumbnailAgent:
     async def generate(
         self,
         analysis: AnalysisResult,
-        chosen_title: str,
+chosen_title: str,
         context_block: str = "",
-    ) -> ThumbnailResult:
+       ) -> ThumbnailResult:
         user_prompt = context_block + "\n\n" + self._build_user_prompt(analysis, chosen_title)
-
-" + self._build_user_prompt(analysis, chosen_title)
 
         response = await self.router.generate(
             prompt=user_prompt,
