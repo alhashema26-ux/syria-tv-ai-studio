@@ -41,7 +41,7 @@ def _build_context_block(content_type, program_name):
             profile_content = profile_path.read_text(encoding="utf-8")
             parts.append(f"\n## بروفايل البرنامج\n{profile_content}")
         
-    parts.append("\nضع هذا السياق في الاعتبار عند توليد كل مخرجاتك — أسلوب العنوان والوصف والسوشيال ميديا يجب أن يتناسب مع نوع هذا المحتوى والبرنامج المذكور.\n")
+    parts.append("\nضع هذا السياق في الاعتبار عند توليد كل مخرجاتك — أسلوب العنوان والوصف والسوشيال ميديا يجب أن يتناسب مع نوع هذا المحتوى والبرنامج المذكور.\n\n**مهم:** أرجع JSON فقط بالشكل المحدد في System Prompt، بدون أي نص إضافي.\n")
     return "\n".join(parts)
 
 
