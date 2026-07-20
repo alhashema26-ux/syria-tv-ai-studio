@@ -373,6 +373,33 @@
         .chat-send-btn:disabled { background: var(--gray-400); cursor: wait; transform: none; }
         .chat-thinking { align-self: flex-end; padding: 10px 16px; background: white; border: 1.5px solid var(--gray-200); border-radius: 12px; font-size: 13px; color: var(--gray-400); font-style: italic; }
         
+
+        /* ===== انيميشن العرض التدريجي ===== */
+        @keyframes revealUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes revealTab {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tab-btn.reveal-animate {
+            opacity: 0;
+            animation: revealTab 0.35s ease forwards;
+        }
+        .tab-content.active > * {
+            opacity: 0;
+            animation: revealUp 0.4s ease forwards;
+        }
+        .tab-content.active > *:nth-child(1) { animation-delay: 0ms; }
+        .tab-content.active > *:nth-child(2) { animation-delay: 150ms; }
+        .tab-content.active > *:nth-child(3) { animation-delay: 300ms; }
+        .tab-content.active > *:nth-child(4) { animation-delay: 450ms; }
+        .tab-content.active > *:nth-child(5) { animation-delay: 600ms; }
+        .tab-content.active > *:nth-child(6) { animation-delay: 750ms; }
+        .tab-content.active > *:nth-child(7) { animation-delay: 900ms; }
+        .tab-content.active > *:nth-child(8) { animation-delay: 1050ms; }
+
         @media (max-width: 640px) {
             body { padding: 12px; }
             header { flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px; }
@@ -855,6 +882,13 @@
                 switchTab(saved);
             }
         } catch(e) {}
+
+        // ===== انيميشن العرض التدريجي للتبويبات =====
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach((btn, idx) => {
+            btn.classList.add('reveal-animate');
+            btn.style.animationDelay = (idx * 80) + 'ms';
+        });
     });
 </script>
 </body>
