@@ -30,6 +30,7 @@
         header a { color: white; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.15); padding: 10px 20px; border-radius: 10px; text-decoration: none; font-size: 13.5px; font-weight: 700; transition: all 0.2s ease; white-space: nowrap; }
         header a:hover { background: var(--orange); border-color: var(--orange); transform: translateY(-1px); }
         .card { background: white; padding: 36px; border-radius: 0 0 var(--radius) var(--radius); box-shadow: var(--shadow-md); margin-bottom: 24px; }
+        .card-tabs { padding: 0; }
 
         /* السياق */
         .context-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--gray-200); }
@@ -58,6 +59,200 @@
         button:disabled { background: var(--gray-400); cursor: wait; transform: none; box-shadow: none; }
         .loading { display: none; margin-top: 18px; padding: 16px 20px; background: var(--warning-bg); border-radius: 10px; color: var(--warning); font-weight: 600; font-size: 13.5px; }
         .error { background: var(--danger-bg); color: var(--danger); padding: 18px 20px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
+
+        /* ===== نظام التبويبات ===== */
+        .tabs-nav {
+            display: flex;
+            gap: 4px;
+            padding: 8px 8px 0 8px;
+            background: var(--gray-50);
+            border-bottom: 2px solid var(--gray-200);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tabs-nav::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            background: transparent;
+            color: var(--gray-600);
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px 10px 0 0;
+            font-size: 13.5px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            margin: 0;
+            box-shadow: none;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.6);
+            color: var(--navy);
+            transform: none;
+            box-shadow: none;
+        }
+        .tab-btn.active {
+            background: white;
+            color: var(--navy);
+            box-shadow: 0 -2px 8px rgba(15,23,41,0.05);
+        }
+        .tab-btn.active::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--orange);
+            border-radius: 2px 2px 0 0;
+        }
+        .tab-content {
+            display: none;
+            padding: 32px 36px;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.25s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== تبويب الملخص ===== */
+        .summary-hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-lighter) 100%);
+            color: white;
+            padding: 28px 32px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .summary-hero::before {
+            content: "⭐";
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            font-size: 120px;
+            opacity: 0.05;
+        }
+        .summary-hero-label {
+            font-size: 11px;
+            color: var(--orange-light);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        .summary-hero-title {
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        .summary-hero-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .summary-quick-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 0;
+            box-shadow: none;
+            transition: all 0.15s ease;
+        }
+        .summary-quick-btn:hover {
+            background: var(--orange);
+            border-color: var(--orange);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(249,115,22,0.3);
+        }
+        .summary-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .summary-stat {
+            background: var(--gray-50);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+        .summary-stat-label {
+            font-size: 11px;
+            color: var(--gray-600);
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .summary-stat-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--navy);
+        }
+        .summary-stat.highlight {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-color: var(--orange);
+        }
+        .summary-section-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--navy);
+            margin: 24px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        .summary-mini-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .summary-mini-item {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .summary-mini-item .mini-copy-inline {
+            background: transparent;
+            color: var(--gray-400);
+            border: none;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            margin: 0;
+            box-shadow: none;
+            transition: color 0.15s ease;
+        }
+        .summary-mini-item .mini-copy-inline:hover {
+            color: var(--orange);
+            transform: none;
+            box-shadow: none;
+        }
+
         .result-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
         .badge { padding: 7px 16px; border-radius: 20px; font-size: 12.5px; font-weight: 800; }
         .badge-cost { background: #dbeafe; color: #1e40af; }
@@ -66,6 +261,7 @@
         .badge-quality-low { background: var(--danger-bg); color: #991b1b; }
         .badge-context { background: #f3e8ff; color: #6b21a8; }
         .section { margin-bottom: 32px; }
+        .section:last-child { margin-bottom: 0; }
         .section-title { font-size: 15.5px; font-weight: 800; color: var(--navy); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2.5px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
         .main-title-box { background: linear-gradient(135deg,var(--navy) 0%,var(--navy-lighter) 100%); color: white; padding: 24px 28px; border-radius: var(--radius); margin-bottom: 24px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
         .main-title-box::before { content: "⭐"; position: absolute; top: -10px; left: -10px; font-size: 90px; opacity: 0.06; }
@@ -117,7 +313,7 @@
         .sw-box li { font-size: 12.5px; margin-bottom: 6px; margin-right: 18px; line-height: 1.6; }
         .copy-btn { background: var(--success); padding: 10px 20px; font-size: 13px; margin: 0; border-radius: 10px; box-shadow: 0 3px 10px rgba(5,150,105,0.3); }
         .copy-btn:hover { background: #047857; transform: translateY(-1px); }
-        .actions-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 18px; }
+        .actions-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 18px; padding: 20px 36px 0; }
         .sm-classification { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
         .sm-classification .sm-badge { font-size: 12.5px; font-weight: 700; color: var(--navy); }
         .sm-classification .sm-badge span { color: var(--orange); font-weight: 800; }
@@ -151,14 +347,13 @@
         .editor-notes-box ul { padding-right: 18px; }
         .editor-notes-box li { font-size: 13px; color: #78350f; margin-bottom: 6px; line-height: 1.7; }
         
-        .chat-section { margin-top: 32px; border-top: 2.5px solid var(--gray-200); padding-top: 28px; }
         .chat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; }
         .chat-title { font-size: 15.5px; font-weight: 800; color: var(--navy); }
         .chat-model-select { display: flex; align-items: center; gap: 10px; }
         .chat-model-select label { font-size: 12.5px; font-weight: 700; color: var(--gray-600); }
         .chat-model-select select { padding: 8px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: inherit; color: var(--gray-800); background: var(--gray-50); cursor: pointer; }
         .chat-model-select select:focus { outline: none; border-color: var(--orange); }
-        .chat-messages { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 16px; min-height: 200px; max-height: 500px; overflow-y: auto; margin-bottom: 14px; display: flex; flex-direction: column; gap: 14px; }
+        .chat-messages { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 16px; min-height: 300px; max-height: 500px; overflow-y: auto; margin-bottom: 14px; display: flex; flex-direction: column; gap: 14px; }
         .chat-empty { text-align: center; color: var(--gray-400); font-size: 13.5px; margin: auto; padding: 30px 0; }
         .chat-bubble { display: flex; flex-direction: column; gap: 4px; max-width: 85%; }
         .chat-bubble.user { align-self: flex-start; }
@@ -177,7 +372,18 @@
         .chat-send-btn:hover { transform: translateY(-1px); }
         .chat-send-btn:disabled { background: var(--gray-400); cursor: wait; transform: none; }
         .chat-thinking { align-self: flex-end; padding: 10px 16px; background: white; border: 1.5px solid var(--gray-200); border-radius: 12px; font-size: 13px; color: var(--gray-400); font-style: italic; }
-        @media (max-width: 640px) { body { padding: 12px; } header { flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px; } .card { padding: 22px; } .strengths-weaknesses { grid-template-columns: 1fr; } .platforms-grid { grid-template-columns: 1fr; } .context-grid { grid-template-columns: 1fr; } }
+        
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            header { flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px; }
+            .card { padding: 22px; }
+            .tab-content { padding: 22px; }
+            .actions-bar { padding: 16px 22px 0; }
+            .strengths-weaknesses { grid-template-columns: 1fr; }
+            .platforms-grid { grid-template-columns: 1fr; }
+            .context-grid { grid-template-columns: 1fr; }
+            .tab-btn { padding: 10px 12px; font-size: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -279,173 +485,242 @@
     {% if error %}<div class="card"><div class="error">❌ حدث خطأ: {{ error }}</div></div>{% endif %}
 
     {% if result %}
-    <div class="card">
+    <div class="card card-tabs">
         <div class="actions-bar">
+            <div class="result-meta" style="margin: 0; flex: 1;">
+                <span class="badge badge-cost">💰 ${{ "%.4f"|format(result.cost) }}</span>
+                {% if result.evaluation %}<span class="badge {% if result.evaluation.overall_score >= 80 %}badge-quality-high{% elif result.evaluation.overall_score >= 60 %}badge-quality-mid{% else %}badge-quality-low{% endif %}">📊 {{ result.evaluation.overall_score }}/100</span>{% endif %}
+                {% if result.content_type %}<span class="badge badge-context">📝 {{ result.content_type }}</span>{% endif %}
+                {% if result.program_name %}<span class="badge badge-context">📺 {{ result.program_name }}</span>{% endif %}
+            </div>
             <button class="copy-btn" onclick="copyResult()">📋 نسخ التقرير كاملاً</button>
         </div>
-        <div class="result-meta">
-            <span class="badge badge-cost">💰 التكلفة: ${{ "%.4f"|format(result.cost) }}</span>
-            {% if result.evaluation %}<span class="badge {% if result.evaluation.overall_score >= 80 %}badge-quality-high{% elif result.evaluation.overall_score >= 60 %}badge-quality-mid{% else %}badge-quality-low{% endif %}">📊 الجودة: {{ result.evaluation.overall_score }}/100</span>{% endif %}
-            {% if result.content_type %}<span class="badge badge-context">📝 {{ result.content_type }}</span>{% endif %}
-            {% if result.program_name %}<span class="badge badge-context">📺 {{ result.program_name }}</span>{% endif %}
+
+        <div class="tabs-nav" id="tabsNav">
+            <button type="button" class="tab-btn active" data-tab="summary">📌 الملخص</button>
+            <button type="button" class="tab-btn" data-tab="analysis">🔍 التحليل</button>
+            {% if result.titles %}<button type="button" class="tab-btn" data-tab="titles">🎯 العناوين</button>{% endif %}
+            {% if result.description %}<button type="button" class="tab-btn" data-tab="description">📄 الوصف والـ SEO</button>{% endif %}
+            {% if result.thumbnail %}<button type="button" class="tab-btn" data-tab="thumbnail">🖼️ الثمبنيل</button>{% endif %}
+            {% if result.social_media %}<button type="button" class="tab-btn" data-tab="social">📱 السوشيال</button>{% endif %}
+            {% if result.evaluation %}<button type="button" class="tab-btn" data-tab="evaluation">⚖️ التقييم</button>{% endif %}
+            <button type="button" class="tab-btn" data-tab="chat">💬 الشات</button>
+        </div>
+
+        <!-- تبويب الملخص -->
+        <div class="tab-content active" data-tab-content="summary">
+            {% if result.titles %}
+            <div class="summary-hero">
+                <div class="summary-hero-label">⭐ العنوان الموصى به</div>
+                <div class="summary-hero-title" id="summaryTitle">{{ result.titles.titles[result.titles.recommended.index].text }}</div>
+                <div class="summary-hero-actions">
+                    <button class="summary-quick-btn" onclick="copyText(document.getElementById('summaryTitle').textContent, 'العنوان')">📋 نسخ العنوان</button>
+                    {% if result.description %}<button class="summary-quick-btn" onclick="copyKeywords()">🔑 نسخ الكلمات المفتاحية</button>{% endif %}
+                    {% if result.description %}<button class="summary-quick-btn" onclick="copyHashtags()">#️⃣ نسخ الهاشتاغات</button>{% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="summary-stats-grid">
+                <div class="summary-stat">
+                    <div class="summary-stat-label">التصنيف</div>
+                    <div class="summary-stat-value">{{ result.analysis.category }}</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-label">النبرة</div>
+                    <div class="summary-stat-value">{{ result.analysis.tone }}</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-label">الأولوية</div>
+                    <div class="summary-stat-value">{{ result.analysis.urgency_level or "—" }}</div>
+                </div>
+                {% if result.evaluation %}
+                <div class="summary-stat highlight">
+                    <div class="summary-stat-label">درجة الجودة</div>
+                    <div class="summary-stat-value">{{ result.evaluation.overall_score }}/100</div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if result.description %}
+            <div class="summary-section-title">📄 الوصف</div>
+            <div class="desc-box" style="margin-bottom: 0;">{{ result.description.description[:300] }}{% if result.description.description|length > 300 %}...{% endif %}</div>
+            {% endif %}
+
+            {% if result.thumbnail %}
+            <div class="summary-section-title">🖼️ الثمبنيل الموصى</div>
+            <div class="summary-mini-list">
+                <div class="summary-mini-item">
+                    <span>{{ result.thumbnail.options[result.thumbnail.recommended_index].text }}</span>
+                    <button class="mini-copy-inline" onclick="copyText('{{ result.thumbnail.options[result.thumbnail.recommended_index].text }}', 'الثمبنيل')">📋</button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- تبويب التحليل -->
+        <div class="tab-content" data-tab-content="analysis">
+            <div class="section">
+                <div class="section-title">🔍 تحليل المحتوى</div>
+                <div class="analysis-grid">
+                    <div class="analysis-item"><div class="k">التصنيف</div><div class="v">{{ result.analysis.category }}</div></div>
+                    <div class="analysis-item"><div class="k">النبرة</div><div class="v">{{ result.analysis.tone }}</div></div>
+                    <div class="analysis-item"><div class="k">الشعور</div><div class="v">{{ result.analysis.emotion }}</div></div>
+                    <div class="analysis-item"><div class="k">الأولوية</div><div class="v">{{ result.analysis.urgency_level or "—" }}</div></div>
+                </div>
+                <div class="desc-box">{{ result.analysis.summary }}</div>
+            </div>
         </div>
 
         {% if result.titles %}
-        <div class="main-title-box">
-            <div class="label">⭐ العنوان الموصى به</div>
-            <div class="title-text">{{ result.titles.titles[result.titles.recommended.index].text }}</div>
-        </div>
-        {% endif %}
-
-        <div class="section">
-            <div class="section-title">🔍 التحليل</div>
-            <div class="analysis-grid">
-                <div class="analysis-item"><div class="k">التصنيف</div><div class="v">{{ result.analysis.category }}</div></div>
-                <div class="analysis-item"><div class="k">النبرة</div><div class="v">{{ result.analysis.tone }}</div></div>
-                <div class="analysis-item"><div class="k">الشعور</div><div class="v">{{ result.analysis.emotion }}</div></div>
-                <div class="analysis-item"><div class="k">الأولوية</div><div class="v">{{ result.analysis.urgency_level or "—" }}</div></div>
-            </div>
-            <div class="desc-box">{{ result.analysis.summary }}</div>
-        </div>
-
-        {% if result.titles %}
-        <div class="section">
-            <div class="section-title">🎯 العناوين المقترحة ({{ result.titles.titles|length }})</div>
-            {% for t in result.titles.titles %}
-            <div class="title-option {% if loop.index0 == result.titles.recommended.index %}recommended{% endif %}">
-                <span class="style-tag">{{ t.style }}</span>
-                {% if loop.index0 == result.titles.recommended.index %}<span class="style-tag" style="background:var(--orange);color:white;">⭐ موصى به</span>{% endif %}
-                <div class="title-text">{{ t.text }}</div>
-                <div class="rationale">{{ t.rationale }}</div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        {% if result.description %}
-        <div class="section">
-            <div class="section-title">📄 الوصف والكلمات المفتاحية</div>
-            <div class="desc-box">{{ result.description.description }}</div>
-            <div class="tags-block">
-                <div class="tags-block-header"><span class="tags-block-title">🔑 الكلمات المفتاحية ({{ result.description.keywords|length }})</span><button class="mini-copy-btn" onclick="copyKeywords()">📋 نسخ للصق في يوتيوب</button></div>
-                <div class="tags">{% for kw in result.description.keywords %}<span class="tag">{{ kw }}</span>{% endfor %}</div>
-            </div>
-            <div class="tags-block">
-                <div class="tags-block-header"><span class="tags-block-title">#️⃣ الهاشتاغات ({{ result.description.hashtags|length }})</span><button class="mini-copy-btn" onclick="copyHashtags()">📋 نسخ الهاشتاغات</button></div>
-                <div class="tags">{% for h in result.description.hashtags %}<span class="hashtag">{{ h }}</span>{% endfor %}</div>
-            </div>
-            <textarea id="keywordsRaw" style="position:absolute;left:-9999px;">{{ result.description.keywords|join(", ") }}</textarea>
-            <textarea id="hashtagsRaw" style="position:absolute;left:-9999px;">{{ result.description.hashtags|join(" ") }}</textarea>
-        </div>
-        {% endif %}
-
-        {% if result.thumbnail %}
-        <div class="section">
-            <div class="section-title">🖼️ أفكار نص الثمبنيل ({{ result.thumbnail.options|length }})</div>
-            <div class="thumb-grid">
-                {% for opt in result.thumbnail.options %}
-                <div class="thumb-card {% if loop.index0 == result.thumbnail.recommended_index %}recommended{% endif %}">
-                    <div class="thumb-text">{{ opt.text }} {% if loop.index0 == result.thumbnail.recommended_index %}⭐{% endif %}</div>
-                    <div class="word-count">{{ opt.word_count }} كلمات</div>
+        <!-- تبويب العناوين -->
+        <div class="tab-content" data-tab-content="titles">
+            <div class="section">
+                <div class="section-title">🎯 العناوين المقترحة ({{ result.titles.titles|length }})</div>
+                {% for t in result.titles.titles %}
+                <div class="title-option {% if loop.index0 == result.titles.recommended.index %}recommended{% endif %}">
+                    <span class="style-tag">{{ t.style }}</span>
+                    {% if loop.index0 == result.titles.recommended.index %}<span class="style-tag" style="background:var(--orange);color:white;">⭐ موصى به</span>{% endif %}
+                    <div class="title-text">{{ t.text }}</div>
+                    <div class="rationale">{{ t.rationale }}</div>
                 </div>
                 {% endfor %}
             </div>
         </div>
         {% endif %}
 
-        {% if result.evaluation %}
-        <div class="section">
-            <div class="section-title">🔍 تقييم الجودة المستقل (GPT)</div>
-            <div class="eval-score-box">
-                <div class="eval-score-circle" style="background: {% if result.evaluation.overall_score >= 80 %}var(--success){% elif result.evaluation.overall_score >= 60 %}var(--warning){% else %}var(--danger){% endif %};">{{ result.evaluation.overall_score }}</div>
-                <div><div class="eval-verdict">{{ result.evaluation.verdict }}</div><div class="eval-ready">{% if result.evaluation.ready_to_publish %}✅ جاهز للنشر{% else %}❌ يحتاج مراجعة{% endif %}</div></div>
+        {% if result.description %}
+        <!-- تبويب الوصف والـ SEO -->
+        <div class="tab-content" data-tab-content="description">
+            <div class="section">
+                <div class="section-title">📄 الوصف والكلمات المفتاحية</div>
+                <div class="desc-box">{{ result.description.description }}</div>
+                <div class="tags-block">
+                    <div class="tags-block-header"><span class="tags-block-title">🔑 الكلمات المفتاحية ({{ result.description.keywords|length }})</span><button class="mini-copy-btn" onclick="copyKeywords()">📋 نسخ للصق في يوتيوب</button></div>
+                    <div class="tags">{% for kw in result.description.keywords %}<span class="tag">{{ kw }}</span>{% endfor %}</div>
+                </div>
+                <div class="tags-block">
+                    <div class="tags-block-header"><span class="tags-block-title">#️⃣ الهاشتاغات ({{ result.description.hashtags|length }})</span><button class="mini-copy-btn" onclick="copyHashtags()">📋 نسخ الهاشتاغات</button></div>
+                    <div class="tags">{% for h in result.description.hashtags %}<span class="hashtag">{{ h }}</span>{% endfor %}</div>
+                </div>
+                <textarea id="keywordsRaw" style="position:absolute;left:-9999px;">{{ result.description.keywords|join(", ") }}</textarea>
+                <textarea id="hashtagsRaw" style="position:absolute;left:-9999px;">{{ result.description.hashtags|join(" ") }}</textarea>
             </div>
-            {% for c in result.evaluation.criteria %}
-            <div class="criterion"><div class="c-name">{{ c.name }}</div><div class="c-comment">{{ c.comment }}</div><div class="c-score">{{ c.score }}/100</div></div>
-            {% endfor %}
-            <div class="strengths-weaknesses">
-                <div class="sw-box strengths"><div class="sw-title">✅ نقاط القوة</div><ul>{% for s in result.evaluation.strengths %}<li>{{ s }}</li>{% endfor %}</ul></div>
-                {% if result.evaluation.weaknesses %}<div class="sw-box weaknesses"><div class="sw-title">⚠️ نقاط الضعف</div><ul>{% for w in result.evaluation.weaknesses %}<li>{{ w }}</li>{% endfor %}</ul></div>{% endif %}
+        </div>
+        {% endif %}
+
+        {% if result.thumbnail %}
+        <!-- تبويب الثمبنيل -->
+        <div class="tab-content" data-tab-content="thumbnail">
+            <div class="section">
+                <div class="section-title">🖼️ أفكار نص الثمبنيل ({{ result.thumbnail.options|length }})</div>
+                <div class="thumb-grid">
+                    {% for opt in result.thumbnail.options %}
+                    <div class="thumb-card {% if loop.index0 == result.thumbnail.recommended_index %}recommended{% endif %}">
+                        <div class="thumb-text">{{ opt.text }} {% if loop.index0 == result.thumbnail.recommended_index %}⭐{% endif %}</div>
+                        <div class="word-count">{{ opt.word_count }} كلمات</div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         {% endif %}
 
         {% if result.social_media %}
-        <div class="section">
-            <div class="section-title">📱 حزمة السوشيال ميديا</div>
-            <div class="sm-classification">
-                <div class="sm-badge">نوع الخبر: <span>{{ result.social_media.classification.news_type }}</span></div>
-                <div class="sm-badge">الزاوية: <span>{{ result.social_media.classification.chosen_angle }}</span></div>
-                <div class="sm-badge">الجمهور: <span>{{ result.social_media.classification.target_audience }}</span></div>
+        <!-- تبويب السوشيال ميديا -->
+        <div class="tab-content" data-tab-content="social">
+            <div class="section">
+                <div class="section-title">📱 حزمة السوشيال ميديا</div>
+                <div class="sm-classification">
+                    <div class="sm-badge">نوع الخبر: <span>{{ result.social_media.classification.news_type }}</span></div>
+                    <div class="sm-badge">الزاوية: <span>{{ result.social_media.classification.chosen_angle }}</span></div>
+                    <div class="sm-badge">الجمهور: <span>{{ result.social_media.classification.target_audience }}</span></div>
+                </div>
+                <div class="platforms-grid">
+                    <div class="platform-card platform-facebook">
+                        <div class="platform-header"><span class="platform-icon">📘</span><span>Facebook</span><div class="platform-nav"><span class="platform-nav-label" id="fb-label">1/3</span><button class="nav-btn" onclick="prevVariant('fb')">‹</button><button class="nav-btn" onclick="nextVariant('fb')">›</button></div></div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="fb-title-text">{{ result.social_media.facebook.titles[0] }}</div>
+                            <div class="platform-text-area" id="fb-caption-text">{{ result.social_media.facebook.captions[0] }}</div>
+                            <div class="platform-hashtags" id="fb-hashtags">{% for h in result.social_media.facebook.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
+                            <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('fb-title-text')">نسخ العنوان</button><button class="sm-copy-btn" onclick="copyPlatformText('fb-caption-text')">نسخ الكابشن</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('fb')">نسخ #</button></div>
+                        </div>
+                    </div>
+                    <div class="platform-card platform-instagram">
+                        <div class="platform-header"><span class="platform-icon">📸</span><span>Instagram</span><div class="platform-nav"><span class="platform-nav-label" id="ig-label">1/3</span><button class="nav-btn" onclick="prevVariant('ig')">‹</button><button class="nav-btn" onclick="nextVariant('ig')">›</button></div></div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="ig-hook-text">{{ result.social_media.instagram.hooks[0].text }}</div>
+                            <div class="platform-text-area" id="ig-caption-text">{{ result.social_media.instagram.full_caption }}</div>
+                            <div class="platform-hashtags" id="ig-hashtags">{% for h in result.social_media.instagram.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
+                            <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('ig-hook-text')">نسخ الهوك</button><button class="sm-copy-btn" onclick="copyPlatformText('ig-caption-text')">نسخ الكابشن</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('ig')">نسخ #</button></div>
+                        </div>
+                    </div>
+                    <div class="platform-card platform-x_twitter">
+                        <div class="platform-header"><span class="platform-icon">✖️</span><span>X (Twitter)</span><div class="platform-nav"><span class="platform-nav-label" id="x-label">1/3</span><button class="nav-btn" onclick="prevVariant('x')">‹</button><button class="nav-btn" onclick="nextVariant('x')">›</button></div></div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="x-tweet-text">{{ result.social_media.x_twitter.tweets[0] }}</div>
+                            <div class="x-char-counter" id="x-char-count"></div>
+                            <div class="platform-hashtags" id="x-hashtags">{% for h in result.social_media.x_twitter.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
+                            <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('x-tweet-text')">نسخ التغريدة</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('x')">نسخ #</button></div>
+                        </div>
+                    </div>
+                    <div class="platform-card platform-telegram">
+                        <div class="platform-header"><span class="platform-icon">✈️</span><span>Telegram</span><div class="platform-nav"><span class="platform-nav-label" id="tg-label">1/3</span><button class="nav-btn" onclick="prevVariant('tg')">‹</button><button class="nav-btn" onclick="nextVariant('tg')">›</button></div></div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="tg-caption-text">{{ result.social_media.telegram.captions[0] }}</div>
+                            <div class="platform-hashtags" id="tg-hashtags">{% for h in result.social_media.telegram.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
+                            <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('tg-caption-text')">نسخ النص</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('tg')">نسخ #</button></div>
+                        </div>
+                    </div>
+                    <div class="platform-card platform-whatsapp">
+                        <div class="platform-header"><span class="platform-icon">💬</span><span>WhatsApp</span><div class="platform-nav"><span class="platform-nav-label" id="wa-label">1/3</span><button class="nav-btn" onclick="prevVariant('wa')">‹</button><button class="nav-btn" onclick="nextVariant('wa')">›</button></div></div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="wa-caption-text">{{ result.social_media.whatsapp.captions[0] }}</div>
+                            <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('wa-caption-text')">نسخ النص</button></div>
+                        </div>
+                    </div>
+                    <div class="platform-card platform-tiktok">
+                        <div class="platform-header"><span class="platform-icon">🎵</span><span>TikTok</span><div class="platform-nav"><span class="platform-nav-label" id="tt-label">1/3</span><button class="nav-btn" onclick="prevVariant('tt')">‹</button><button class="nav-btn" onclick="nextVariant('tt')">›</button></div></div>
+                        <div class="platform-body">
+                            <div class="platform-text-area" id="tt-hook-text">{{ result.social_media.tiktok.hooks[0].text }}</div>
+                            <div class="platform-text-area" id="tt-caption-text">{{ result.social_media.tiktok.full_caption }}</div>
+                            <div class="platform-hashtags" id="tt-hashtags">{% for h in result.social_media.tiktok.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
+                            <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('tt-hook-text')">نسخ الهوك</button><button class="sm-copy-btn" onclick="copyPlatformText('tt-caption-text')">نسخ الكابشن</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('tt')">نسخ #</button></div>
+                        </div>
+                    </div>
+                </div>
+                {% if result.social_media.editor_notes %}
+                <div class="editor-notes-box">
+                    <div class="en-title">📝 ملاحظات المحرر</div>
+                    <ul>{% for note in result.social_media.editor_notes %}<li>{{ note }}</li>{% endfor %}</ul>
+                </div>
+                {% endif %}
             </div>
-            <div class="platforms-grid">
-                <div class="platform-card platform-facebook">
-                    <div class="platform-header"><span class="platform-icon">📘</span><span>Facebook</span><div class="platform-nav"><span class="platform-nav-label" id="fb-label">1/3</span><button class="nav-btn" onclick="prevVariant('fb')">‹</button><button class="nav-btn" onclick="nextVariant('fb')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="fb-title-text">{{ result.social_media.facebook.titles[0] }}</div>
-                        <div class="platform-text-area" id="fb-caption-text">{{ result.social_media.facebook.captions[0] }}</div>
-                        <div class="platform-hashtags" id="fb-hashtags">{% for h in result.social_media.facebook.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('fb-title-text')">نسخ العنوان</button><button class="sm-copy-btn" onclick="copyPlatformText('fb-caption-text')">نسخ الكابشن</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('fb')">نسخ #</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-instagram">
-                    <div class="platform-header"><span class="platform-icon">📸</span><span>Instagram</span><div class="platform-nav"><span class="platform-nav-label" id="ig-label">1/3</span><button class="nav-btn" onclick="prevVariant('ig')">‹</button><button class="nav-btn" onclick="nextVariant('ig')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="ig-hook-text">{{ result.social_media.instagram.hooks[0].text }}</div>
-                        <div class="platform-text-area" id="ig-caption-text">{{ result.social_media.instagram.full_caption }}</div>
-                        <div class="platform-hashtags" id="ig-hashtags">{% for h in result.social_media.instagram.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('ig-hook-text')">نسخ الهوك</button><button class="sm-copy-btn" onclick="copyPlatformText('ig-caption-text')">نسخ الكابشن</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('ig')">نسخ #</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-x_twitter">
-                    <div class="platform-header"><span class="platform-icon">✖️</span><span>X (Twitter)</span><div class="platform-nav"><span class="platform-nav-label" id="x-label">1/3</span><button class="nav-btn" onclick="prevVariant('x')">‹</button><button class="nav-btn" onclick="nextVariant('x')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="x-tweet-text">{{ result.social_media.x_twitter.tweets[0] }}</div>
-                        <div class="x-char-counter" id="x-char-count"></div>
-                        <div class="platform-hashtags" id="x-hashtags">{% for h in result.social_media.x_twitter.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('x-tweet-text')">نسخ التغريدة</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('x')">نسخ #</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-telegram">
-                    <div class="platform-header"><span class="platform-icon">✈️</span><span>Telegram</span><div class="platform-nav"><span class="platform-nav-label" id="tg-label">1/3</span><button class="nav-btn" onclick="prevVariant('tg')">‹</button><button class="nav-btn" onclick="nextVariant('tg')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="tg-caption-text">{{ result.social_media.telegram.captions[0] }}</div>
-                        <div class="platform-hashtags" id="tg-hashtags">{% for h in result.social_media.telegram.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('tg-caption-text')">نسخ النص</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('tg')">نسخ #</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-whatsapp">
-                    <div class="platform-header"><span class="platform-icon">💬</span><span>WhatsApp</span><div class="platform-nav"><span class="platform-nav-label" id="wa-label">1/3</span><button class="nav-btn" onclick="prevVariant('wa')">‹</button><button class="nav-btn" onclick="nextVariant('wa')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="wa-caption-text">{{ result.social_media.whatsapp.captions[0] }}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('wa-caption-text')">نسخ النص</button></div>
-                    </div>
-                </div>
-                <div class="platform-card platform-tiktok">
-                    <div class="platform-header"><span class="platform-icon">🎵</span><span>TikTok</span><div class="platform-nav"><span class="platform-nav-label" id="tt-label">1/3</span><button class="nav-btn" onclick="prevVariant('tt')">‹</button><button class="nav-btn" onclick="nextVariant('tt')">›</button></div></div>
-                    <div class="platform-body">
-                        <div class="platform-text-area" id="tt-hook-text">{{ result.social_media.tiktok.hooks[0].text }}</div>
-                        <div class="platform-text-area" id="tt-caption-text">{{ result.social_media.tiktok.full_caption }}</div>
-                        <div class="platform-hashtags" id="tt-hashtags">{% for h in result.social_media.tiktok.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
-                        <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('tt-hook-text')">نسخ الهوك</button><button class="sm-copy-btn" onclick="copyPlatformText('tt-caption-text')">نسخ الكابشن</button><button class="sm-copy-btn" onclick="copyPlatformHashtags('tt')">نسخ #</button></div>
-                    </div>
-                </div>
-            </div>
-            {% if result.social_media.editor_notes %}
-            <div class="editor-notes-box">
-                <div class="en-title">📝 ملاحظات المحرر</div>
-                <ul>{% for note in result.social_media.editor_notes %}<li>{{ note }}</li>{% endfor %}</ul>
-            </div>
-            {% endif %}
         </div>
         {% endif %}
 
-        <textarea id="rawContent" style="position:absolute;left:-9999px;">{{ result.raw_text }}</textarea>
-    </div>
+        {% if result.evaluation %}
+        <!-- تبويب التقييم -->
+        <div class="tab-content" data-tab-content="evaluation">
+            <div class="section">
+                <div class="section-title">⚖️ تقييم الجودة المستقل (GPT)</div>
+                <div class="eval-score-box">
+                    <div class="eval-score-circle" style="background: {% if result.evaluation.overall_score >= 80 %}var(--success){% elif result.evaluation.overall_score >= 60 %}var(--warning){% else %}var(--danger){% endif %};">{{ result.evaluation.overall_score }}</div>
+                    <div><div class="eval-verdict">{{ result.evaluation.verdict }}</div><div class="eval-ready">{% if result.evaluation.ready_to_publish %}✅ جاهز للنشر{% else %}❌ يحتاج مراجعة{% endif %}</div></div>
+                </div>
+                {% for c in result.evaluation.criteria %}
+                <div class="criterion"><div class="c-name">{{ c.name }}</div><div class="c-comment">{{ c.comment }}</div><div class="c-score">{{ c.score }}/100</div></div>
+                {% endfor %}
+                <div class="strengths-weaknesses">
+                    <div class="sw-box strengths"><div class="sw-title">✅ نقاط القوة</div><ul>{% for s in result.evaluation.strengths %}<li>{{ s }}</li>{% endfor %}</ul></div>
+                    {% if result.evaluation.weaknesses %}<div class="sw-box weaknesses"><div class="sw-title">⚠️ نقاط الضعف</div><ul>{% for w in result.evaluation.weaknesses %}<li>{{ w }}</li>{% endfor %}</ul></div>{% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
-    {% if result %}
-    <div class="card">
-        <div class="chat-section">
+        <!-- تبويب الشات -->
+        <div class="tab-content" data-tab-content="chat">
             <div class="chat-header">
                 <div class="chat-title">💬 شات مع المحرر الذكي</div>
                 <div class="chat-model-select">
@@ -465,8 +740,9 @@
                 <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">إرسال</button>
             </div>
         </div>
+
+        <textarea id="rawContent" style="position:absolute;left:-9999px;">{{ result.raw_text }}</textarea>
     </div>
-    {% endif %}
     {% endif %}
 </div>
 <script>
@@ -475,16 +751,36 @@
         document.getElementById('submitBtn').textContent = '⏳ جارٍ المعالجة...';
         document.getElementById('loadingMsg').style.display = 'block';
     });
+
+    // ===== نظام التبويبات =====
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        const activeBtn = document.querySelector('.tab-btn[data-tab="' + tabName + '"]');
+        const activeContent = document.querySelector('.tab-content[data-tab-content="' + tabName + '"]');
+        if (activeBtn) activeBtn.classList.add('active');
+        if (activeContent) activeContent.classList.add('active');
+        // احفظ التبويب النشط في localStorage
+        try { localStorage.setItem('stv_active_tab', tabName); } catch(e) {}
+    }
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    function copyText(text, label) {
+        navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ ' + (label || 'النص') + '!'));
+    }
     function copyResult() { navigator.clipboard.writeText(document.getElementById('rawContent').value).then(() => alert('✅ تم نسخ التقرير كاملاً!')); }
-    function copyKeywords() { navigator.clipboard.writeText(document.getElementById('keywordsRaw').value).then(() => alert('✅ تم نسخ الكلمات المفتاحية!')); }
-    function copyHashtags() { navigator.clipboard.writeText(document.getElementById('hashtagsRaw').value).then(() => alert('✅ تم نسخ الهاشتاغات!')); }
+    function copyKeywords() { const el = document.getElementById('keywordsRaw'); if (el) navigator.clipboard.writeText(el.value).then(() => alert('✅ تم نسخ الكلمات المفتاحية!')); }
+    function copyHashtags() { const el = document.getElementById('hashtagsRaw'); if (el) navigator.clipboard.writeText(el.value).then(() => alert('✅ تم نسخ الهاشتاغات!')); }
+
     const smData = {
-        fb: { titles: {{ result.social_media.facebook.titles | tojson if result.social_media else '[]' }}, captions: {{ result.social_media.facebook.captions | tojson if result.social_media else '[]' }}, hashtags: {{ result.social_media.facebook.hashtags | tojson if result.social_media else '[]' }}, current: 0 },
-        ig: { hooks: {{ result.social_media.instagram.hooks | map(attribute='text') | list | tojson if result.social_media else '[]' }}, caption: {{ result.social_media.instagram.full_caption | tojson if result.social_media else '""' }}, hashtags: {{ result.social_media.instagram.hashtags | tojson if result.social_media else '[]' }}, current: 0 },
-        x: { tweets: {{ result.social_media.x_twitter.tweets | tojson if result.social_media else '[]' }}, hashtags: {{ result.social_media.x_twitter.hashtags | tojson if result.social_media else '[]' }}, current: 0 },
-        tg: { captions: {{ result.social_media.telegram.captions | tojson if result.social_media else '[]' }}, hashtags: {{ result.social_media.telegram.hashtags | tojson if result.social_media else '[]' }}, current: 0 },
-        wa: { captions: {{ result.social_media.whatsapp.captions | tojson if result.social_media else '[]' }}, current: 0 },
-        tt: { hooks: {{ result.social_media.tiktok.hooks | map(attribute='text') | list | tojson if result.social_media else '[]' }}, caption: {{ result.social_media.tiktok.full_caption | tojson if result.social_media else '""' }}, hashtags: {{ result.social_media.tiktok.hashtags | tojson if result.social_media else '[]' }}, current: 0 }
+        fb: { titles: {{ result.social_media.facebook.titles | tojson if result and result.social_media else '[]' }}, captions: {{ result.social_media.facebook.captions | tojson if result and result.social_media else '[]' }}, hashtags: {{ result.social_media.facebook.hashtags | tojson if result and result.social_media else '[]' }}, current: 0 },
+        ig: { hooks: {{ result.social_media.instagram.hooks | map(attribute='text') | list | tojson if result and result.social_media else '[]' }}, caption: {{ result.social_media.instagram.full_caption | tojson if result and result.social_media else '""' }}, hashtags: {{ result.social_media.instagram.hashtags | tojson if result and result.social_media else '[]' }}, current: 0 },
+        x: { tweets: {{ result.social_media.x_twitter.tweets | tojson if result and result.social_media else '[]' }}, hashtags: {{ result.social_media.x_twitter.hashtags | tojson if result and result.social_media else '[]' }}, current: 0 },
+        tg: { captions: {{ result.social_media.telegram.captions | tojson if result and result.social_media else '[]' }}, hashtags: {{ result.social_media.telegram.hashtags | tojson if result and result.social_media else '[]' }}, current: 0 },
+        wa: { captions: {{ result.social_media.whatsapp.captions | tojson if result and result.social_media else '[]' }}, current: 0 },
+        tt: { hooks: {{ result.social_media.tiktok.hooks | map(attribute='text') | list | tojson if result and result.social_media else '[]' }}, caption: {{ result.social_media.tiktok.full_caption | tojson if result and result.social_media else '""' }}, hashtags: {{ result.social_media.tiktok.hashtags | tojson if result and result.social_media else '[]' }}, current: 0 }
     };
     function updateXCounter() { const el = document.getElementById('x-tweet-text'); const counter = document.getElementById('x-char-count'); if (!el || !counter) return; const len = el.textContent.length; counter.textContent = len + '/280'; counter.className = 'x-char-counter ' + (len > 280 ? 'x-char-warn' : 'x-char-ok'); }
     function renderPlatform(platform) { const d = smData[platform]; if (!d) return; const idx = d.current; const total = (d.titles || d.hooks || d.tweets || d.captions).length; const label = document.getElementById(platform + '-label'); if (label) label.textContent = (idx+1)+'/'+total; if (platform==='fb') { document.getElementById('fb-title-text').textContent=d.titles[idx]||''; document.getElementById('fb-caption-text').textContent=d.captions[idx]||''; } else if (platform==='ig') { document.getElementById('ig-hook-text').textContent=d.hooks[idx]||''; } else if (platform==='x') { document.getElementById('x-tweet-text').textContent=d.tweets[idx]||''; updateXCounter(); } else if (platform==='tg') { document.getElementById('tg-caption-text').textContent=d.captions[idx]||''; } else if (platform==='wa') { document.getElementById('wa-caption-text').textContent=d.captions[idx]||''; } else if (platform==='tt') { document.getElementById('tt-hook-text').textContent=d.hooks[idx]||''; } }
@@ -492,6 +788,7 @@
     function prevVariant(platform) { const d=smData[platform]; if(!d) return; const total=(d.titles||d.hooks||d.tweets||d.captions).length; d.current=(d.current-1+total)%total; renderPlatform(platform); }
     function copyPlatformText(elementId) { const el=document.getElementById(elementId); if(!el) return; navigator.clipboard.writeText(el.textContent.trim()).then(()=>alert('✅ تم النسخ!')); }
     function copyPlatformHashtags(platform) { const d=smData[platform]; if(!d||!d.hashtags||!d.hashtags.length) return; navigator.clipboard.writeText(d.hashtags.join(' ')).then(()=>alert('✅ تم نسخ الهاشتاغات!')); }
+
     let chatHistory = [];
     let chatContext = "";
     function buildChatContext() { const raw = document.getElementById('rawContent'); if (raw) chatContext = raw.value.substring(0, 3000); }
@@ -551,6 +848,13 @@
             ci.addEventListener('keydown', function(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } });
             ci.addEventListener('input', function() { this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,120)+'px'; });
         }
+        // استرجاع التبويب النشط من localStorage
+        try {
+            const saved = localStorage.getItem('stv_active_tab');
+            if (saved && document.querySelector('.tab-btn[data-tab="' + saved + '"]')) {
+                switchTab(saved);
+            }
+        } catch(e) {}
     });
 </script>
 </body>
