@@ -11,86 +11,498 @@
         :root {
             --navy: #0f1729;
             --navy-light: #1e2942;
+            --navy-lighter: #2d3b57;
             --orange: #f97316;
             --orange-dark: #ea580c;
+            --orange-light: #fed7aa;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
             --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-400: #94a3b8;
             --gray-600: #64748b;
+            --gray-800: #1e293b;
+            --success: #059669;
+            --success-bg: #d1fae5;
+            --warning: #d97706;
+            --shadow-md: 0 4px 16px rgba(15, 23, 41, 0.10);
+            --shadow-lg: 0 12px 32px rgba(15, 23, 41, 0.14);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Tajawal', 'Segoe UI', Tahoma, Arial, sans-serif;
             background: var(--gray-100);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            color: var(--gray-800);
+            padding: 28px 20px;
+            line-height: 1.8;
             min-height: 100vh;
         }
-        .box {
-            background: white;
-            padding: 52px 44px;
-            border-radius: 18px;
-            box-shadow: 0 12px 32px rgba(15, 23, 41, 0.14);
-            text-align: center;
-            max-width: 420px;
+        .container { max-width: 780px; margin: 0 auto; }
+
+        header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: white;
+            padding: 24px 32px;
+            border-radius: 14px 14px 0 0;
             position: relative;
             overflow: hidden;
         }
-        .box::before {
+        header::after {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--navy) 0%, var(--orange) 100%);
+            height: 4px;
+            background: linear-gradient(90deg, var(--orange) 0%, var(--orange-light) 50%, var(--orange) 100%);
         }
-        .spinner {
-            width: 58px;
-            height: 58px;
-            border: 5px solid #e2e8f0;
-            border-top-color: var(--orange);
+        header h1 {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+        header h1 span { color: var(--orange); }
+        header p {
+            color: #b8c2d9;
+            font-size: 13px;
+        }
+
+        .card {
+            background: white;
+            padding: 32px;
+            border-radius: 0 0 14px 14px;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ===== شريط التقدّم ===== */
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .progress-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .progress-stats {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .stat-badge {
+            background: var(--gray-50);
+            border: 1.5px solid var(--gray-200);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stat-badge.cost { background: #dbeafe; border-color: #93c5fd; color: #1e40af; }
+        .stat-badge.time { background: var(--gray-50); border-color: var(--gray-200); color: var(--gray-800); }
+
+        .steps-progress {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 8px;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            overflow-x: auto;
+        }
+        .step-item {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 8px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            background: white;
+            border: 1.5px solid var(--gray-200);
+        }
+        .step-item.pending {
+            opacity: 0.5;
+        }
+        .step-item.active {
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+            border-color: var(--orange);
+            color: white;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.35);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        .step-item.completed {
+            background: var(--success-bg);
+            border-color: var(--success);
+            color: #065f46;
+        }
+        .step-item.skipped {
+            opacity: 0.3;
+            background: var(--gray-100);
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .step-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .step-name {
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .step-status {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            margin: 8px auto 26px;
-            animation: spin 0.9s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 900;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        h2 { font-size: 18.5px; margin-bottom: 10px; color: var(--navy); font-weight: 800; }
-        p { color: var(--gray-600); font-size: 14px; line-height: 1.8; }
-        .steps {
-            margin-top: 22px; font-size: 12.5px; color: #94a3b8;
-            padding-top: 18px; border-top: 1px solid #e2e8f0; font-weight: 600;
+        .step-item.completed .step-status {
+            background: var(--success);
+            color: white;
+        }
+        .step-item.active .step-status {
+            background: white;
+            color: var(--orange);
+        }
+
+        /* ===== شريط التقدّم الأفقي ===== */
+        .progress-bar-container {
+            background: var(--gray-200);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--orange) 0%, var(--orange-dark) 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 3px;
+        }
+
+        /* ===== سجل النشاط ===== */
+        .activity-log {
+            background: var(--gray-50);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 16px 20px;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+        .activity-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .activity-title::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: blink 1s ease-in-out infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .log-entry {
+            display: flex;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px dashed var(--gray-200);
+            animation: slideIn 0.3s ease;
+        }
+        .log-entry:last-child { border-bottom: none; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .log-time {
+            color: var(--gray-400);
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 50px;
+            font-family: 'Courier New', monospace;
+        }
+        .log-text {
+            color: var(--gray-800);
+            flex: 1;
+        }
+        .log-entry.success .log-text { color: #065f46; font-weight: 600; }
+        .log-entry.info .log-text { color: var(--navy); }
+        .log-entry.warn .log-text { color: var(--warning); }
+        .log-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        /* ===== حالة الخطأ ===== */
+        .error-state {
+            padding: 20px;
+            background: #fee2e2;
+            border: 1.5px solid #fca5a5;
+            border-radius: 10px;
+            color: #991b1b;
+            margin-top: 20px;
+            font-size: 13.5px;
+            font-weight: 600;
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            .card { padding: 22px; }
+            .steps-progress { flex-direction: column; }
+            .step-item { min-width: auto; }
         }
     </style>
 </head>
 <body>
-    <div class="box">
-        <div class="spinner"></div>
-        <h2>⏳ جارٍ معالجة التقرير...</h2>
-        <p>النظام يعمل الآن على تحليل النص وتوليد المحتوى المطلوب. هذه الصفحة ستنتقل تلقائياً عند الانتهاء.</p>
-        <div class="steps" id="statusText">جارٍ التحقق من الحالة...</div>
+    <div class="container">
+        <header>
+            <h1>📺 Syria<span>TV</span> AI Studio</h1>
+            <p>جارٍ معالجة التقرير...</p>
+        </header>
+        <div class="card">
+            <div class="progress-header">
+                <div class="progress-title">⚡ سير المعالجة</div>
+                <div class="progress-stats">
+                    <div class="stat-badge time">⏱️ <span id="elapsedTime">0s</span></div>
+                    <div class="stat-badge cost">💰 $<span id="costCounter">0.0000</span></div>
+                </div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+
+            <div class="steps-progress" id="stepsProgress">
+                <!-- الخطوات تُبنى ديناميكياً -->
+            </div>
+
+            <div class="activity-log">
+                <div class="activity-title">سجل النشاط المباشر</div>
+                <div id="logContainer">
+                    <div class="log-entry info">
+                        <span class="log-time">--:--</span>
+                        <span class="log-icon">🚀</span>
+                        <span class="log-text">بدء المعالجة...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="error-state" id="errorState"></div>
+        </div>
     </div>
 
     <script>
         const jobId = "{{ job_id }}";
+        const startTime = Date.now();
+
+        // الخطوات المفعّلة من صفحة الإدخال
+        const enabledSteps = {
+            analysis: true, // إلزامي
+            titles: {{ 'true' if include_titles else 'false' }},
+            description: {{ 'true' if include_description else 'false' }},
+            thumbnail: {{ 'true' if include_thumbnail else 'false' }},
+            evaluation: {{ 'true' if include_evaluation else 'false' }},
+            social_media: {{ 'true' if include_social_media else 'false' }},
+        };
+
+        const stepInfo = {
+            analysis: { icon: "🔍", name: "التحليل" },
+            titles: { icon: "🎯", name: "العناوين" },
+            description: { icon: "📄", name: "الوصف" },
+            thumbnail: { icon: "🖼️", name: "الثمبنيل" },
+            evaluation: { icon: "⚖️", name: "التقييم" },
+            social_media: { icon: "📱", name: "السوشيال" },
+        };
+
+        // بناء بطاقات الخطوات
+        function buildSteps() {
+            const container = document.getElementById('stepsProgress');
+            container.innerHTML = '';
+            Object.keys(stepInfo).forEach(step => {
+                const info = stepInfo[step];
+                const isEnabled = enabledSteps[step];
+                const div = document.createElement('div');
+                div.className = 'step-item ' + (isEnabled ? 'pending' : 'skipped');
+                div.id = 'step-' + step;
+                div.innerHTML = `
+                    <span class="step-icon">${info.icon}</span>
+                    <span class="step-name">${info.name}</span>
+                    <span class="step-status" style="display:none;"></span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // تحديث حالة الخطوة
+        function updateStepStatus(step, status) {
+            const el = document.getElementById('step-' + step);
+            if (!el) return;
+            el.classList.remove('pending', 'active', 'completed');
+            el.classList.add(status);
+            const statusIcon = el.querySelector('.step-status');
+            if (status === 'completed') {
+                statusIcon.style.display = 'flex';
+                statusIcon.textContent = '✓';
+            } else if (status === 'active') {
+                statusIcon.style.display = 'flex';
+                statusIcon.textContent = '⏳';
+            } else {
+                statusIcon.style.display = 'none';
+            }
+        }
+
+        // إضافة سطر للسجل
+        function addLog(text, type = 'info', icon = '•') {
+            const container = document.getElementById('logContainer');
+            const now = new Date();
+            const time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry ' + type;
+            entry.innerHTML = `
+                <span class="log-time">${time}</span>
+                <span class="log-icon">${icon}</span>
+                <span class="log-text">${text}</span>
+            `;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // تحديث شريط التقدّم
+        function updateProgressBar() {
+            const enabledList = Object.keys(enabledSteps).filter(k => enabledSteps[k]);
+            const completed = enabledList.filter(step => {
+                const el = document.getElementById('step-' + step);
+                return el && el.classList.contains('completed');
+            });
+            const percent = (completed.length / enabledList.length) * 100;
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+
+        // عدّاد الوقت
+        function updateElapsedTime() {
+            const seconds = Math.floor((Date.now() - startTime) / 1000);
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('elapsedTime').textContent = mins > 0 ? mins + 'm ' + secs + 's' : secs + 's';
+        }
+        setInterval(updateElapsedTime, 1000);
+
+        // تتبع الحالة
+        let previousSteps = [];
+        let previousCost = 0;
 
         async function checkStatus() {
             try {
                 const res = await fetch(`/status/${jobId}`);
                 const data = await res.json();
 
-                if (data.status === "done" || data.status === "error") {
-                    window.location.href = `/result/${jobId}`;
+                // تحديث التكلفة
+                if (data.cost_so_far && data.cost_so_far > previousCost) {
+                    document.getElementById('costCounter').textContent = data.cost_so_far.toFixed(4);
+                    previousCost = data.cost_so_far;
+                }
+
+                // تحديث الخطوات المكتملة
+                const stepsCompleted = data.steps_completed || [];
+                stepsCompleted.forEach(step => {
+                    if (!previousSteps.includes(step)) {
+                        updateStepStatus(step, 'completed');
+                        const info = stepInfo[step];
+                        if (info) {
+                            addLog(`اكتملت خطوة "${info.name}"`, 'success', '✅');
+                        }
+                    }
+                });
+
+                // تحديث الخطوة الحالية
+                if (data.current_step && data.status === 'running') {
+                    // اضبط كل شي على pending أولاً (لكن حافظ على المكتملة)
+                    Object.keys(enabledSteps).forEach(step => {
+                        if (!stepsCompleted.includes(step) && step !== data.current_step && enabledSteps[step]) {
+                            const el = document.getElementById('step-' + step);
+                            if (el && !el.classList.contains('completed')) {
+                                el.classList.remove('active');
+                                el.classList.add('pending');
+                            }
+                        }
+                    });
+                    // فعّل الحالية
+                    if (enabledSteps[data.current_step] && !stepsCompleted.includes(data.current_step)) {
+                        const currentEl = document.getElementById('step-' + data.current_step);
+                        if (currentEl && !currentEl.classList.contains('active')) {
+                            updateStepStatus(data.current_step, 'active');
+                            const info = stepInfo[data.current_step];
+                            if (info) {
+                                addLog(`بدء "${info.name}"...`, 'info', info.icon);
+                            }
+                        }
+                    }
+                }
+
+                previousSteps = stepsCompleted;
+                updateProgressBar();
+
+                if (data.status === "done") {
+                    addLog('اكتملت المعالجة بنجاح — تحويل للنتائج...', 'success', '🎉');
+                    setTimeout(() => window.location.href = `/result/${jobId}`, 800);
+                } else if (data.status === "error") {
+                    document.getElementById('errorState').style.display = 'block';
+                    document.getElementById('errorState').textContent = '❌ حدث خطأ أثناء المعالجة';
+                    addLog('حدث خطأ أثناء المعالجة', 'warn', '❌');
+                    setTimeout(() => window.location.href = `/result/${jobId}`, 2000);
                 } else if (data.status === "not_found") {
-                    document.getElementById("statusText").textContent = "⚠️ لم يتم العثور على المهمة";
+                    document.getElementById('errorState').style.display = 'block';
+                    document.getElementById('errorState').textContent = '⚠️ لم يتم العثور على المهمة';
                 } else {
-                    document.getElementById("statusText").textContent = "جارٍ المعالجة بالخلفية...";
-                    setTimeout(checkStatus, 3000);
+                    setTimeout(checkStatus, 1500);
                 }
             } catch (e) {
-                document.getElementById("statusText").textContent = "جارٍ إعادة المحاولة...";
+                addLog('إعادة محاولة الاتصال...', 'warn', '⚠️');
                 setTimeout(checkStatus, 3000);
             }
         }
 
-        setTimeout(checkStatus, 2000);
+        // ابدأ
+        buildSteps();
+        setTimeout(() => {
+            addLog('اتصال ناجح بالخادم', 'info', '🔗');
+            checkStatus();
+        }, 500);
     </script>
 </body>
 </html>
