@@ -138,7 +138,10 @@ async def show_result(request: Request, job_id: str):
         if checkpoint_path.exists():
             return await history_detail(request, job_id)
         return templates.TemplateResponse(request, "index.html", {"result": None, "error": "المهمة غير موجودة أو انتهت صلاحيتها"})
-    return templates.TemplateResponse(request, "index.html", {"result": job.get("result"), "error": job.get("error"), "transcript": ""})
+    result_with_id = job.get("result")
+    if result_with_id and isinstance(result_with_id, dict):
+        result_with_id["job_id"] = job_id
+    return templates.TemplateResponse(request, "index.html", {"result": result_with_id, "error": job.get("error"), "transcript": ""})
 
 
 @app.get("/history", response_class=HTMLResponse)
@@ -170,9 +173,214 @@ async def history_detail(request: Request, run_id: str):
         "content_type": cp_data.get("content_type"),
         "program_name": cp_data.get("program_name"),
         "raw_text": json.dumps(data, ensure_ascii=False, indent=2),
+        "job_id": run_id,
     }
 
     return templates.TemplateResponse(request, "index.html", {"result": result_data, "transcript": ""})
+
+
+
+# ==================== إعادة التوليد الجزئية ====================
+
+async def _load_checkpoint(job_id: str):
+    """يحمّل الـ checkpoint من ملف."""
+    from stv_studio.config import PROJECT_ROOT
+    filepath = PROJECT_ROOT / "outputs" / "checkpoints" / f"checkpoint_{job_id}.json"
+    if not filepath.exists():
+        return None
+    with open(filepath, encoding="utf-8") as f:
+        return json.load(f)
+
+
+async def _save_checkpoint(job_id: str, cp_data: dict):
+    """يحفظ الـ checkpoint المحدّث."""
+    from stv_studio.config import PROJECT_ROOT
+    filepath = PROJECT_ROOT / "outputs" / "checkpoints" / f"checkpoint_{job_id}.json"
+    from datetime import datetime
+    cp_data["last_updated"] = datetime.now().isoformat()
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(cp_data, f, ensure_ascii=False, indent=2)
+
+
+def _build_context_block_regen(content_type, program_name):
+    """يبني سياق تحريري - نسخة داخلية للـ regenerate."""
+    if not content_type and not program_name:
+        return ""
+    parts = ["\n## السياق التحريري\n"]
+    if content_type:
+        parts.append(f"- **نوع النص:** {content_type}")
+    if program_name:
+        parts.append(f"- **البرنامج:** {program_name}")
+    parts.append("\nضع هذا السياق في الاعتبار عند توليد كل مخرجاتك.\n")
+    return "\n".join(parts)
+
+
+@app.post("/regenerate/titles/{job_id}")
+async def regenerate_titles(job_id: str):
+    """يعيد توليد العناوين فقط."""
+    cp_data = await _load_checkpoint(job_id)
+    if not cp_data:
+        return JSONResponse({"error": "التقرير غير موجود"}, status_code=404)
+
+    transcript = cp_data.get("transcript", "")
+    if not transcript:
+        return JSONResponse({"error": "نص التقرير غير محفوظ"}, status_code=400)
+
+    content_type = cp_data.get("content_type")
+    program_name = cp_data.get("program_name")
+    context_block = _build_context_block_regen(content_type, program_name)
+
+    try:
+        from stv_studio.agents.analyzer import TranscriptAnalyzer
+        from stv_studio.agents.title_generator import TitleAgent
+
+        analyzer = TranscriptAnalyzer()
+        analysis = await analyzer.analyze(transcript, context_block=context_block)
+
+        title_agent = TitleAgent(router=analyzer.router)
+        titles_result = await title_agent.generate(analysis, context_block=context_block)
+
+        # تحديث الـ checkpoint
+        cp_data["data"]["titles"] = titles_result.model_dump()
+        cp_data["cost_so_far_usd"] = cp_data.get("cost_so_far_usd", 0.0) + analyzer.router.get_stats()["total_cost_usd"]
+        await _save_checkpoint(job_id, cp_data)
+
+        return JSONResponse({
+            "success": True,
+            "titles": titles_result.model_dump(),
+            "new_cost": cp_data["cost_so_far_usd"],
+        })
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.post("/regenerate/description/{job_id}")
+async def regenerate_description(job_id: str):
+    """يعيد توليد الوصف والكلمات المفتاحية والهاشتاغات."""
+    cp_data = await _load_checkpoint(job_id)
+    if not cp_data:
+        return JSONResponse({"error": "التقرير غير موجود"}, status_code=404)
+
+    transcript = cp_data.get("transcript", "")
+    if not transcript:
+        return JSONResponse({"error": "نص التقرير غير محفوظ"}, status_code=400)
+
+    content_type = cp_data.get("content_type")
+    program_name = cp_data.get("program_name")
+    context_block = _build_context_block_regen(content_type, program_name)
+
+    try:
+        from stv_studio.agents.analyzer import TranscriptAnalyzer
+        from stv_studio.agents.description_generator import DescriptionAgent
+
+        analyzer = TranscriptAnalyzer()
+        analysis = await analyzer.analyze(transcript, context_block=context_block)
+
+        # نأخذ العنوان الحالي من الـ checkpoint
+        titles_data = cp_data["data"].get("titles", {})
+        if titles_data and titles_data.get("titles"):
+            recommended_idx = titles_data.get("recommended", {}).get("index", 0)
+            chosen_title = titles_data["titles"][recommended_idx]["text"]
+        else:
+            chosen_title = analysis.title_focus or analysis.topic[:70]
+
+        desc_agent = DescriptionAgent(router=analyzer.router)
+        desc_result = await desc_agent.generate(analysis, chosen_title, context_block=context_block)
+
+        cp_data["data"]["description"] = desc_result.model_dump()
+        cp_data["cost_so_far_usd"] = cp_data.get("cost_so_far_usd", 0.0) + analyzer.router.get_stats()["total_cost_usd"]
+        await _save_checkpoint(job_id, cp_data)
+
+        return JSONResponse({
+            "success": True,
+            "description": desc_result.model_dump(),
+            "new_cost": cp_data["cost_so_far_usd"],
+        })
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.post("/regenerate/thumbnail/{job_id}")
+async def regenerate_thumbnail(job_id: str):
+    """يعيد توليد أفكار الثمبنيل."""
+    cp_data = await _load_checkpoint(job_id)
+    if not cp_data:
+        return JSONResponse({"error": "التقرير غير موجود"}, status_code=404)
+
+    transcript = cp_data.get("transcript", "")
+    if not transcript:
+        return JSONResponse({"error": "نص التقرير غير محفوظ"}, status_code=400)
+
+    content_type = cp_data.get("content_type")
+    program_name = cp_data.get("program_name")
+    context_block = _build_context_block_regen(content_type, program_name)
+
+    try:
+        from stv_studio.agents.analyzer import TranscriptAnalyzer
+        from stv_studio.agents.thumbnail_generator import ThumbnailAgent
+
+        analyzer = TranscriptAnalyzer()
+        analysis = await analyzer.analyze(transcript, context_block=context_block)
+
+        titles_data = cp_data["data"].get("titles", {})
+        if titles_data and titles_data.get("titles"):
+            recommended_idx = titles_data.get("recommended", {}).get("index", 0)
+            chosen_title = titles_data["titles"][recommended_idx]["text"]
+        else:
+            chosen_title = analysis.title_focus or analysis.topic[:70]
+
+        thumb_agent = ThumbnailAgent(router=analyzer.router)
+        thumb_result = await thumb_agent.generate(analysis, chosen_title, context_block=context_block)
+
+        cp_data["data"]["thumbnail"] = thumb_result.model_dump()
+        cp_data["cost_so_far_usd"] = cp_data.get("cost_so_far_usd", 0.0) + analyzer.router.get_stats()["total_cost_usd"]
+        await _save_checkpoint(job_id, cp_data)
+
+        return JSONResponse({
+            "success": True,
+            "thumbnail": thumb_result.model_dump(),
+            "new_cost": cp_data["cost_so_far_usd"],
+        })
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.post("/regenerate/social_media/{job_id}")
+async def regenerate_social_media(job_id: str):
+    """يعيد توليد حزمة السوشيال ميديا."""
+    cp_data = await _load_checkpoint(job_id)
+    if not cp_data:
+        return JSONResponse({"error": "التقرير غير موجود"}, status_code=404)
+
+    transcript = cp_data.get("transcript", "")
+    if not transcript:
+        return JSONResponse({"error": "نص التقرير غير محفوظ"}, status_code=400)
+
+    content_type = cp_data.get("content_type")
+    program_name = cp_data.get("program_name")
+    context_block = _build_context_block_regen(content_type, program_name)
+
+    try:
+        from stv_studio.agents.analyzer import TranscriptAnalyzer
+        from stv_studio.agents.social_media_generator import SocialMediaAgent
+
+        analyzer = TranscriptAnalyzer()
+        analysis = await analyzer.analyze(transcript, context_block=context_block)
+
+        social_agent = SocialMediaAgent(router=analyzer.router)
+        social_result = await social_agent.generate(transcript, analysis, context_block=context_block)
+
+        cp_data["data"]["social_media"] = social_result.model_dump()
+        cp_data["cost_so_far_usd"] = cp_data.get("cost_so_far_usd", 0.0) + analyzer.router.get_stats()["total_cost_usd"]
+        await _save_checkpoint(job_id, cp_data)
+
+        return JSONResponse({
+            "success": True,
+            "social_media": social_result.model_dump(),
+            "new_cost": cp_data["cost_so_far_usd"],
+        })
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 
 @app.post("/chat")

@@ -42,6 +42,7 @@ async def process_structured(
     cp = CheckpointManager(run_id=run_id)
     cp._data["content_type"] = content_type
     cp._data["program_name"] = program_name
+    cp._data["transcript"] = transcript
     cp._write()
 
     analyzer = TranscriptAnalyzer()

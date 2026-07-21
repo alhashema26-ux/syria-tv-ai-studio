@@ -400,6 +400,51 @@
         .tab-content.active > *:nth-child(7) { animation-delay: 900ms; }
         .tab-content.active > *:nth-child(8) { animation-delay: 1050ms; }
 
+
+        /* ===== أزرار إعادة التوليد ===== */
+        .regen-btn {
+            background: transparent;
+            color: var(--gray-600);
+            border: 1.5px solid var(--gray-200);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            margin: 0;
+            box-shadow: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .regen-btn:hover {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: white;
+            transform: none;
+            box-shadow: 0 2px 8px rgba(249,115,22,0.25);
+        }
+        .regen-btn:disabled {
+            background: var(--gray-100);
+            color: var(--gray-400);
+            cursor: wait;
+            border-color: var(--gray-200);
+        }
+        .regen-btn.spinning svg { animation: spinIcon 0.8s linear infinite; }
+        @keyframes spinIcon {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .section-content { transition: opacity 0.4s ease; }
+        .section-content.fading-out { opacity: 0; }
+        @keyframes fadeInSection {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .section-content.fading-in { animation: fadeInSection 0.5s ease forwards; }
+
         @media (max-width: 640px) {
             body { padding: 12px; }
             header { flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px; }
@@ -603,7 +648,14 @@
         <!-- تبويب العناوين -->
         <div class="tab-content" data-tab-content="titles">
             <div class="section">
-                <div class="section-title">🎯 العناوين المقترحة ({{ result.titles.titles|length }})</div>
+                <div class="section-title">
+                    <span>🎯 العناوين المقترحة ({{ result.titles.titles|length }})</span>
+                    <button type="button" class="regen-btn" id="regen-btn-titles" onclick="regenerateSection('titles')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                        <span>إعادة توليد</span>
+                    </button>
+                </div>
+                <div class="section-content" id="section-content-titles">
                 {% for t in result.titles.titles %}
                 <div class="title-option {% if loop.index0 == result.titles.recommended.index %}recommended{% endif %}">
                     <span class="style-tag">{{ t.style }}</span>
@@ -620,7 +672,14 @@
         <!-- تبويب الوصف والـ SEO -->
         <div class="tab-content" data-tab-content="description">
             <div class="section">
-                <div class="section-title">📄 الوصف والكلمات المفتاحية</div>
+                <div class="section-title">
+                    <span>📄 الوصف والكلمات المفتاحية</span>
+                    <button type="button" class="regen-btn" id="regen-btn-description" onclick="regenerateSection('description')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                        <span>إعادة توليد</span>
+                    </button>
+                </div>
+                <div class="section-content" id="section-content-description">
                 <div class="desc-box">{{ result.description.description }}</div>
                 <div class="tags-block">
                     <div class="tags-block-header"><span class="tags-block-title">🔑 الكلمات المفتاحية ({{ result.description.keywords|length }})</span><button class="mini-copy-btn" onclick="copyKeywords()">📋 نسخ للصق في يوتيوب</button></div>
@@ -632,6 +691,7 @@
                 </div>
                 <textarea id="keywordsRaw" style="position:absolute;left:-9999px;">{{ result.description.keywords|join(", ") }}</textarea>
                 <textarea id="hashtagsRaw" style="position:absolute;left:-9999px;">{{ result.description.hashtags|join(" ") }}</textarea>
+                </div>
             </div>
         </div>
         {% endif %}
@@ -640,7 +700,14 @@
         <!-- تبويب الثمبنيل -->
         <div class="tab-content" data-tab-content="thumbnail">
             <div class="section">
-                <div class="section-title">🖼️ أفكار نص الثمبنيل ({{ result.thumbnail.options|length }})</div>
+                <div class="section-title">
+                    <span>🖼️ أفكار نص الثمبنيل ({{ result.thumbnail.options|length }})</span>
+                    <button type="button" class="regen-btn" id="regen-btn-thumbnail" onclick="regenerateSection('thumbnail')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                        <span>إعادة توليد</span>
+                    </button>
+                </div>
+                <div class="section-content" id="section-content-thumbnail">
                 <div class="thumb-grid">
                     {% for opt in result.thumbnail.options %}
                     <div class="thumb-card {% if loop.index0 == result.thumbnail.recommended_index %}recommended{% endif %}">
@@ -648,6 +715,7 @@
                         <div class="word-count">{{ opt.word_count }} كلمات</div>
                     </div>
                     {% endfor %}
+                </div>
                 </div>
             </div>
         </div>
@@ -657,7 +725,14 @@
         <!-- تبويب السوشيال ميديا -->
         <div class="tab-content" data-tab-content="social">
             <div class="section">
-                <div class="section-title">📱 حزمة السوشيال ميديا</div>
+                <div class="section-title">
+                    <span>📱 حزمة السوشيال ميديا</span>
+                    <button type="button" class="regen-btn" id="regen-btn-social_media" onclick="regenerateSection('social_media')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                        <span>إعادة توليد</span>
+                    </button>
+                </div>
+                <div class="section-content" id="section-content-social_media">
                 <div class="sm-classification">
                     <div class="sm-badge">نوع الخبر: <span>{{ result.social_media.classification.news_type }}</span></div>
                     <div class="sm-badge">الزاوية: <span>{{ result.social_media.classification.chosen_angle }}</span></div>
@@ -716,6 +791,7 @@
                         </div>
                     </div>
                 </div>
+                </div>
                 {% if result.social_media.editor_notes %}
                 <div class="editor-notes-box">
                     <div class="en-title">📝 ملاحظات المحرر</div>
@@ -768,6 +844,7 @@
         </div>
 
         <textarea id="rawContent" style="position:absolute;left:-9999px;">{{ result.raw_text }}</textarea>
+        <input type="hidden" id="jobId" value="{{ result.job_id or '' }}">
     </div>
     {% endif %}
 </div>
@@ -867,6 +944,62 @@
         } catch(e) { removeThinking(); addMessage('assistant', 'تعذر الاتصال.', ''); }
         btn.disabled = false; input.focus();
     }
+
+    // ===== إعادة التوليد الجزئية =====
+    async function regenerateSection(sectionName) {
+        const btn = document.getElementById('regen-btn-' + sectionName);
+        const contentEl = document.getElementById('section-content-' + sectionName);
+        const jobId = document.getElementById('jobId').value;
+
+        if (!jobId) {
+            alert('لا يمكن إعادة التوليد - job_id غير موجود');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.classList.add('spinning');
+        btn.querySelector('span').textContent = 'جارٍ التوليد...';
+
+        if (contentEl) contentEl.classList.add('fading-out');
+
+        try {
+            const res = await fetch('/regenerate/' + sectionName + '/' + jobId, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+            });
+            const data = await res.json();
+
+            if (data.error) {
+                alert('خطأ: ' + data.error);
+                if (contentEl) contentEl.classList.remove('fading-out');
+                return;
+            }
+
+            // تحديث cost counter
+            if (data.new_cost !== undefined) {
+                const costBadge = document.querySelector('.badge-cost');
+                if (costBadge) costBadge.textContent = '💰 $' + data.new_cost.toFixed(4);
+            }
+
+            // TODO: هنا سنضيف render functions لاحقاً
+            // مؤقتاً: reload
+            setTimeout(() => {
+                const activeTab = document.querySelector('.tab-btn.active');
+                if (activeTab) {
+                    try { localStorage.setItem('stv_active_tab', activeTab.dataset.tab); } catch(e) {}
+                }
+                window.location.reload();
+            }, 300);
+        } catch(e) {
+            alert('تعذر الاتصال');
+            if (contentEl) contentEl.classList.remove('fading-out');
+        } finally {
+            btn.disabled = false;
+            btn.classList.remove('spinning');
+            btn.querySelector('span').textContent = 'إعادة توليد';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         updateXCounter(); buildChatContext();
         const ci = document.getElementById('chatInput');
