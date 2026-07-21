@@ -12,6 +12,7 @@ from stv_studio.agents.description_generator import DescriptionAgent
 from stv_studio.agents.thumbnail_generator import ThumbnailAgent
 from stv_studio.agents.quality_evaluator import QualityEvaluator
 from stv_studio.agents.social_media_generator import SocialMediaAgent
+from stv_studio.agents.trend_context import TrendContextAgent
 from stv_studio.utils.output_saver import OutputSaver
 from stv_studio.utils.checkpoint import CheckpointManager
 
@@ -19,29 +20,12 @@ from stv_studio.utils.checkpoint import CheckpointManager
 def _build_context_block(content_type, program_name):
     if not content_type and not program_name:
         return ""
-    
-    from pathlib import Path
-    import sys
-    PROJECT_ROOT = Path(__file__).parent.parent
-    programs_dir = PROJECT_ROOT / "src" / "stv_studio" / "prompts" / "programs"
-    
     parts = ["\n## السياق التحريري\n"]
-    
     if content_type:
         parts.append(f"- **نوع النص:** {content_type}")
-    
     if program_name:
         parts.append(f"- **البرنامج:** {program_name}")
-        
-        # قراءة بروفايل البرنامج إن وجد
-        safe_name = program_name.replace(" ", "_").replace("/", "_").replace("-", "_")
-        profile_path = programs_dir / f"{safe_name}.md"
-        
-        if profile_path.exists():
-            profile_content = profile_path.read_text(encoding="utf-8")
-            parts.append(f"\n## بروفايل البرنامج\n{profile_content}")
-        
-    parts.append("\nضع هذا السياق في الاعتبار عند توليد كل مخرجاتك — أسلوب العنوان والوصف والسوشيال ميديا يجب أن يتناسب مع نوع هذا المحتوى والبرنامج المذكور.\n\n**مهم:** أرجع JSON فقط بالشكل المحدد في System Prompt، بدون أي نص إضافي.\n")
+    parts.append("\nضع هذا السياق في الاعتبار عند توليد كل مخرجاتك.\n")
     return "\n".join(parts)
 
 
@@ -54,6 +38,7 @@ async def process_structured(
     include_thumbnail=True,
     include_evaluation=True,
     include_social_media=False,
+    include_trend_context=False,
     run_id=None,
 ):
     cp = CheckpointManager(run_id=run_id)
@@ -136,6 +121,19 @@ async def process_structured(
             cp.mark_failed("social_media", str(e))
             raise
 
+    # سياق الترند - جديد
+    trend_context_result = None
+
+    if include_trend_context:
+        try:
+            trend_agent = TrendContextAgent(router=analyzer.router)
+            trend_context_result = await trend_agent.generate(analysis, context_block=context_block)
+            cp.save_step("trend_context", trend_context_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
+        except Exception as e:
+            cp.mark_failed("trend_context", str(e))
+            # لا نرفع الخطأ - سياق الترند اختياري ولا يوقف باقي المعالجة
+            print(f"[TREND] Error but continuing: {e}")
+
     stats = analyzer.router.get_stats()
     saver = OutputSaver()
     filepath = saver.save_full_report(
@@ -159,6 +157,7 @@ async def process_structured(
         "thumbnail": thumb_result,
         "evaluation": eval_result,
         "social_media": social_media_result,
+        "trend_context": trend_context_result,
         "raw_text": filepath.read_text(encoding="utf-8"),
         "filepath": str(filepath),
     }
