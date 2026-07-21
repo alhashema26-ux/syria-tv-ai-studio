@@ -53,6 +53,7 @@ async def process_transcript(
     include_thumbnail: str = Form(default=None),
     include_evaluation: str = Form(default=None),
     include_social_media: str = Form(default=None),
+    include_trend_context: str = Form(default=None),
 ):
     job_id = uuid.uuid4().hex[:12]
     JOBS[job_id] = {"status": "running", "result": None, "error": None}
@@ -65,6 +66,7 @@ async def process_transcript(
         "include_thumbnail": bool(include_thumbnail),
         "include_evaluation": bool(include_evaluation),
         "include_social_media": bool(include_social_media),
+        "include_trend_context": bool(include_trend_context),
     }
 
     # نمرّر الخيارات لصفحة المعالجة لبناء شريط التقدّم
@@ -76,6 +78,7 @@ async def process_transcript(
         "include_thumbnail": bool(include_thumbnail),
         "include_evaluation": bool(include_evaluation),
         "include_social_media": bool(include_social_media),
+        "include_trend_context": bool(include_trend_context),
     })
 
 
@@ -109,7 +112,7 @@ async def check_status(job_id: str):
                 checkpoint_data["cost_so_far"] = cp.get("cost_so_far_usd", 0.0)
 
                 # تحديد الخطوة الحالية = آخر خطوة مكتملة + 1
-                all_steps = ["analysis", "titles", "description", "thumbnail", "evaluation", "social_media"]
+                all_steps = ["analysis", "titles", "description", "thumbnail", "evaluation", "social_media", "trend_context"]
                 completed = checkpoint_data["steps_completed"]
                 next_step = None
                 for step in all_steps:
@@ -167,6 +170,7 @@ async def history_detail(request: Request, run_id: str):
         "thumbnail": data.get("thumbnail"),
         "evaluation": data.get("evaluation"),
         "social_media": data.get("social_media"),
+        "trend_context": data.get("trend_context"),
         "content_type": cp_data.get("content_type"),
         "program_name": cp_data.get("program_name"),
         "raw_text": json.dumps(data, ensure_ascii=False, indent=2),

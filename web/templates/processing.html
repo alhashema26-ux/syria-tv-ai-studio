@@ -338,6 +338,7 @@
             thumbnail: {{ 'true' if include_thumbnail else 'false' }},
             evaluation: {{ 'true' if include_evaluation else 'false' }},
             social_media: {{ 'true' if include_social_media else 'false' }},
+            trend_context: {{ 'true' if include_trend_context else 'false' }},
         };
 
         const stepInfo = {
@@ -347,6 +348,7 @@
             thumbnail: { icon: "🖼️", name: "الثمبنيل" },
             evaluation: { icon: "⚖️", name: "التقييم" },
             social_media: { icon: "📱", name: "السوشيال" },
+            trend_context: { icon: "🔥", name: "الترند" },
         };
 
         // بناء بطاقات الخطوات
