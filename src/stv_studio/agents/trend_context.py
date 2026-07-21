@@ -7,7 +7,7 @@ import httpx
 from typing import Optional
 from pydantic import BaseModel, Field
 
-from stv_studio.providers.router import ProviderRouter, TaskType
+from stv_studio.providers.router import LLMRouter, TaskType
 from stv_studio.schemas.analysis import AnalysisResult
 
 
@@ -43,7 +43,7 @@ class TrendContextAgent:
     وتقديم رؤية تحريرية.
     """
 
-    def __init__(self, router: ProviderRouter):
+    def __init__(self, router: LLMRouter):
         self.router = router
         self.google_api_key = os.environ.get("GOOGLE_SEARCH_API_KEY", "")
         self.google_engine_id = os.environ.get("GOOGLE_SEARCH_ENGINE_ID", "")
