@@ -501,7 +501,6 @@
                     <label class="checkbox-item"><input type="checkbox" name="include_thumbnail" value="1" checked>أفكار نص الثمبنيل</label>
                     <label class="checkbox-item"><input type="checkbox" name="include_evaluation" value="1" checked>تقييم الجودة المستقل (GPT)</label>
                     <label class="checkbox-item"><input type="checkbox" name="include_social_media" value="1">📱 حزمة السوشيال ميديا (6 منصات)</label>
-                    <label class="checkbox-item"><input type="checkbox" name="include_trend_context" value="1">🔥 سياق الترند (بحث آخر 24 ساعة)</label>
                 </div>
                 <div class="note">💡 التقييم المستقل يحتاج الوصف والثمبنيل ليعمل بدقة كاملة.</div>
             </div>
@@ -532,7 +531,6 @@
             {% if result.thumbnail %}<button type="button" class="tab-btn" data-tab="thumbnail">🖼️ الثمبنيل</button>{% endif %}
             {% if result.social_media %}<button type="button" class="tab-btn" data-tab="social">📱 السوشيال</button>{% endif %}
             {% if result.evaluation %}<button type="button" class="tab-btn" data-tab="evaluation">⚖️ التقييم</button>{% endif %}
-            {% if result.trend_context %}<button type="button" class="tab-btn" data-tab="trend">🔥 سياق الترند</button>{% endif %}
             <button type="button" class="tab-btn" data-tab="chat">💬 الشات</button>
         </div>
 
@@ -747,69 +745,6 @@
             </div>
         </div>
         {% endif %}
-
-        
-        {% if result.trend_context %}
-        <!-- تبويب سياق الترند -->
-        <div class="tab-content" data-tab-content="trend">
-            <div class="section">
-                <div class="section-title">🔥 سياق الترند - آخر 24 ساعة</div>
-                <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1.5px solid #f59e0b; border-radius: 14px; padding: 22px; margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap;">
-                        <div style="font-size: 32px;">{{ result.trend_context.trend_status_emoji }}</div>
-                        <div>
-                            <div style="font-size: 12px; font-weight: 700; color: #92400e; text-transform: uppercase;">حالة الترند</div>
-                            <div style="font-size: 20px; font-weight: 900; color: #78350f;">{{ result.trend_context.trend_status }}</div>
-                        </div>
-                        <div style="margin-right: auto; text-align: left;">
-                            <div style="font-size: 11px; color: #92400e; font-weight: 700;">عدد التغطيات</div>
-                            <div style="font-size: 22px; font-weight: 900; color: #78350f;">{{ result.trend_context.total_results }}</div>
-                        </div>
-                    </div>
-                    <div style="font-size: 14px; line-height: 1.9; color: #451a03; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(146,64,14,0.2);">
-                        {{ result.trend_context.editorial_summary }}
-                    </div>
-                </div>
-
-                {% if result.trend_context.coverage_angles %}
-                <div style="margin-bottom: 20px;">
-                    <div style="font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 10px;">📐 زوايا التغطية المختلفة</div>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        {% for angle in result.trend_context.coverage_angles %}
-                        <div style="background: var(--gray-50); border-right: 3px solid var(--orange); padding: 10px 16px; border-radius: 8px; font-size: 13.5px;">{{ angle }}</div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-
-                <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 1.5px solid #3b82f6; border-radius: 12px; padding: 18px 22px; margin-bottom: 20px;">
-                    <div style="font-size: 12px; font-weight: 800; color: #1e40af; margin-bottom: 8px;">💡 الزاوية المميزة المقترحة</div>
-                    <div style="font-size: 15px; line-height: 1.8; color: #1e3a8a; font-weight: 600;">{{ result.trend_context.recommended_angle }}</div>
-                </div>
-
-                {% if result.trend_context.top_sources %}
-                <div class="section-title" style="margin-top: 24px;">📰 أعلى المصادر التي غطّت الموضوع</div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    {% for src in result.trend_context.top_sources %}
-                    <div style="background: white; border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 14px 18px;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px;">
-                            <div style="font-size: 14.5px; font-weight: 800; color: var(--navy); flex: 1;">{{ src.title }}</div>
-                            <span style="background: var(--gray-100); color: var(--gray-600); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">{{ src.source_name }}</span>
-                        </div>
-                        {% if src.snippet %}<div style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px;">{{ src.snippet }}</div>{% endif %}
-                        <a href="{{ src.link }}" target="_blank" style="font-size: 12px; color: var(--orange); font-weight: 700;">🔗 فتح المصدر ←</a>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <div style="margin-top: 20px; padding: 12px 16px; background: var(--gray-50); border-radius: 8px; font-size: 12px; color: var(--gray-600); text-align: center;">
-                    🔍 الاستعلام المُستخدم: <strong>{{ result.trend_context.query_used }}</strong>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
         <!-- تبويب الشات -->
         <div class="tab-content" data-tab-content="chat">
             <div class="chat-header">
