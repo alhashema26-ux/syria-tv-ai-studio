@@ -3,7 +3,9 @@
 ويستخدم Claude لتلخيص وتحليل النتائج تحريرياً.
 """
 import os
-import httpx
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+import json as _json
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -54,26 +56,31 @@ class TrendContextAgent:
             print("[TREND] Google Search credentials missing - skipping")
             return []
 
-        url = "https://www.googleapis.com/customsearch/v1"
         params = {
             "key": self.google_api_key,
             "cx": self.google_engine_id,
             "q": query,
             "num": num_results,
-            "dateRestrict": "d1",  # آخر يوم
-            "lr": "lang_ar",  # عربي فقط
-            "sort": "date",  # الأحدث أولاً
+            "dateRestrict": "d1",
+            "lr": "lang_ar",
+            "sort": "date",
         }
+        url = "https://www.googleapis.com/customsearch/v1?" + urlencode(params)
 
-        try:
-            async with httpx.AsyncClient(timeout=15) as client:
-                response = await client.get(url, params=params)
-                response.raise_for_status()
-                data = response.json()
-                return data.get("items", [])
-        except Exception as e:
-            print(f"[TREND] Google Search error: {e}")
-            return []
+        import asyncio
+        loop = asyncio.get_event_loop()
+
+        def _fetch():
+            try:
+                req = Request(url, headers={"User-Agent": "SyriaTV-Studio/1.0"})
+                with urlopen(req, timeout=15) as response:
+                    data = _json.loads(response.read().decode("utf-8"))
+                    return data.get("items", [])
+            except Exception as e:
+                print(f"[TREND] Google Search error: {e}")
+                return []
+
+        return await loop.run_in_executor(None, _fetch)
 
     def _build_search_query(self, analysis: AnalysisResult) -> str:
         """يبني استعلام بحث ذكي من التحليل."""
