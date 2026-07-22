@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 class ThumbnailOption(BaseModel):
     """فكرة واحدة لنص الثمبنيل — نص فقط."""
 
-    text: str = Field(..., min_length=2, max_length=40)
+    text: str = Field(..., min_length=2, max_length=100)
     word_count: int = Field(..., ge=1, le=6)
 
 
