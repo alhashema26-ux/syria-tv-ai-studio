@@ -135,7 +135,12 @@ async def show_result(request: Request, job_id: str):
         from stv_studio.config import PROJECT_ROOT
         checkpoint_path = PROJECT_ROOT / "outputs" / "checkpoints" / f"checkpoint_{job_id}.json"
         if checkpoint_path.exists():
-            return await history_detail(request, job_id)
+            try:
+                return await history_detail(request, job_id)
+            except Exception as e:
+                import traceback
+                print(f"[ERROR] history_detail failed: {e}\n{traceback.format_exc()}")
+                return templates.TemplateResponse(request, "index.html", {"result": None, "error": f"خطأ في تحميل التقرير: {str(e)}"})
         return templates.TemplateResponse(request, "index.html", {"result": None, "error": "المهمة غير موجودة أو انتهت صلاحيتها"})
     result_with_id = job.get("result")
     if result_with_id and isinstance(result_with_id, dict):
