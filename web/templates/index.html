@@ -974,12 +974,13 @@
                 if (costBadge) costBadge.textContent = '💰 $' + data.new_cost.toFixed(4);
             }
 
-            // reload مع cache bust
+            // reload مع cache bust + حفظ scroll position
             setTimeout(() => {
                 const activeTab = document.querySelector('.tab-btn.active');
-                if (activeTab) {
-                    try { localStorage.setItem('stv_active_tab', activeTab.dataset.tab); } catch(e) {}
-                }
+                try {
+                    if (activeTab) localStorage.setItem('stv_active_tab', activeTab.dataset.tab);
+                    localStorage.setItem('stv_scroll_pos', window.scrollY);
+                } catch(e) {}
                 const url = new URL(window.location.href);
                 url.searchParams.set('t', Date.now());
                 window.location.href = url.toString();
@@ -996,6 +997,14 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         updateXCounter(); buildChatContext();
+        // استرجاع scroll position بعد regenerate reload
+        try {
+            const scrollPos = localStorage.getItem('stv_scroll_pos');
+            if (scrollPos) {
+                window.scrollTo(0, parseInt(scrollPos));
+                localStorage.removeItem('stv_scroll_pos');
+            }
+        } catch(e) {}
         const ci = document.getElementById('chatInput');
         if (ci) {
             ci.addEventListener('keydown', function(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } });

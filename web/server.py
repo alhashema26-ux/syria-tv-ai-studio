@@ -243,6 +243,7 @@ async def regenerate_titles(job_id: str):
         cp_data["data"]["titles"] = titles_result.model_dump()
         cp_data["cost_so_far_usd"] = cp_data.get("cost_so_far_usd", 0.0) + analyzer.router.get_stats()["total_cost_usd"]
         await _save_checkpoint(job_id, cp_data)
+        if job_id in JOBS: JOBS[job_id]["result"] = cp_data["data"]
 
         return JSONResponse({
             "success": True,
@@ -289,6 +290,7 @@ async def regenerate_description(job_id: str):
         cp_data["data"]["description"] = desc_result.model_dump()
         cp_data["cost_so_far_usd"] = cp_data.get("cost_so_far_usd", 0.0) + analyzer.router.get_stats()["total_cost_usd"]
         await _save_checkpoint(job_id, cp_data)
+        if job_id in JOBS: JOBS[job_id]["result"] = cp_data["data"]
 
         return JSONResponse({
             "success": True,
@@ -334,6 +336,7 @@ async def regenerate_thumbnail(job_id: str):
         cp_data["data"]["thumbnail"] = thumb_result.model_dump()
         cp_data["cost_so_far_usd"] = cp_data.get("cost_so_far_usd", 0.0) + analyzer.router.get_stats()["total_cost_usd"]
         await _save_checkpoint(job_id, cp_data)
+        if job_id in JOBS: JOBS[job_id]["result"] = cp_data["data"]
 
         return JSONResponse({
             "success": True,
@@ -372,6 +375,7 @@ async def regenerate_social_media(job_id: str):
         cp_data["data"]["social_media"] = social_result.model_dump()
         cp_data["cost_so_far_usd"] = cp_data.get("cost_so_far_usd", 0.0) + analyzer.router.get_stats()["total_cost_usd"]
         await _save_checkpoint(job_id, cp_data)
+        if job_id in JOBS: JOBS[job_id]["result"] = cp_data["data"]
 
         return JSONResponse({
             "success": True,
