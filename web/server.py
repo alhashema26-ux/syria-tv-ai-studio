@@ -213,6 +213,20 @@ async def _save_checkpoint(job_id: str, cp_data: dict):
         json.dump(cp_data, f, ensure_ascii=False, indent=2)
 
 
+ROTATION_PROVIDERS = [
+    ("gemini", "gemini-3.1-flash-lite"),
+    ("openai", "gpt-4o-mini"),
+    ("anthropic", "claude-sonnet-4-6"),
+]
+
+def _get_rotation_provider(cp_data: dict, section: str) -> tuple[str, str]:
+    """يرجع الـ provider والموديل بناءً على عدد مرات التوليد."""
+    counts = cp_data.setdefault("rotation_counts", {})
+    count = counts.get(section, 0)
+    provider, model = ROTATION_PROVIDERS[count % len(ROTATION_PROVIDERS)]
+    counts[section] = count + 1
+    return provider, model
+
 def _build_context_block_regen(content_type, program_name):
     """يبني سياق تحريري - نسخة داخلية للـ regenerate."""
     if not content_type and not program_name:
@@ -248,6 +262,9 @@ async def regenerate_titles(job_id: str):
         analyzer = TranscriptAnalyzer()
         analysis = await analyzer.analyze(transcript, context_block=context_block)
 
+        _prov, _mdl = _get_rotation_provider(cp_data, "titles")
+        from stv_studio.providers.router import TaskType as _TT
+        analyzer.router.TASK_ROUTING[_TT.TITLE_GENERATION] = (_prov, _mdl)
         title_agent = TitleAgent(router=analyzer.router)
         titles_result = await title_agent.generate(analysis, context_block=context_block)
 
@@ -296,6 +313,9 @@ async def regenerate_description(job_id: str):
         else:
             chosen_title = analysis.title_focus or analysis.topic[:70]
 
+        _prov, _mdl = _get_rotation_provider(cp_data, "description")
+        from stv_studio.providers.router import TaskType as _TT
+        analyzer.router.TASK_ROUTING[_TT.DESCRIPTION] = (_prov, _mdl)
         desc_agent = DescriptionAgent(router=analyzer.router)
         desc_result = await desc_agent.generate(analysis, chosen_title, context_block=context_block)
 
@@ -342,6 +362,9 @@ async def regenerate_thumbnail(job_id: str):
         else:
             chosen_title = analysis.title_focus or analysis.topic[:70]
 
+        _prov, _mdl = _get_rotation_provider(cp_data, "thumbnail")
+        from stv_studio.providers.router import TaskType as _TT
+        analyzer.router.TASK_ROUTING[_TT.THUMBNAIL_TEXT] = (_prov, _mdl)
         thumb_agent = ThumbnailAgent(router=analyzer.router)
         thumb_result = await thumb_agent.generate(analysis, chosen_title, context_block=context_block)
 
@@ -381,6 +404,9 @@ async def regenerate_social_media(job_id: str):
         analyzer = TranscriptAnalyzer()
         analysis = await analyzer.analyze(transcript, context_block=context_block)
 
+        _prov, _mdl = _get_rotation_provider(cp_data, "social_media")
+        from stv_studio.providers.router import TaskType as _TT
+        analyzer.router.TASK_ROUTING[_TT.SOCIAL_MEDIA_GENERATION] = (_prov, _mdl)
         social_agent = SocialMediaAgent(router=analyzer.router)
         social_result = await social_agent.generate(transcript, analysis, context_block=context_block)
 
