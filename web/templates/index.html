@@ -974,14 +974,15 @@
                 if (costBadge) costBadge.textContent = '💰 $' + data.new_cost.toFixed(4);
             }
 
-            // TODO: هنا سنضيف render functions لاحقاً
-            // مؤقتاً: reload
+            // reload مع cache bust
             setTimeout(() => {
                 const activeTab = document.querySelector('.tab-btn.active');
                 if (activeTab) {
                     try { localStorage.setItem('stv_active_tab', activeTab.dataset.tab); } catch(e) {}
                 }
-                window.location.reload();
+                const url = new URL(window.location.href);
+                url.searchParams.set('t', Date.now());
+                window.location.href = url.toString();
             }, 300);
         } catch(e) {
             alert('تعذر الاتصال');
