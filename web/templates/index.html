@@ -1008,20 +1008,22 @@
             ci.addEventListener('keydown', function(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } });
             ci.addEventListener('input', function() { this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,120)+'px'; });
         }
-        // استرجاع التبويب النشط من localStorage
-        try {
-            const saved = localStorage.getItem('stv_active_tab');
-            if (saved && document.querySelector('.tab-btn[data-tab="' + saved + '"]')) {
-                switchTab(saved);
-            }
-        } catch(e) {}
-
         // ===== انيميشن العرض التدريجي للتبويبات =====
         const tabButtons = document.querySelectorAll('.tab-btn');
+        const maxDelay = tabButtons.length * 80;
         tabButtons.forEach((btn, idx) => {
             btn.classList.add('reveal-animate');
             btn.style.animationDelay = (idx * 80) + 'ms';
         });
+        // استرجاع التبويب النشط بعد انتهاء الانيميشن
+        setTimeout(() => {
+            try {
+                const saved = localStorage.getItem('stv_active_tab');
+                if (saved && document.querySelector('.tab-btn[data-tab="' + saved + '"]')) {
+                    switchTab(saved);
+                }
+            } catch(e) {}
+        }, maxDelay + 400);
     });
 </script>
 </body>
