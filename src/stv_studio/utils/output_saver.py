@@ -127,8 +127,12 @@ class OutputSaver:
         # العناوين
         parts.append("## 🎯 العناوين المقترحة")
         parts.append("")
-        
-        for i, title in enumerate(titles.titles):
+
+        if not titles:
+            parts.append("لم يتم توليد عناوين.")
+            parts.append("")
+        else:
+         for i, title in enumerate(titles.titles):
             is_recommended = (i == titles.recommended.index)
             marker = "⭐ " if is_recommended else ""
             

@@ -163,33 +163,28 @@ class TitleAgent:
             max_tokens=10000,
         )
         
-        # الخطوة 4: استخراج JSON
-        try:
-            json_text = self._extract_json(response.text)
-        except ValueError as e:
-            raise ValueError(
-                f"Failed to extract JSON.\n"
-                f"Provider: {response.provider}, Model: {response.model}\n"
-                f"Raw response:\n{response.text[:1000]}\n\nError: {e}"
-            )
-        
-        # الخطوة 5: Parse JSON
-        try:
-            data = json.loads(json_text)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON:\n{json_text[:1000]}\n\nError: {e}")
-        
-        # الخطوة 6: Validation عبر Pydantic
-        try:
-            result = TitleGenerationResult(**data)
-        except ValidationError as e:
-            raise ValueError(
-                f"Schema validation failed.\n"
-                f"Data: {json.dumps(data, ensure_ascii=False, indent=2)[:2000]}\n\n"
-                f"Errors: {e}"
-            )
-        
-        return result
+        # الخطوات 4-6: استخراج JSON مع retry حتى 3 محاولات
+        last_error = None
+        for attempt in range(3):
+            try:
+                if attempt > 0:
+                    print(f"[TITLE] Retry attempt {attempt + 1}/3...")
+                    response = await self.router.complete(
+                        prompt=user_prompt,
+                        task=TaskType.TITLE_GENERATION,
+                        system=self.system_prompt,
+                        max_tokens=10000,
+                    )
+                json_text = self._extract_json(response.text)
+                data = json.loads(json_text)
+                result = TitleGenerationResult(**data)
+                return result
+            except (ValueError, json.JSONDecodeError, ValidationError) as e:
+                last_error = e
+                print(f"[TITLE] Attempt {attempt + 1} failed: {e}")
+                continue
+
+        raise ValueError(f"Title generation failed after 3 attempts. Last error: {last_error}")
 
 
 # ---------- اختبار سريع ----------
