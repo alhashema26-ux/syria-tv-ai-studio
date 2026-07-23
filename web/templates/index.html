@@ -877,7 +877,6 @@
     function copyKeywords() { const el = document.getElementById('keywordsRaw'); if (el) navigator.clipboard.writeText(el.value).then(() => alert('✅ تم نسخ الكلمات المفتاحية!')); }
     function copyHashtags() { const el = document.getElementById('hashtagsRaw'); if (el) navigator.clipboard.writeText(el.value).then(() => alert('✅ تم نسخ الهاشتاغات!')); }
 
-    const smData = JSON.parse(document.getElementById("smDataJson").textContent);
     function updateXCounter() { const el = document.getElementById('x-tweet-text'); const counter = document.getElementById('x-char-count'); if (!el || !counter) return; const len = el.textContent.length; counter.textContent = len + '/280'; counter.className = 'x-char-counter ' + (len > 280 ? 'x-char-warn' : 'x-char-ok'); }
     function renderPlatform(platform) { const d = smData[platform]; if (!d) return; const idx = d.current; const total = (d.titles || d.hooks || d.tweets || d.captions).length; const label = document.getElementById(platform + '-label'); if (label) label.textContent = (idx+1)+'/'+total; if (platform==='fb') { document.getElementById('fb-title-text').textContent=d.titles[idx]||''; document.getElementById('fb-caption-text').textContent=d.captions[idx]||''; } else if (platform==='ig') { document.getElementById('ig-hook-text').textContent=d.hooks[idx]||''; } else if (platform==='x') { document.getElementById('x-tweet-text').textContent=d.tweets[idx]||''; updateXCounter(); } else if (platform==='tg') { document.getElementById('tg-caption-text').textContent=d.captions[idx]||''; } else if (platform==='wa') { document.getElementById('wa-caption-text').textContent=d.captions[idx]||''; } else if (platform==='tt') { document.getElementById('tt-hook-text').textContent=d.hooks[idx]||''; } }
     function nextVariant(platform) { const d=smData[platform]; if(!d) return; const total=(d.titles||d.hooks||d.tweets||d.captions).length; d.current=(d.current+1)%total; renderPlatform(platform); }
@@ -996,6 +995,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        const smData = JSON.parse(document.getElementById("smDataJson").textContent);
         updateXCounter(); buildChatContext();
         // استرجاع scroll position بعد regenerate reload
         try {
