@@ -129,7 +129,15 @@ class KeywordMapAgent:
         """
         # 1. نبني الاستعلام الأولي - نستخدم الموضوع فقط لضمان نتائج غنية
         # (keywords تُستخدم لاحقاً في تجميع النتائج، ليس في الاستعلام)
-        seed_query = topic.strip()[:60]
+        # نستخدم keywords من DescriptionAgent إذا موجودة (أفضل جودة)
+        # إلا نستخرج من الموضوع
+        if keywords and len(keywords) >= 2:
+            seed_query = " ".join(keywords[:2])
+        else:
+            stopwords = {"في", "من", "إلى", "على", "عن", "مع", "أن", "و", "أو", "لكن", "التي", "الذي", "هذا", "هذه", "ذلك", "تلك", "بعد", "قبل", "خلال", "لدى", "عند", "متوقعة", "متوقع", "القريب", "العاجل", "الآن", "اليوم", "أمس", "غداً", "للرئيس", "الرئيس"}
+            words = topic.strip().split()
+            meaningful = [w for w in words if w not in stopwords and len(w) > 1]
+            seed_query = " ".join(meaningful[:2]) if meaningful else topic[:40]
         print(f"[KEYWORD_MAP] Seed query: {seed_query}")
 
         # 2. المستوى الأول - 10 اقتراحات
