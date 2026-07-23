@@ -132,7 +132,9 @@ class KeywordMapAgent:
         # نستخدم keywords من DescriptionAgent إذا موجودة (أفضل جودة)
         # إلا نستخرج من الموضوع
         if keywords and len(keywords) >= 2:
-            seed_query = " ".join(keywords[:2])
+            # نأخذ أول كلمة من كل keyword لأن الـ DescriptionAgent يولّد جمل طويلة
+            short_kws = [kw.strip().split()[0] for kw in keywords if kw.strip()]
+            seed_query = " ".join(short_kws[:2])
         else:
             stopwords = {"في", "من", "إلى", "على", "عن", "مع", "أن", "و", "أو", "لكن", "التي", "الذي", "هذا", "هذه", "ذلك", "تلك", "بعد", "قبل", "خلال", "لدى", "عند", "متوقعة", "متوقع", "القريب", "العاجل", "الآن", "اليوم", "أمس", "غداً", "للرئيس", "الرئيس"}
             words = topic.strip().split()
