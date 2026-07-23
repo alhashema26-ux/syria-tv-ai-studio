@@ -12,7 +12,6 @@ from stv_studio.agents.description_generator import DescriptionAgent
 from stv_studio.agents.thumbnail_generator import ThumbnailAgent
 from stv_studio.agents.quality_evaluator import QualityEvaluator
 from stv_studio.agents.social_media_generator import SocialMediaAgent
-from stv_studio.agents.keyword_map import KeywordMapAgent
 from stv_studio.utils.output_saver import OutputSaver
 from stv_studio.utils.checkpoint import CheckpointManager
 
@@ -38,7 +37,6 @@ async def process_structured(
     include_thumbnail=True,
     include_evaluation=True,
     include_social_media=False,
-    include_keyword_map=False,
     run_id=None,
 ):
     cp = CheckpointManager(run_id=run_id)
@@ -112,7 +110,6 @@ async def process_structured(
             raise
 
     social_media_result = None
-    keyword_map_result = None
 
     if include_social_media:
         try:
@@ -124,18 +121,6 @@ async def process_structured(
             raise
 
     # خريطة الكلمات المفتاحية من يوتيوب (مجاني، بدون API key)
-    if include_keyword_map:
-        try:
-            km_agent = KeywordMapAgent()
-            # نستخدم الموضوع + الكلمات المفتاحية من DescriptionAgent إذا موجودة
-            desc_keywords = desc_result.keywords if desc_result else None
-            keyword_map_result = await km_agent.generate(
-                topic=analysis.topic,
-                keywords=desc_keywords,
-            )
-            cp.save_step("keyword_map", keyword_map_result.model_dump(), analyzer.router.get_stats()["total_cost_usd"])
-        except Exception as e:
-            cp.mark_failed("keyword_map", str(e))
             # لا نرفع الخطأ - الخريطة اختيارية ولا توقف باقي المعالجة
             print(f"[KEYWORD_MAP] Error but continuing: {e}")
 
@@ -163,7 +148,6 @@ async def process_structured(
         "thumbnail": thumb_result,
         "evaluation": eval_result,
         "social_media": social_media_result,
-        "keyword_map": keyword_map_result,
         "raw_text": filepath.read_text(encoding="utf-8"),
         "filepath": str(filepath),
     }
