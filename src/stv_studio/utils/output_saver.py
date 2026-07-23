@@ -132,41 +132,40 @@ class OutputSaver:
             parts.append("لم يتم توليد عناوين.")
             parts.append("")
         else:
-         for i, title in enumerate(titles.titles):
-            is_recommended = (i == titles.recommended.index)
-            marker = "⭐ " if is_recommended else ""
-            
-            parts.append("### " + marker + "#" + str(i) + " — " + title.style)
+            for i, title in enumerate(titles.titles):
+                is_recommended = (i == titles.recommended.index)
+                marker = "⭐ " if is_recommended else ""
+                parts.append("### " + marker + "#" + str(i) + " — " + title.style)
+                parts.append("")
+                parts.append("**العنوان:** " + title.text)
+                parts.append("")
+                parts.append("**الطول:** " + str(title.length) + " حرف")
+                parts.append("")
+                parts.append("**المبرر:** " + title.rationale)
+                parts.append("")
+                parts.append("---")
+                parts.append("")
+
+            # التوصية
+            parts.append("## ⭐ التوصية النهائية")
             parts.append("")
-            parts.append("**العنوان:** " + title.text)
+            parts.append("**العنوان الموصى به (#" + str(titles.recommended.index) + "):**")
             parts.append("")
-            parts.append("**الطول:** " + str(title.length) + " حرف")
+            parts.append("> " + titles.titles[titles.recommended.index].text)
             parts.append("")
-            parts.append("**المبرر:** " + title.rationale)
+            parts.append("**السبب:**")
             parts.append("")
-            parts.append("---")
+            parts.append(titles.recommended.reason)
             parts.append("")
-        
-        # التوصية
-        parts.append("## ⭐ التوصية النهائية")
-        parts.append("")
-        parts.append("**العنوان الموصى به (#" + str(titles.recommended.index) + "):**")
-        parts.append("")
-        parts.append("> " + titles.titles[titles.recommended.index].text)
-        parts.append("")
-        parts.append("**السبب:**")
-        parts.append("")
-        parts.append(titles.recommended.reason)
-        parts.append("")
-        
-        # ملاحظات
-        if titles.notes:
-            parts.append("---")
-            parts.append("")
-            parts.append("## 📌 ملاحظات إضافية")
-            parts.append("")
-            parts.append(titles.notes)
-            parts.append("")
+
+            # ملاحظات
+            if titles.notes:
+                parts.append("---")
+                parts.append("")
+                parts.append("## 📌 ملاحظات إضافية")
+                parts.append("")
+                parts.append(titles.notes)
+                parts.append("")
         
         # كتابة الملف
         content = "\n".join(parts)
