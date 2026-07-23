@@ -127,18 +127,19 @@ class KeywordMapAgent:
         Returns:
             KeywordMapResult بشجرة مكونة من مستويين
         """
-        # 1. نبني الاستعلام الأولي - نستخدم الموضوع فقط لضمان نتائج غنية
-        # (keywords تُستخدم لاحقاً في تجميع النتائج، ليس في الاستعلام)
-        # نستخدم keywords من DescriptionAgent إذا موجودة (أفضل جودة)
-        # إلا نستخرج من الموضوع
-        if keywords and len(keywords) >= 2:
-            # نأخذ أول كلمة من كل keyword لأن الـ DescriptionAgent يولّد جمل طويلة
-            short_kws = [kw.strip().split()[0] for kw in keywords if kw.strip()]
-            seed_query = " ".join(short_kws[:2])
+        # 1. نبني الاستعلام من الـ topic — أول كلمة مفيدة + اسم البلد إذا موجود
+        stopwords = {"في", "من", "إلى", "على", "عن", "مع", "أن", "و", "أو", "لكن",
+                     "التي", "الذي", "هذا", "هذه", "ذلك", "تلك", "بعد", "قبل",
+                     "خلال", "لدى", "عند", "متوقعة", "متوقع", "القريب", "العاجل",
+                     "الآن", "اليوم", "أمس", "غداً", "للرئيس", "الرئيس"}
+        geo_terms = {"سوريا", "لبنان", "العراق", "فلسطين", "غزة", "مصر", "الأردن",
+                     "تركيا", "إيران", "اليمن", "ليبيا", "السودان", "السعودية"}
+        words = topic.strip().split()
+        meaningful = [w for w in words if w not in stopwords and len(w) > 1]
+        geo = [w for w in words if w in geo_terms]
+        if meaningful and geo and meaningful[0] not in geo_terms:
+            seed_query = f"{meaningful[0]} {geo[0]}"
         else:
-            stopwords = {"في", "من", "إلى", "على", "عن", "مع", "أن", "و", "أو", "لكن", "التي", "الذي", "هذا", "هذه", "ذلك", "تلك", "بعد", "قبل", "خلال", "لدى", "عند", "متوقعة", "متوقع", "القريب", "العاجل", "الآن", "اليوم", "أمس", "غداً", "للرئيس", "الرئيس"}
-            words = topic.strip().split()
-            meaningful = [w for w in words if w not in stopwords and len(w) > 1]
             seed_query = " ".join(meaningful[:2]) if meaningful else topic[:40]
         print(f"[KEYWORD_MAP] Seed query: {seed_query}")
 
