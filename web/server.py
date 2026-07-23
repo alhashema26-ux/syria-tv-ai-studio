@@ -145,6 +145,13 @@ async def show_result(request: Request, job_id: str):
     result_with_id = job.get("result")
     if result_with_id and isinstance(result_with_id, dict):
         result_with_id["job_id"] = job_id
+        # نضيف cost من الـ checkpoint إذا ما كانت موجودة
+        if "cost" not in result_with_id:
+            cp = await _load_checkpoint(job_id)
+            if cp:
+                result_with_id["cost"] = cp.get("cost_so_far_usd", 0.0)
+                result_with_id["content_type"] = cp.get("content_type")
+                result_with_id["program_name"] = cp.get("program_name")
     return templates.TemplateResponse(request, "index.html", {"result": result_with_id, "error": job.get("error"), "transcript": ""})
 
 
