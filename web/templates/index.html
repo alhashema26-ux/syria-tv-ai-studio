@@ -468,7 +468,7 @@
     <div class="card">
         <form id="reportForm" method="post" action="/process">
             <div class="context-section">
-                <div class="context-title">🎬 سياق المحتوى (اختياري)</div>
+                <div class="context-title">سياق المحتوى (اختياري)</div>
                 <div class="context-grid">
                     <div class="select-group">
                         <label for="content_type">نوع النص</label>
@@ -536,18 +536,18 @@
             <textarea name="transcript" placeholder="الصق نص التقرير الإخباري هنا...">{{ transcript or "" }}</textarea>
 
             <div class="options-section">
-                <div class="options-title">🎯 ماذا تريد أن يولّد النظام؟</div>
+                <div class="options-title">ماذا تريد أن يولّد النظام؟</div>
                 <div class="checkbox-grid">
                     <label class="checkbox-item required"><input type="checkbox" checked disabled>التحليل (إلزامي)</label>
                     <label class="checkbox-item"><input type="checkbox" name="include_titles" value="1" checked>العناوين المقترحة (RAG)</label>
                     <label class="checkbox-item"><input type="checkbox" name="include_description" value="1" checked>الوصف والكلمات المفتاحية والهاشتاغات</label>
                     <label class="checkbox-item"><input type="checkbox" name="include_thumbnail" value="1" checked>أفكار نص الثمبنيل</label>
                     <label class="checkbox-item"><input type="checkbox" name="include_evaluation" value="1" checked>تقييم الجودة المستقل (GPT)</label>
-                    <label class="checkbox-item"><input type="checkbox" name="include_social_media" value="1">📱 حزمة السوشيال ميديا (6 منصات)</label>
+                    <label class="checkbox-item"><input type="checkbox" name="include_social_media" value="1">حزمة السوشيال ميديا (6 منصات)</label>
                                     </div>
-                <div class="note">💡 التقييم المستقل يحتاج الوصف والثمبنيل ليعمل بدقة كاملة.</div>
+                <div class="note">التقييم المستقل يحتاج الوصف والثمبنيل ليعمل بدقة كاملة.</div>
             </div>
-            <button type="submit" id="submitBtn">🚀 معالجة التقرير</button>
+            <button type="submit" id="submitBtn">معالجة التقرير</button>
             <div class="loading" id="loadingMsg">⏳ جارٍ المعالجة... قد تستغرق 15-90 ثانية حسب الخيارات المحددة</div>
         </form>
     </div>
@@ -558,28 +558,28 @@
     <div class="card card-tabs">
         <div class="actions-bar">
             <div class="result-meta" style="margin: 0; flex: 1;">
-                <span class="badge badge-cost">💰 ${{ "%.4f"|format(result.cost) }}</span>
-                {% if result.evaluation %}<span class="badge {% if result.evaluation.overall_score >= 80 %}badge-quality-high{% elif result.evaluation.overall_score >= 60 %}badge-quality-mid{% else %}badge-quality-low{% endif %}">📊 {{ result.evaluation.overall_score }}/100</span>{% endif %}
-                {% if result.content_type %}<span class="badge badge-context">📝 {{ result.content_type }}</span>{% endif %}
+                <span class="badge badge-cost">${{ "%.4f"|format(result.cost) }}</span>
+                {% if result.evaluation %}<span class="badge {% if result.evaluation.overall_score >= 80 %}badge-quality-high{% elif result.evaluation.overall_score >= 60 %}badge-quality-mid{% else %}badge-quality-low{% endif %}">{{ result.evaluation.overall_score }}/100</span>{% endif %}
+                {% if result.content_type %}<span class="badge badge-context">{{ result.content_type }}</span>{% endif %}
                 {% if result.program_name %}<span class="badge badge-context">📺 {{ result.program_name }}</span>{% endif %}
             </div>
-            <button class="copy-btn" onclick="copyResult()">📋 نسخ التقرير كاملاً</button>
+            <button class="copy-btn" onclick="copyResult()">نسخ التقرير كاملاً</button>
         </div>
 
         <div class="tabs-nav" id="tabsNav">
-            <button type="button" class="tab-btn active" data-tab="content">🎯 المحتوى</button>
-            <button type="button" class="tab-btn" data-tab="details">📊 التفاصيل</button>
+            <button type="button" class="tab-btn active" data-tab="content">المحتوى</button>
+            <button type="button" class="tab-btn" data-tab="details">التفاصيل</button>
         </div>
 
         <!-- تبويب الملخص -->
         <div class="tab-content" data-tab-content="details">
             {% if result.titles %}
             <div class="summary-hero">
-                <div class="summary-hero-label">⭐ العنوان الموصى به</div>
+                <div class="summary-hero-label">العنوان الموصى به</div>
                 <div class="summary-hero-title" id="summaryTitle">{{ result.titles.titles[result.titles.recommended.index].text }}</div>
                 <div class="summary-hero-actions">
-                    <button class="summary-quick-btn" onclick="copyText(document.getElementById('summaryTitle').textContent, 'العنوان')">📋 نسخ العنوان</button>
-                    {% if result.description %}<button class="summary-quick-btn" onclick="copyKeywords()">🔑 نسخ الكلمات المفتاحية</button>{% endif %}
+                    <button class="summary-quick-btn" onclick="copyText(document.getElementById('summaryTitle').textContent, 'العنوان')">نسخ العنوان</button>
+                    {% if result.description %}<button class="summary-quick-btn" onclick="copyKeywords()">نسخ الكلمات المفتاحية</button>{% endif %}
                     {% if result.description %}<button class="summary-quick-btn" onclick="copyHashtags()">#️⃣ نسخ الهاشتاغات</button>{% endif %}
                 </div>
             </div>
@@ -607,16 +607,16 @@
             </div>
 
             {% if result.description %}
-            <div class="summary-section-title">📄 الوصف</div>
+            <div class="summary-section-title">الوصف</div>
             <div class="desc-box" style="margin-bottom: 0;">{{ result.description.description[:300] }}{% if result.description.description|length > 300 %}...{% endif %}</div>
             {% endif %}
 
             {% if result.thumbnail %}
-            <div class="summary-section-title">🖼️ الثمبنيل الموصى</div>
+            <div class="summary-section-title">الثمبنيل الموصى</div>
             <div class="summary-mini-list">
                 <div class="summary-mini-item">
                     <span>{{ result.thumbnail.options[result.thumbnail.recommended_index].text }}</span>
-                    <button class="mini-copy-inline" onclick="copyText('{{ result.thumbnail.options[result.thumbnail.recommended_index].text }}', 'الثمبنيل')">📋</button>
+                    <button class="mini-copy-inline" onclick="copyText('{{ result.thumbnail.options[result.thumbnail.recommended_index].text }}', 'الثمبنيل')"></button>
                 </div>
             </div>
             {% endif %}
@@ -625,7 +625,7 @@
         <!-- تبويب التحليل -->
         <div class="tab-content" data-tab-content="details">
             <div class="section">
-                <div class="section-title">🔍 تحليل المحتوى</div>
+                <div class="section-title">تحليل المحتوى</div>
                 <div class="analysis-grid">
                     <div class="analysis-item"><div class="k">التصنيف</div><div class="v">{{ result.analysis.category }}</div></div>
                     <div class="analysis-item"><div class="k">النبرة</div><div class="v">{{ result.analysis.tone }}</div></div>
@@ -641,7 +641,7 @@
         <div class="tab-content active" data-tab-content="content">
             <div class="section">
                 <div class="section-title">
-                    <span>🎯 العناوين المقترحة ({{ result.titles.titles|length }})</span>
+                    <span>العناوين المقترحة ({{ result.titles.titles|length }})</span>
                     <button type="button" class="regen-btn" id="regen-btn-titles" onclick="regenerateSection('titles')">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
                         <span>إعادة توليد</span>
@@ -651,7 +651,7 @@
                 {% for t in result.titles.titles %}
                 <div class="title-option {% if loop.index0 == result.titles.recommended.index %}recommended{% endif %}">
                     <span class="style-tag">{{ t.style }}</span>
-                    {% if loop.index0 == result.titles.recommended.index %}<span class="style-tag" style="background:var(--orange);color:white;">⭐ موصى به</span>{% endif %}
+                    {% if loop.index0 == result.titles.recommended.index %}<span class="style-tag" style="background:var(--orange);color:white;">موصى به</span>{% endif %}
                     <div class="title-text">{{ t.text }}</div>
                     <div class="rationale">{{ t.rationale }}</div>
                 </div>
@@ -666,7 +666,7 @@
         <div class="tab-content" data-tab-content="content">
             <div class="section">
                 <div class="section-title">
-                    <span>📄 الوصف والكلمات المفتاحية</span>
+                    <span>الوصف والكلمات المفتاحية</span>
                     <button type="button" class="regen-btn" id="regen-btn-description" onclick="regenerateSection('description')">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
                         <span>إعادة توليد</span>
@@ -675,11 +675,11 @@
                 <div class="section-content" id="section-content-description">
                 <div class="desc-box">{{ result.description.description }}</div>
                 <div class="tags-block">
-                    <div class="tags-block-header"><span class="tags-block-title">🔑 الكلمات المفتاحية ({{ result.description.keywords|length }})</span><button class="mini-copy-btn" onclick="copyKeywords()">📋 نسخ للصق في يوتيوب</button></div>
+                    <div class="tags-block-header"><span class="tags-block-title">الكلمات المفتاحية ({{ result.description.keywords|length }})</span><button class="mini-copy-btn" onclick="copyKeywords()">نسخ للصق في يوتيوب</button></div>
                     <div class="tags">{% for kw in result.description.keywords %}<span class="tag">{{ kw }}</span>{% endfor %}</div>
                 </div>
                 <div class="tags-block">
-                    <div class="tags-block-header"><span class="tags-block-title">#️⃣ الهاشتاغات ({{ result.description.hashtags|length }})</span><button class="mini-copy-btn" onclick="copyHashtags()">📋 نسخ الهاشتاغات</button></div>
+                    <div class="tags-block-header"><span class="tags-block-title">الهاشتاغات ({{ result.description.hashtags|length }})</span><button class="mini-copy-btn" onclick="copyHashtags()">نسخ الهاشتاغات</button></div>
                     <div class="tags">{% for h in result.description.hashtags %}<span class="hashtag">{{ h }}</span>{% endfor %}</div>
                 </div>
                 <textarea id="keywordsRaw" style="position:absolute;left:-9999px;">{{ result.description.keywords|join(", ") }}</textarea>
@@ -694,7 +694,7 @@
         <div class="tab-content" data-tab-content="content">
             <div class="section">
                 <div class="section-title">
-                    <span>🖼️ أفكار نص الثمبنيل ({{ result.thumbnail.options|length }})</span>
+                    <span>أفكار نص الثمبنيل ({{ result.thumbnail.options|length }})</span>
                     <button type="button" class="regen-btn" id="regen-btn-thumbnail" onclick="regenerateSection('thumbnail')">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
                         <span>إعادة توليد</span>
@@ -719,7 +719,7 @@
         <div class="tab-content" data-tab-content="details">
             <div class="section">
                 <div class="section-title">
-                    <span>📱 حزمة السوشيال ميديا</span>
+                    <span>حزمة السوشيال ميديا</span>
                     <button type="button" class="regen-btn" id="regen-btn-social_media" onclick="regenerateSection('social_media')">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
                         <span>إعادة توليد</span>
@@ -733,7 +733,7 @@
                 </div>
                 <div class="platforms-grid">
                     <div class="platform-card platform-facebook">
-                        <div class="platform-header"><span class="platform-icon">📘</span><span>Facebook</span><div class="platform-nav"><span class="platform-nav-label" id="fb-label">1/3</span><button class="nav-btn" onclick="prevVariant('fb')">‹</button><button class="nav-btn" onclick="nextVariant('fb')">›</button></div></div>
+                        <div class="platform-header"><span>Facebook</span><div class="platform-nav"><span class="platform-nav-label" id="fb-label">1/3</span><button class="nav-btn" onclick="prevVariant('fb')">‹</button><button class="nav-btn" onclick="nextVariant('fb')">›</button></div></div>
                         <div class="platform-body">
                             <div class="platform-text-area" id="fb-title-text">{{ result.social_media.facebook.titles[0] }}</div>
                             <div class="platform-text-area" id="fb-caption-text">{{ result.social_media.facebook.captions[0] }}</div>
@@ -742,7 +742,7 @@
                         </div>
                     </div>
                     <div class="platform-card platform-instagram">
-                        <div class="platform-header"><span class="platform-icon">📸</span><span>Instagram</span><div class="platform-nav"><span class="platform-nav-label" id="ig-label">1/3</span><button class="nav-btn" onclick="prevVariant('ig')">‹</button><button class="nav-btn" onclick="nextVariant('ig')">›</button></div></div>
+                        <div class="platform-header"><span>Instagram</span><div class="platform-nav"><span class="platform-nav-label" id="ig-label">1/3</span><button class="nav-btn" onclick="prevVariant('ig')">‹</button><button class="nav-btn" onclick="nextVariant('ig')">›</button></div></div>
                         <div class="platform-body">
                             <div class="platform-text-area" id="ig-hook-text">{{ result.social_media.instagram.hooks[0].text }}</div>
                             <div class="platform-text-area" id="ig-caption-text">{{ result.social_media.instagram.full_caption }}</div>
@@ -751,7 +751,7 @@
                         </div>
                     </div>
                     <div class="platform-card platform-x_twitter">
-                        <div class="platform-header"><span class="platform-icon">✖️</span><span>X (Twitter)</span><div class="platform-nav"><span class="platform-nav-label" id="x-label">1/3</span><button class="nav-btn" onclick="prevVariant('x')">‹</button><button class="nav-btn" onclick="nextVariant('x')">›</button></div></div>
+                        <div class="platform-header"><span>X (Twitter)</span><div class="platform-nav"><span class="platform-nav-label" id="x-label">1/3</span><button class="nav-btn" onclick="prevVariant('x')">‹</button><button class="nav-btn" onclick="nextVariant('x')">›</button></div></div>
                         <div class="platform-body">
                             <div class="platform-text-area" id="x-tweet-text">{{ result.social_media.x_twitter.tweets[0] }}</div>
                             <div class="x-char-counter" id="x-char-count"></div>
@@ -760,7 +760,7 @@
                         </div>
                     </div>
                     <div class="platform-card platform-telegram">
-                        <div class="platform-header"><span class="platform-icon">✈️</span><span>Telegram</span><div class="platform-nav"><span class="platform-nav-label" id="tg-label">1/3</span><button class="nav-btn" onclick="prevVariant('tg')">‹</button><button class="nav-btn" onclick="nextVariant('tg')">›</button></div></div>
+                        <div class="platform-header"><span>Telegram</span><div class="platform-nav"><span class="platform-nav-label" id="tg-label">1/3</span><button class="nav-btn" onclick="prevVariant('tg')">‹</button><button class="nav-btn" onclick="nextVariant('tg')">›</button></div></div>
                         <div class="platform-body">
                             <div class="platform-text-area" id="tg-caption-text">{{ result.social_media.telegram.captions[0] }}</div>
                             <div class="platform-hashtags" id="tg-hashtags">{% for h in result.social_media.telegram.hashtags %}<span class="sm-hashtag">{{ h }}</span>{% endfor %}</div>
@@ -768,14 +768,14 @@
                         </div>
                     </div>
                     <div class="platform-card platform-whatsapp">
-                        <div class="platform-header"><span class="platform-icon">💬</span><span>WhatsApp</span><div class="platform-nav"><span class="platform-nav-label" id="wa-label">1/3</span><button class="nav-btn" onclick="prevVariant('wa')">‹</button><button class="nav-btn" onclick="nextVariant('wa')">›</button></div></div>
+                        <div class="platform-header"><span>WhatsApp</span><div class="platform-nav"><span class="platform-nav-label" id="wa-label">1/3</span><button class="nav-btn" onclick="prevVariant('wa')">‹</button><button class="nav-btn" onclick="nextVariant('wa')">›</button></div></div>
                         <div class="platform-body">
                             <div class="platform-text-area" id="wa-caption-text">{{ result.social_media.whatsapp.captions[0] }}</div>
                             <div class="platform-actions"><button class="sm-copy-btn" onclick="copyPlatformText('wa-caption-text')">نسخ النص</button></div>
                         </div>
                     </div>
                     <div class="platform-card platform-tiktok">
-                        <div class="platform-header"><span class="platform-icon">🎵</span><span>TikTok</span><div class="platform-nav"><span class="platform-nav-label" id="tt-label">1/3</span><button class="nav-btn" onclick="prevVariant('tt')">‹</button><button class="nav-btn" onclick="nextVariant('tt')">›</button></div></div>
+                        <div class="platform-header"><span>TikTok</span><div class="platform-nav"><span class="platform-nav-label" id="tt-label">1/3</span><button class="nav-btn" onclick="prevVariant('tt')">‹</button><button class="nav-btn" onclick="nextVariant('tt')">›</button></div></div>
                         <div class="platform-body">
                             <div class="platform-text-area" id="tt-hook-text">{{ result.social_media.tiktok.hooks[0].text }}</div>
                             <div class="platform-text-area" id="tt-caption-text">{{ result.social_media.tiktok.full_caption }}</div>
@@ -787,7 +787,7 @@
                 </div>
                 {% if result.social_media.editor_notes %}
                 <div class="editor-notes-box">
-                    <div class="en-title">📝 ملاحظات المحرر</div>
+                    <div class="en-title">ملاحظات المحرر</div>
                     <ul>{% for note in result.social_media.editor_notes %}<li>{{ note }}</li>{% endfor %}</ul>
                 </div>
                 {% endif %}
@@ -799,7 +799,7 @@
         <!-- تبويب التقييم -->
         <div class="tab-content" data-tab-content="details">
             <div class="section">
-                <div class="section-title">⚖️ تقييم الجودة المستقل (GPT)</div>
+                <div class="section-title">تقييم الجودة المستقل (GPT)</div>
                 <div class="eval-score-box">
                     <div class="eval-score-circle" style="background: {% if result.evaluation.overall_score >= 80 %}var(--success){% elif result.evaluation.overall_score >= 60 %}var(--warning){% else %}var(--danger){% endif %};">{{ result.evaluation.overall_score }}</div>
                     <div><div class="eval-verdict">{{ result.evaluation.verdict }}</div><div class="eval-ready">{% if result.evaluation.ready_to_publish %}✅ جاهز للنشر{% else %}❌ يحتاج مراجعة{% endif %}</div></div>
@@ -808,7 +808,7 @@
                 <div class="criterion"><div class="c-name">{{ c.name }}</div><div class="c-comment">{{ c.comment }}</div><div class="c-score">{{ c.score }}/100</div></div>
                 {% endfor %}
                 <div class="strengths-weaknesses">
-                    <div class="sw-box strengths"><div class="sw-title">✅ نقاط القوة</div><ul>{% for s in result.evaluation.strengths %}<li>{{ s }}</li>{% endfor %}</ul></div>
+                    <div class="sw-box strengths"><div class="sw-title">نقاط القوة</div><ul>{% for s in result.evaluation.strengths %}<li>{{ s }}</li>{% endfor %}</ul></div>
                     {% if result.evaluation.weaknesses %}<div class="sw-box weaknesses"><div class="sw-title">⚠️ نقاط الضعف</div><ul>{% for w in result.evaluation.weaknesses %}<li>{{ w }}</li>{% endfor %}</ul></div>{% endif %}
                 </div>
             </div>
@@ -818,7 +818,7 @@
         <!-- تبويب الشات -->
         <div class="tab-content" data-tab-content="content">
             <div class="chat-header">
-                <div class="chat-title">💬 شات مع المحرر الذكي</div>
+                <div class="chat-title">شات مع المحرر الذكي</div>
                 <div class="chat-model-select">
                     <label>النموذج:</label>
                     <select id="chatModelSelect">
@@ -994,7 +994,7 @@
             // تحديث cost counter
             if (data.new_cost !== undefined) {
                 const costBadge = document.querySelector('.badge-cost');
-                if (costBadge) costBadge.textContent = '💰 $' + data.new_cost.toFixed(4);
+                if (costBadge) costBadge.textContent = '$' + data.new_cost.toFixed(4);
             }
 
             // reload مع cache bust + حفظ scroll position
