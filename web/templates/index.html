@@ -567,18 +567,12 @@
         </div>
 
         <div class="tabs-nav" id="tabsNav">
-            <button type="button" class="tab-btn active" data-tab="summary">📌 الملخص</button>
-            <button type="button" class="tab-btn" data-tab="analysis">🔍 التحليل</button>
-            {% if result.titles %}<button type="button" class="tab-btn" data-tab="titles">🎯 العناوين</button>{% endif %}
-            {% if result.description %}<button type="button" class="tab-btn" data-tab="description">📄 الوصف والـ SEO</button>{% endif %}
-            {% if result.thumbnail %}<button type="button" class="tab-btn" data-tab="thumbnail">🖼️ الثمبنيل</button>{% endif %}
-            {% if result.social_media %}<button type="button" class="tab-btn" data-tab="social">📱 السوشيال</button>{% endif %}
-            {% if result.evaluation %}<button type="button" class="tab-btn" data-tab="evaluation">⚖️ التقييم</button>{% endif %}
-                        <button type="button" class="tab-btn" data-tab="chat">💬 الشات</button>
+            <button type="button" class="tab-btn active" data-tab="content">🎯 المحتوى</button>
+            <button type="button" class="tab-btn" data-tab="details">📊 التفاصيل</button>
         </div>
 
         <!-- تبويب الملخص -->
-        <div class="tab-content active" data-tab-content="summary">
+        <div class="tab-content" data-tab-content="details">
             {% if result.titles %}
             <div class="summary-hero">
                 <div class="summary-hero-label">⭐ العنوان الموصى به</div>
@@ -629,7 +623,7 @@
         </div>
 
         <!-- تبويب التحليل -->
-        <div class="tab-content" data-tab-content="analysis">
+        <div class="tab-content" data-tab-content="details">
             <div class="section">
                 <div class="section-title">🔍 تحليل المحتوى</div>
                 <div class="analysis-grid">
@@ -644,7 +638,7 @@
 
         {% if result.titles %}
         <!-- تبويب العناوين -->
-        <div class="tab-content" data-tab-content="titles">
+        <div class="tab-content active" data-tab-content="content">
             <div class="section">
                 <div class="section-title">
                     <span>🎯 العناوين المقترحة ({{ result.titles.titles|length }})</span>
@@ -669,7 +663,7 @@
 
         {% if result.description %}
         <!-- تبويب الوصف والـ SEO -->
-        <div class="tab-content" data-tab-content="description">
+        <div class="tab-content" data-tab-content="content">
             <div class="section">
                 <div class="section-title">
                     <span>📄 الوصف والكلمات المفتاحية</span>
@@ -697,7 +691,7 @@
 
         {% if result.thumbnail %}
         <!-- تبويب الثمبنيل -->
-        <div class="tab-content" data-tab-content="thumbnail">
+        <div class="tab-content" data-tab-content="content">
             <div class="section">
                 <div class="section-title">
                     <span>🖼️ أفكار نص الثمبنيل ({{ result.thumbnail.options|length }})</span>
@@ -722,7 +716,7 @@
 
         {% if result.social_media %}
         <!-- تبويب السوشيال ميديا -->
-        <div class="tab-content" data-tab-content="social">
+        <div class="tab-content" data-tab-content="details">
             <div class="section">
                 <div class="section-title">
                     <span>📱 حزمة السوشيال ميديا</span>
@@ -803,7 +797,7 @@
 
         {% if result.evaluation %}
         <!-- تبويب التقييم -->
-        <div class="tab-content" data-tab-content="evaluation">
+        <div class="tab-content" data-tab-content="details">
             <div class="section">
                 <div class="section-title">⚖️ تقييم الجودة المستقل (GPT)</div>
                 <div class="eval-score-box">
@@ -822,7 +816,7 @@
         {% endif %}
 
         <!-- تبويب الشات -->
-        <div class="tab-content" data-tab-content="chat">
+        <div class="tab-content" data-tab-content="content">
             <div class="chat-header">
                 <div class="chat-title">💬 شات مع المحرر الذكي</div>
                 <div class="chat-model-select">
@@ -1021,7 +1015,8 @@
         setTimeout(() => {
             try {
                 const saved = localStorage.getItem('stv_active_tab');
-                if (saved && document.querySelector('.tab-btn[data-tab="' + saved + '"]')) {
+                const validTabs = ['content', 'details'];
+                if (saved && validTabs.includes(saved) && document.querySelector('.tab-btn[data-tab="' + saved + '"]')) {
                     switchTab(saved);
                 }
             } catch(e) {}
