@@ -854,9 +854,8 @@
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
         const activeBtn = document.querySelector('.tab-btn[data-tab="' + tabName + '"]');
-        const activeContent = document.querySelector('.tab-content[data-tab-content="' + tabName + '"]');
         if (activeBtn) activeBtn.classList.add('active');
-        if (activeContent) activeContent.classList.add('active');
+        document.querySelectorAll('.tab-content[data-tab-content="' + tabName + '"]').forEach(el => el.classList.add('active'));
         // احفظ التبويب النشط في localStorage
         try { localStorage.setItem('stv_active_tab', tabName); } catch(e) {}
     }
