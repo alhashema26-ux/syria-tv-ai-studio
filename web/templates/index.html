@@ -919,14 +919,45 @@
         chatHistory.push({role: 'user', content: message});
         input.value = ''; input.style.height = 'auto'; btn.disabled = true; addThinking();
         try {
-            const res = await fetch('/chat', {
+            const res = await fetch('/chat/stream', {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({message, model, context: chatContext, history: chatHistory.slice(-10)}),
             });
-            const data = await res.json(); removeThinking();
-            if (data.error) { addMessage('assistant', 'خطأ: ' + data.error, ''); }
-            else { addMessage('assistant', data.reply, data.model_name); chatHistory.push({role: 'assistant', content: data.reply}); }
-        } catch(e) { removeThinking(); addMessage('assistant', 'تعذر الاتصال.', ''); }
+            removeThinking();
+            const container = document.getElementById('chatMessages');
+            const emptyEl = document.getElementById('chatEmpty');
+            if (emptyEl) emptyEl.style.display = 'none';
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble assistant';
+            const textEl = document.createElement('div');
+            bubble.appendChild(textEl);
+            container.appendChild(bubble);
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let fullReply = '';
+            while (true) {
+                const {done, value} = await reader.read();
+                if (done) break;
+                const lines = decoder.decode(value).split('\n');
+                for (const line of lines) {
+                    if (!line.startsWith('data: ')) continue;
+                    try {
+                        const parsed = JSON.parse(line.slice(6));
+                        if (parsed.text) { fullReply += parsed.text; }
+                        if (parsed.done) { chatHistory.push({role: 'assistant', content: fullReply}); }
+                    } catch(ex) {}
+                }
+            }
+            // typewriter effect
+            const words = fullReply.split(' ');
+            let displayed = '';
+            for (let i = 0; i < words.length; i++) {
+                await new Promise(r => setTimeout(r, 40));
+                displayed += (i === 0 ? '' : ' ') + words[i];
+                textEl.textContent = displayed;
+                container.scrollTop = container.scrollHeight;
+            }
+        } catch(e) { removeThinking(); addMessage('assistant', 'error', ''); }
         btn.disabled = false; input.focus();
     }
 

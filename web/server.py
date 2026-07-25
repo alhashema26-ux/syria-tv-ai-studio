@@ -424,6 +424,81 @@ async def regenerate_social_media(job_id: str):
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
+
+@app.post("/chat/stream")
+async def chat_stream(request: Request):
+    from starlette.responses import StreamingResponse
+    from stv_studio.config import settings
+    import json as _json
+
+    body = await request.json()
+    message = body.get("message", "").strip()
+    model_choice = body.get("model", "claude")
+    context = body.get("context", "")
+    history = body.get("history", [])
+
+    if not message:
+        return JSONResponse({"error": "empty"}, status_code=400)
+
+    system_prompt = "You are an expert editorial assistant at Syria TV. Help the editor improve content, suggest alternatives, and answer questions. Always respond in Arabic."
+    if context:
+        system_prompt += "\n\nReport context:\n" + context
+
+    messages = []
+    for h in history:
+        messages.append({"role": h["role"], "content": h["content"]})
+    messages.append({"role": "user", "content": message})
+
+    async def generate_claude():
+        from anthropic import Anthropic
+        client = Anthropic(api_key=settings.anthropic_api_key.get_secret_value())
+        with client.messages.stream(
+            model="claude-sonnet-4-6",
+            max_tokens=2000,
+            system=system_prompt,
+            messages=messages,
+        ) as stream:
+            for text in stream.text_stream:
+                yield "data: " + _json.dumps({"text": text}) + "\n\n"
+        yield "data: " + _json.dumps({"done": True, "model_name": "Claude Sonnet"}) + "\n\n"
+
+    async def generate_gpt():
+        from openai import OpenAI
+        client = OpenAI(api_key=settings.openai_api_key.get_secret_value())
+        all_messages = [{"role": "system", "content": system_prompt}] + messages
+        stream = client.chat.completions.create(
+            model="gpt-4o",
+            messages=all_messages,
+            max_tokens=2000,
+            stream=True,
+        )
+        for chunk in stream:
+            text = chunk.choices[0].delta.content or ""
+            if text:
+                yield "data: " + _json.dumps({"text": text}) + "\n\n"
+        yield "data: " + _json.dumps({"done": True, "model_name": "GPT"}) + "\n\n"
+
+    async def generate_gemini():
+        from google import genai
+        from google.genai import types as genai_types
+        client = genai.Client(api_key=settings.google_api_key.get_secret_value())
+        full_prompt = system_prompt + "\n\n" + "\n".join([m["role"] + ": " + m["content"] for m in messages])
+        for chunk in client.models.generate_content_stream(
+            model="gemini-3.1-flash-lite",
+            contents=full_prompt,
+            config=genai_types.GenerateContentConfig(max_output_tokens=2000),
+        ):
+            if chunk.text:
+                yield "data: " + _json.dumps({"text": chunk.text}) + "\n\n"
+        yield "data: " + _json.dumps({"done": True, "model_name": "Gemini Flash"}) + "\n\n"
+
+    generators = {"claude": generate_claude, "gpt": generate_gpt, "gemini": generate_gemini}
+    generator = generators.get(model_choice)
+    if not generator:
+        return JSONResponse({"error": "unknown model"}, status_code=400)
+
+    return StreamingResponse(generator(), media_type="text/event-stream", headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"})
+
 @app.post("/chat")
 async def chat(request: Request):
     from stv_studio.config import settings
