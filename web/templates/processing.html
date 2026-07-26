@@ -478,7 +478,7 @@
                 updateProgressBar();
 
                 if (data.status === "done") {
-                    addLog('اكتملت المعالجة بنجاح — تحويل للنتائج...', 'success', '🎉');
+                    addLog('اكتملت المعالجة بنجاح — تحويل للنتائج...', 'success', '');
                     setTimeout(() => window.location.href = `/result/${jobId}`, 800);
                 } else if (data.status === "error") {
                     document.getElementById('errorState').style.display = 'block';

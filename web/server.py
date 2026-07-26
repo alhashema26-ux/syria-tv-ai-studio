@@ -142,16 +142,33 @@ async def show_result(request: Request, job_id: str):
                 print(f"[ERROR] history_detail failed: {e}\n{traceback.format_exc()}")
                 return templates.TemplateResponse(request, "index.html", {"result": None, "error": f"خطأ في تحميل التقرير: {str(e)}"})
         return templates.TemplateResponse(request, "index.html", {"result": None, "error": "المهمة غير موجودة أو انتهت صلاحيتها"})
-    result_with_id = job.get("result")
-    if result_with_id and isinstance(result_with_id, dict):
-        result_with_id["job_id"] = job_id
-        # نضيف cost من الـ checkpoint إذا ما كانت موجودة
-        if "cost" not in result_with_id:
-            cp = await _load_checkpoint(job_id)
-            if cp:
-                result_with_id["cost"] = cp.get("cost_so_far_usd", 0.0)
-                result_with_id["content_type"] = cp.get("content_type")
-                result_with_id["program_name"] = cp.get("program_name")
+    job_status = job.get("status", "running")
+    is_processing = job_status == "running"
+
+    # اقرأ من checkpoint دائماً لضمان أحدث البيانات
+    cp = await _load_checkpoint(job_id)
+    if cp:
+        data = cp.get("data", {})
+        result_with_id = {
+            "job_id": job_id,
+            "cost": cp.get("cost_so_far_usd", 0.0),
+            "analysis": data.get("analysis"),
+            "titles": data.get("titles"),
+            "description": data.get("description"),
+            "thumbnail": data.get("thumbnail"),
+            "evaluation": data.get("evaluation"),
+            "social_media": data.get("social_media"),
+            "content_type": cp.get("content_type"),
+            "program_name": cp.get("program_name"),
+            "raw_text": cp.get("transcript", ""),
+            "is_processing": is_processing,
+        }
+    else:
+        result_with_id = job.get("result")
+        if result_with_id and isinstance(result_with_id, dict):
+            result_with_id["job_id"] = job_id
+            result_with_id["is_processing"] = is_processing
+
     return templates.TemplateResponse(request, "index.html", {"result": result_with_id, "error": job.get("error"), "transcript": ""})
 
 

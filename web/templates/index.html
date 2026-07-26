@@ -20,6 +20,7 @@
             --fb: #1877f2; --ig: #e1306c; --tg: #229ed9; --wa: #25d366;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { overflow-x: hidden; max-width: 100%; }
         body { font-family: 'Tajawal','Segoe UI',Tahoma,Arial,sans-serif; background: var(--gray-100); color: var(--gray-800); padding: 28px 20px; line-height: 1.8; }
         .container { max-width: 980px; margin: 0 auto; }
         header { background: linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%); color: white; padding: 28px 36px; border-radius: var(--radius) var(--radius) 0 0; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
@@ -46,11 +47,14 @@
         textarea::placeholder { color: var(--gray-400); }
         textarea:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 4px rgba(249,115,22,0.10); }
         .options-section { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--gray-200); }
-        .options-title { font-size: 14px; font-weight: 800; color: var(--navy); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 10px; }
-        .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
-        .checkbox-item:hover { background: white; border-color: var(--orange); box-shadow: var(--shadow-sm); }
-        .checkbox-item input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--orange); }
+        .options-title { font-size: 14px; font-weight: 800; color: var(--navy); margin-bottom: 14px; }
+        .checkbox-grid { display: flex; flex-direction: column; gap: 8px; }
+        .checkbox-item { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: white; border: 1.5px solid var(--gray-200); border-radius: 10px; cursor: pointer; transition: all 0.2s ease; }
+        .checkbox-item:hover { border-color: var(--orange); box-shadow: var(--shadow-sm); }
+        .checkbox-item input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--orange); flex-shrink: 0; }
+        .checkbox-item .option-text { display: flex; flex-direction: column; gap: 2px; }
+        .checkbox-item .option-name { font-size: 14px; font-weight: 700; color: var(--navy); }
+        .checkbox-item .option-desc { font-size: 12px; color: var(--gray-500); font-weight: 400; }
         .checkbox-item.required { opacity: 0.55; }
         .checkbox-item.required input { cursor: not-allowed; }
         .note { font-size: 12px; color: var(--gray-400); margin-top: 10px; }
@@ -538,12 +542,48 @@
             <div class="options-section">
                 <div class="options-title">ماذا تريد أن يولّد النظام؟</div>
                 <div class="checkbox-grid">
-                    <label class="checkbox-item required"><input type="checkbox" checked disabled>التحليل (إلزامي)</label>
-                    <label class="checkbox-item"><input type="checkbox" name="include_titles" value="1" checked>العناوين المقترحة (RAG)</label>
-                    <label class="checkbox-item"><input type="checkbox" name="include_description" value="1" checked>الوصف والكلمات المفتاحية والهاشتاغات</label>
-                    <label class="checkbox-item"><input type="checkbox" name="include_thumbnail" value="1" checked>أفكار نص الثمبنيل</label>
-                    <label class="checkbox-item"><input type="checkbox" name="include_evaluation" value="1" checked>تقييم الجودة المستقل (GPT)</label>
-                    <label class="checkbox-item"><input type="checkbox" name="include_social_media" value="1">حزمة السوشيال ميديا (6 منصات)</label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="include_analysis" value="1">
+                        <div class="option-text">
+                            <span class="option-name">التحليل</span>
+                            <span class="option-desc">تصنيف النص، النبرة، الأولوية، والملخص التحريري</span>
+                        </div>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="include_titles" value="1">
+                        <div class="option-text">
+                            <span class="option-name">العناوين المقترحة</span>
+                            <span class="option-desc">10 عناوين بأساليب مختلفة مبنية على RAG من 49,819 عنوان يوتيوب</span>
+                        </div>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="include_description" value="1">
+                        <div class="option-text">
+                            <span class="option-name">الوصف والكلمات المفتاحية</span>
+                            <span class="option-desc">وصف SEO محسّن + كلمات مفتاحية + هاشتاغات جاهزة للنشر</span>
+                        </div>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="include_thumbnail" value="1">
+                        <div class="option-text">
+                            <span class="option-name">أفكار نص الثمبنيل</span>
+                            <span class="option-desc">10 أفكار نصية قصيرة ومؤثرة للثمبنيل</span>
+                        </div>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="include_evaluation" value="1">
+                        <div class="option-text">
+                            <span class="option-name">تقييم الجودة المستقل</span>
+                            <span class="option-desc">تقييم صحفي مستقل بالذكاء الاصطناعي — الدقة، اللغة، قوة الجذب</span>
+                        </div>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="include_social_media" value="1">
+                        <div class="option-text">
+                            <span class="option-name">حزمة السوشيال ميديا</span>
+                            <span class="option-desc">محتوى جاهز لـ 6 منصات: Facebook، Instagram، X، TikTok، WhatsApp، Telegram</span>
+                        </div>
+                    </label>
                                     </div>
                 <div class="note">التقييم المستقل يحتاج الوصف والثمبنيل ليعمل بدقة كاملة.</div>
             </div>
