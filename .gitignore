@@ -221,3 +221,6 @@ __marimo__/
 data/chroma_db/
 data/processed/
 data/checkpoints/
+outputs/checkpoints/
+outputs/reports/
+outputs/*.md
