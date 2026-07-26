@@ -341,12 +341,12 @@
         };
 
         const stepInfo = {
-            analysis: { icon: "ت", name: "التحليل" },
-            titles: { icon: "ع", name: "العناوين" },
-            description: { icon: "و", name: "الوصف" },
-            thumbnail: { icon: "ث", name: "الثمبنيل" },
-            evaluation: { icon: "ق", name: "التقييم" },
-            social_media: { icon: "س", name: "السوشيال" },
+            analysis: { icon: "", name: "Analysis" },
+            titles: { icon: "", name: "Titles" },
+            description: { icon: "", name: "Description" },
+            thumbnail: { icon: "", name: "Thumbnail" },
+            evaluation: { icon: "", name: "Evaluation" },
+            social_media: { icon: "", name: "Social" },
         };
 
         // بناء بطاقات الخطوات
@@ -360,7 +360,7 @@
                 div.className = 'step-item ' + (isEnabled ? 'pending' : 'skipped');
                 div.id = 'step-' + step;
                 div.innerHTML = `
-                    <span class="step-icon">${info.icon}</span>
+                    
                     <span class="step-name">${info.name}</span>
                     <span class="step-status" style="display:none;"></span>
                 `;
