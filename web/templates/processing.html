@@ -296,10 +296,10 @@
         </header>
         <div class="card">
             <div class="progress-header">
-                <div class="progress-title">⚡ سير المعالجة</div>
+                <div class="progress-title">سير المعالجة</div>
                 <div class="progress-stats">
-                    <div class="stat-badge time">⏱️ <span id="elapsedTime">0s</span></div>
-                    <div class="stat-badge cost">💰 $<span id="costCounter">0.0000</span></div>
+                    <div class="stat-badge time"><span id="elapsedTime">0s</span></div>
+                    <div class="stat-badge cost">$<span id="costCounter">0.0000</span></div>
                 </div>
             </div>
 
@@ -316,7 +316,7 @@
                 <div id="logContainer">
                     <div class="log-entry info">
                         <span class="log-time">--:--</span>
-                        <span class="log-icon">🚀</span>
+                        
                         <span class="log-text">بدء المعالجة...</span>
                     </div>
                 </div>
@@ -341,12 +341,12 @@
         };
 
         const stepInfo = {
-            analysis: { icon: "🔍", name: "التحليل" },
-            titles: { icon: "🎯", name: "العناوين" },
-            description: { icon: "📄", name: "الوصف" },
-            thumbnail: { icon: "🖼️", name: "الثمبنيل" },
-            evaluation: { icon: "⚖️", name: "التقييم" },
-            social_media: { icon: "📱", name: "السوشيال" },
+            analysis: { icon: "ت", name: "التحليل" },
+            titles: { icon: "ع", name: "العناوين" },
+            description: { icon: "و", name: "الوصف" },
+            thumbnail: { icon: "ث", name: "الثمبنيل" },
+            evaluation: { icon: "ق", name: "التقييم" },
+            social_media: { icon: "س", name: "السوشيال" },
         };
 
         // بناء بطاقات الخطوات
@@ -444,7 +444,7 @@
                         updateStepStatus(step, 'completed');
                         const info = stepInfo[step];
                         if (info) {
-                            addLog(`اكتملت خطوة "${info.name}"`, 'success', '✅');
+                            addLog(`اكتملت خطوة "${info.name}"`, 'success', '');
                         }
                     }
                 });
@@ -500,7 +500,7 @@
         // ابدأ
         buildSteps();
         setTimeout(() => {
-            addLog('اتصال ناجح بالخادم', 'info', '🔗');
+            addLog('اتصال ناجح بالخادم', 'info', '');
             checkStatus();
         }, 500);
     </script>
