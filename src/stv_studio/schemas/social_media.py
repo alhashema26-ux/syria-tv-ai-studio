@@ -41,7 +41,7 @@ class FacebookContent(BaseModel):
     # العنوان: 60-90 حرف (نسمح هامش أمان حتى 110)
     titles: list[str] = Field(..., min_length=3, max_length=3)
     # الكابشن: 150-400 حرف (هامش أمان حتى 450)
-    captions: list[str] = Field(..., min_length=3, max_length=3)
+    captions: list[str] = Field(..., min_length=2, max_length=3)
     hashtags: list[str] = Field(..., min_length=3, max_length=5)
 
 
@@ -65,13 +65,13 @@ class XContent(BaseModel):
 
 class TelegramContent(BaseModel):
     # 400-1200 حرف + هامش
-    captions: list[str] = Field(..., min_length=3, max_length=3)
+    captions: list[str] = Field(..., min_length=2, max_length=3)
     hashtags: list[str] = Field(..., min_length=2, max_length=3)
 
 
 class WhatsAppContent(BaseModel):
     # 80-250 حرف + هامش
-    captions: list[str] = Field(..., min_length=3, max_length=3)
+    captions: list[str] = Field(..., min_length=2, max_length=3)
     emojis_used: list[str] = Field(default_factory=list, max_length=5)
 
 
