@@ -15,6 +15,7 @@ from stv_studio.providers.anthropic_provider import AnthropicProvider
 from stv_studio.providers.base import LLMProvider, LLMResponse
 from stv_studio.providers.gemini_provider import GeminiProvider
 from stv_studio.providers.openai_provider import OpenAIProvider
+from stv_studio.providers.openrouter_provider import OpenRouterProvider
 
 
 class TaskType(str, Enum):
@@ -35,14 +36,14 @@ class LLMRouter:
     
     # خريطة المهام للـ Providers والنماذج
     TASK_ROUTING = {
-        TaskType.TRANSCRIPT_ANALYSIS: ("anthropic", "claude-sonnet-5"),
-        TaskType.TITLE_GENERATION:    ("anthropic", "claude-sonnet-5"),
-        TaskType.THUMBNAIL_TEXT:      ("anthropic", "claude-sonnet-5"),
-        TaskType.DESCRIPTION:         ("gemini", "gemini-3.1-flash-lite"),
-        TaskType.KEYWORDS:            ("gemini", "gemini-3.1-flash-lite"),
-        TaskType.QUALITY_EVALUATION:  ("openai", "gpt-5.6-terra"),
-        TaskType.GENERAL:             ("anthropic", "claude-sonnet-5"),
-        TaskType.SOCIAL_MEDIA_GENERATION: ("anthropic", "claude-sonnet-5"),
+        TaskType.TRANSCRIPT_ANALYSIS:    ("openrouter", "anthropic/claude-opus-4.8"),
+        TaskType.TITLE_GENERATION:        ("openrouter", "anthropic/claude-opus-4.8"),
+        TaskType.THUMBNAIL_TEXT:          ("openrouter", "google/gemini-2.5-pro"),
+        TaskType.DESCRIPTION:             ("openrouter", "openai/gpt-4o"),
+        TaskType.KEYWORDS:                ("openrouter", "openai/gpt-4o"),
+        TaskType.QUALITY_EVALUATION:      ("openrouter", "openai/gpt-4o"),
+        TaskType.GENERAL:                 ("openrouter", "anthropic/claude-opus-4.8"),
+        TaskType.SOCIAL_MEDIA_GENERATION: ("openrouter", "google/gemini-2.5-pro"),
     }
     
     def __init__(self):
@@ -56,6 +57,9 @@ class LLMRouter:
             ),
             "gemini": GeminiProvider(
                 api_key=settings.google_api_key.get_secret_value()
+            ),
+            "openrouter": OpenRouterProvider(
+                api_key=settings.openrouter_api_key.get_secret_value()
             ),
         }
         

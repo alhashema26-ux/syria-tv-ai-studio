@@ -49,6 +49,10 @@ class Settings(BaseSettings):
         ...,
         description="مفتاح Voyage AI للـ embeddings"
     )
+    openrouter_api_key: SecretStr = Field(
+        ...,
+        description="مفتاح OpenRouter API"
+    )
     # --- Default Models ---
     default_provider: Literal["anthropic", "openai", "gemini"] = "anthropic"
     anthropic_model: str = "claude-sonnet-5"
