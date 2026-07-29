@@ -89,3 +89,83 @@ def list_jobs(limit: int = 50) -> list:
                 LIMIT %s;
             """, (limit,))
             return [dict(row) for row in cur.fetchall()]
+
+
+def get_stats() -> dict:
+    """إحصائيات عامة للـ Dashboard."""
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("""
+                SELECT
+                    COUNT(*) as total_reports,
+                    COUNT(*) FILTER (WHERE status = 'done') as completed,
+                    COUNT(*) FILTER (WHERE status = 'error') as failed,
+                    COUNT(*) FILTER (WHERE status = 'running') as running,
+                    COALESCE(SUM(cost), 0) as total_cost,
+                    COALESCE(AVG(cost) FILTER (WHERE status = 'done'), 0) as avg_cost,
+                    COALESCE(AVG((result_data->'evaluation'->>'overall_score')::float) 
+                        FILTER (WHERE result_data->'evaluation' IS NOT NULL), 0) as avg_quality
+                FROM reports;
+            """)
+            stats = dict(cur.fetchone())
+
+            # أكثر البرامج استخداماً
+            cur.execute("""
+                SELECT program_name, COUNT(*) as count
+                FROM reports
+                WHERE program_name IS NOT NULL AND status = 'done'
+                GROUP BY program_name
+                ORDER BY count DESC
+                LIMIT 5;
+            """)
+            stats['top_programs'] = [dict(r) for r in cur.fetchall()]
+
+            # أكثر أنواع المحتوى
+            cur.execute("""
+                SELECT content_type, COUNT(*) as count
+                FROM reports
+                WHERE content_type IS NOT NULL AND status = 'done'
+                GROUP BY content_type
+                ORDER BY count DESC
+                LIMIT 5;
+            """)
+            stats['top_content_types'] = [dict(r) for r in cur.fetchall()]
+
+            # التقارير اليومية آخر 7 أيام
+            cur.execute("""
+                SELECT
+                    DATE(created_at) as date,
+                    COUNT(*) as count,
+                    COALESCE(SUM(cost), 0) as daily_cost
+                FROM reports
+                WHERE created_at >= NOW() - INTERVAL '7 days'
+                    AND status = 'done'
+                GROUP BY DATE(created_at)
+                ORDER BY date;
+            """)
+            stats['daily_reports'] = [dict(r) for r in cur.fetchall()]
+
+            return stats
+
+
+def get_recent_reports(limit: int = 20) -> list:
+    """آخر التقارير مع تفاصيلها."""
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("""
+                SELECT
+                    job_id,
+                    status,
+                    content_type,
+                    program_name,
+                    cost,
+                    created_at,
+                    LEFT(transcript, 100) as transcript_preview,
+                    (result_data->'evaluation'->>'overall_score')::float as quality_score,
+                    result_data->'titles'->'titles'->0->>'text' as recommended_title
+                FROM reports
+                WHERE status = 'done'
+                ORDER BY created_at DESC
+                LIMIT %s;
+            """, (limit,))
+            return [dict(r) for r in cur.fetchall()]

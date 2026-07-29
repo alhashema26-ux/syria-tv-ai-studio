@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — STV AI Studio</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { overflow-x: hidden; font-family: 'Segoe UI', Tahoma, sans-serif; background: #f1f5f9; color: #1e293b; }
+        
+        .header { background: #0f172a; color: white; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+        .header h1 { font-size: 20px; font-weight: 700; }
+        .header a { color: #f97316; text-decoration: none; font-size: 14px; font-weight: 600; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+        
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .stat-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .stat-label { font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
+        .stat-value { font-size: 32px; font-weight: 800; color: #0f172a; }
+        .stat-value.orange { color: #f97316; }
+        .stat-value.green { color: #16a34a; }
+        .stat-value.red { color: #dc2626; }
+        
+        /* Section */
+        .section { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 24px; }
+        .section-title { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
+        
+        /* Chart */
+        .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+        .bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+        .bar { background: #f97316; border-radius: 4px 4px 0 0; width: 100%; min-height: 4px; transition: height 0.3s; }
+        .bar-label { font-size: 10px; color: #64748b; }
+        .bar-count { font-size: 11px; font-weight: 700; color: #0f172a; }
+        
+        /* Top Lists */
+        .top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .top-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+        .top-item:last-child { border-bottom: none; }
+        .top-name { font-size: 13px; font-weight: 600; color: #334155; }
+        .top-count { background: #f1f5f9; color: #475569; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
+        
+        /* Table */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: right; padding: 10px 12px; background: #f8fafc; color: #64748b; font-weight: 600; font-size: 12px; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        tr:hover td { background: #f8fafc; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-done { background: #dcfce7; color: #16a34a; }
+        .badge-error { background: #fee2e2; color: #dc2626; }
+        .badge-running { background: #fef3c7; color: #d97706; }
+        .score { font-weight: 700; }
+        .score-high { color: #16a34a; }
+        .score-mid { color: #d97706; }
+        .score-low { color: #dc2626; }
+        .title-preview { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .view-btn { color: #f97316; text-decoration: none; font-weight: 600; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>STV AI Studio — Dashboard</h1>
+        <a href="/">العودة للأداة</a>
+    </div>
+    
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">إجمالي التقارير</div>
+                <div class="stat-value">{{ stats.total_reports or 0 }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">مكتملة</div>
+                <div class="stat-value green">{{ stats.completed or 0 }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">فشلت</div>
+                <div class="stat-value red">{{ stats.failed or 0 }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">التكلفة الإجمالية</div>
+                <div class="stat-value orange">${{ "%.3f"|format(stats.total_cost or 0) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">متوسط التكلفة</div>
+                <div class="stat-value">${{ "%.4f"|format(stats.avg_cost or 0) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">متوسط الجودة</div>
+                <div class="stat-value orange">{{ "%.0f"|format(stats.avg_quality or 0) }}/100</div>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        {% if stats.daily_reports %}
+        <div class="section">
+            <div class="section-title">التقارير اليومية — آخر 7 أيام</div>
+            {% set max_count = stats.daily_reports | map(attribute='count') | max %}
+            <div class="chart-bars">
+                {% for day in stats.daily_reports %}
+                {% set height = (day.count / max_count * 100) | int %}
+                <div class="bar-wrap">
+                    <div class="bar-count">{{ day.count }}</div>
+                    <div class="bar" style="height: {{ height }}px;"></div>
+                    <div class="bar-label">{{ day.date.strftime('%m/%d') if day.date else '' }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Top Programs & Content Types -->
+        <div class="top-grid">
+            {% if stats.top_programs %}
+            <div class="section">
+                <div class="section-title">أكثر البرامج استخداماً</div>
+                {% for item in stats.top_programs %}
+                <div class="top-item">
+                    <span class="top-name">{{ item.program_name or '—' }}</span>
+                    <span class="top-count">{{ item.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if stats.top_content_types %}
+            <div class="section">
+                <div class="section-title">أكثر أنواع المحتوى</div>
+                {% for item in stats.top_content_types %}
+                <div class="top-item">
+                    <span class="top-name">{{ item.content_type or '—' }}</span>
+                    <span class="top-count">{{ item.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Reports Table -->
+        <div class="section">
+            <div class="section-title">آخر التقارير</div>
+            {% if reports %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>العنوان المقترح</th>
+                        <th>البرنامج</th>
+                        <th>النوع</th>
+                        <th>الجودة</th>
+                        <th>التكلفة</th>
+                        <th>التاريخ</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reports %}
+                    <tr>
+                        <td class="title-preview">{{ r.recommended_title or r.transcript_preview or '—' }}</td>
+                        <td>{{ r.program_name or '—' }}</td>
+                        <td>{{ r.content_type or '—' }}</td>
+                        <td>
+                            {% if r.quality_score %}
+                            <span class="score {% if r.quality_score >= 80 %}score-high{% elif r.quality_score >= 60 %}score-mid{% else %}score-low{% endif %}">
+                                {{ "%.0f"|format(r.quality_score) }}
+                            </span>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>${{ "%.4f"|format(r.cost or 0) }}</td>
+                        <td>{{ r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else '—' }}</td>
+                        <td><a href="/result/{{ r.job_id }}" class="view-btn">فتح</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color: #64748b; text-align: center; padding: 40px;">لا يوجد تقارير بعد</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

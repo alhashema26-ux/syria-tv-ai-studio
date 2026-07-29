@@ -206,6 +206,21 @@ async def show_result(request: Request, job_id: str):
     return templates.TemplateResponse(request, "index.html", {"result": result_with_id, "error": job.get("error"), "transcript": ""})
 
 
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    try:
+        stats = get_stats()
+        reports = get_recent_reports(20)
+    except Exception as e:
+        stats = {}
+        reports = []
+        print(f"[DB] Dashboard error: {e}")
+    return templates.TemplateResponse(request, "dashboard.html", {
+        "stats": stats,
+        "reports": reports,
+    })
+
+
 @app.get("/history", response_class=HTMLResponse)
 async def history(request: Request):
     reports = CheckpointManager.list_complete()
