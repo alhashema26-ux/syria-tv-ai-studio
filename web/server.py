@@ -17,8 +17,16 @@ from fastapi.templating import Jinja2Templates
 
 from process_report_v2 import process_structured
 from stv_studio.utils.checkpoint import CheckpointManager
+from database import init_db, save_job, update_job, get_job, list_jobs
 
 app = FastAPI(title="Syria TV AI Studio")
+
+@app.on_event("startup")
+async def startup():
+    try:
+        init_db()
+    except Exception as e:
+        print(f"[DB] Warning: {e}")
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
 JOBS: dict[str, dict] = {}
@@ -28,8 +36,18 @@ async def run_job(job_id: str, transcript: str, options: dict):
     try:
         result = await process_structured(transcript, run_id=job_id, **options)
         JOBS[job_id] = {"status": "done", "result": result, "error": None}
+        try:
+            cost = result.get("cost", 0.0) if isinstance(result, dict) else 0.0
+            update_job(job_id, "done", result, cost)
+        except Exception as db_err:
+            print(f"[DB] Failed to save result: {db_err}")
     except Exception as e:
-        JOBS[job_id] = {"status": "error", "result": None, "error": f"{e}\n\n{traceback.format_exc()[-500:]}"}
+        error_msg = f"{e}\n\n{traceback.format_exc()[-500:]}"
+        JOBS[job_id] = {"status": "error", "result": None, "error": error_msg}
+        try:
+            update_job(job_id, "error", error=error_msg)
+        except Exception as db_err:
+            print(f"[DB] Failed to save error: {db_err}")
 
 
 @app.get("/health")
@@ -56,6 +74,10 @@ async def process_transcript(
 ):
     job_id = uuid.uuid4().hex[:12]
     JOBS[job_id] = {"status": "running", "result": None, "error": None}
+    try:
+        save_job(job_id, transcript, content_type, program_name)
+    except Exception as db_err:
+        print(f"[DB] Failed to save job: {db_err}")
 
     options = {
         "content_type": content_type or None,
@@ -131,16 +153,28 @@ async def check_status(job_id: str):
 async def show_result(request: Request, job_id: str):
     job = JOBS.get(job_id)
     if not job:
-        # حاول القراءة من الـ checkpoint حتى لو JOBS انمسحت
-        from stv_studio.config import PROJECT_ROOT
-        checkpoint_path = PROJECT_ROOT / "outputs" / "checkpoints" / f"checkpoint_{job_id}.json"
-        if checkpoint_path.exists():
-            try:
-                return await history_detail(request, job_id)
-            except Exception as e:
-                import traceback
-                print(f"[ERROR] history_detail failed: {e}\n{traceback.format_exc()}")
-                return templates.TemplateResponse(request, "index.html", {"result": None, "error": f"خطأ في تحميل التقرير: {str(e)}"})
+        # حاول القراءة من DB
+        try:
+            db_job = get_job(job_id)
+            if db_job:
+                data = db_job.get("result_data") or {}
+                result_with_id = {
+                    "job_id": job_id,
+                    "cost": db_job.get("cost", 0.0),
+                    "analysis": data.get("analysis"),
+                    "titles": data.get("titles"),
+                    "description": data.get("description"),
+                    "thumbnail": data.get("thumbnail"),
+                    "evaluation": data.get("evaluation"),
+                    "social_media": data.get("social_media"),
+                    "content_type": db_job.get("content_type"),
+                    "program_name": db_job.get("program_name"),
+                    "raw_text": db_job.get("transcript", ""),
+                    "is_processing": db_job.get("status") == "running",
+                }
+                return templates.TemplateResponse(request, "index.html", {"result": result_with_id, "error": db_job.get("error"), "transcript": ""})
+        except Exception as db_err:
+            print(f"[DB] Failed to read job: {db_err}")
         return templates.TemplateResponse(request, "index.html", {"result": None, "error": "المهمة غير موجودة أو انتهت صلاحيتها"})
     job_status = job.get("status", "running")
     is_processing = job_status == "running"
