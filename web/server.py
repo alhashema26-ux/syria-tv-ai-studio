@@ -37,8 +37,16 @@ async def run_job(job_id: str, transcript: str, options: dict):
         result = await process_structured(transcript, run_id=job_id, **options)
         JOBS[job_id] = {"status": "done", "result": result, "error": None}
         try:
-            cost = result.get("cost", 0.0) if isinstance(result, dict) else 0.0
-            update_job(job_id, "done", result, cost)
+            if isinstance(result, dict):
+                cost = result.get("cost", 0.0)
+                # نحول Pydantic objects لـ dict
+                serializable = {}
+                for k, v in result.items():
+                    if hasattr(v, 'model_dump'):
+                        serializable[k] = v.model_dump()
+                    else:
+                        serializable[k] = v
+                update_job(job_id, "done", serializable, cost)
         except Exception as db_err:
             print(f"[DB] Failed to save result: {db_err}")
     except Exception as e:
