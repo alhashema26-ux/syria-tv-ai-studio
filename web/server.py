@@ -38,15 +38,22 @@ async def run_job(job_id: str, transcript: str, options: dict):
         JOBS[job_id] = {"status": "done", "result": result, "error": None}
         try:
             if isinstance(result, dict):
-                cost = result.get("cost", 0.0)
-                # نحول Pydantic objects لـ dict
+                cost = float(result.get("cost", 0.0) or 0.0)
                 serializable = {}
                 for k, v in result.items():
+                    if k in ("filepath", "raw_text"):
+                        continue
                     if hasattr(v, 'model_dump'):
                         serializable[k] = v.model_dump()
-                    else:
+                    elif isinstance(v, dict):
                         serializable[k] = v
+                    elif v is None or isinstance(v, (str, int, float, bool, list)):
+                        serializable[k] = v
+                    else:
+                        serializable[k] = str(v)
+                serializable["cost"] = cost
                 update_job(job_id, "done", serializable, cost)
+                print(f"[DB] Job {job_id} saved — cost: ${cost:.4f}")
         except Exception as db_err:
             print(f"[DB] Failed to save result: {db_err}")
     except Exception as e:
