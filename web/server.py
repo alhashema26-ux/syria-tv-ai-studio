@@ -17,7 +17,7 @@ from fastapi.templating import Jinja2Templates
 
 from process_report_v2 import process_structured
 from stv_studio.utils.checkpoint import CheckpointManager
-from database import init_db, save_job, update_job, get_job, list_jobs
+from database import init_db, save_job, update_job, get_job, list_jobs, get_stats, get_recent_reports
 
 app = FastAPI(title="Syria TV AI Studio")
 
