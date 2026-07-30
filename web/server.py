@@ -226,10 +226,12 @@ async def dashboard(request: Request):
     try:
         stats = get_stats()
         reports = get_recent_reports(20)
+        print(f"[DB] Dashboard stats: {stats}")
     except Exception as e:
+        import traceback
         stats = {}
         reports = []
-        print(f"[DB] Dashboard error: {e}")
+        print(f"[DB] Dashboard error: {e}\n{traceback.format_exc()}")
     return templates.TemplateResponse(request, "dashboard.html", {
         "stats": stats,
         "reports": reports,
