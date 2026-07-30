@@ -403,6 +403,14 @@
         .tab-content.active > *:nth-child(8) { animation-delay: 1050ms; }
 
 
+
+        /* ===== Toast Notifications ===== */
+        #toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .toast { background: #1e293b; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); transition: all 0.3s ease; pointer-events: none; white-space: nowrap; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { border-right: 4px solid #16a34a; }
+        .toast.error { border-right: 4px solid #dc2626; }
+        .toast.info { border-right: 4px solid #f97316; }
         /* ===== أزرار إعادة التوليد ===== */
         .regen-btn {
             background: transparent;
@@ -882,6 +890,7 @@
     </div>
     {% endif %}
 </div>
+<div id="toast-container"></div>
 <script>
     document.getElementById('reportForm').addEventListener('submit', function() {
         document.getElementById('submitBtn').disabled = true;
@@ -903,19 +912,31 @@
         btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
 
-    function copyText(text, label) {
-        navigator.clipboard.writeText(text).then(() => alert('✅ تم نسخ ' + (label || 'النص') + '!'));
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
     }
-    function copyResult() { navigator.clipboard.writeText(document.getElementById('rawContent').value).then(() => alert('✅ تم نسخ التقرير كاملاً!')); }
-    function copyKeywords() { const el = document.getElementById('keywordsRaw'); if (el) navigator.clipboard.writeText(el.value).then(() => alert('✅ تم نسخ الكلمات المفتاحية!')); }
-    function copyHashtags() { const el = document.getElementById('hashtagsRaw'); if (el) navigator.clipboard.writeText(el.value).then(() => alert('✅ تم نسخ الهاشتاغات!')); }
+    function copyText(text, label) {
+        navigator.clipboard.writeText(text).then(() => showToast('✅ تم نسخ ' + (label || 'النص') + '!'));
+    }
+    function copyResult() { navigator.clipboard.writeText(document.getElementById('rawContent').value).then(() => showToast('✅ تم نسخ التقرير كاملاً!')); }
+    function copyKeywords() { const el = document.getElementById('keywordsRaw'); if (el) navigator.clipboard.writeText(el.value).then(() => showToast('✅ تم نسخ الكلمات المفتاحية!')); }
+    function copyHashtags() { const el = document.getElementById('hashtagsRaw'); if (el) navigator.clipboard.writeText(el.value).then(() => showToast('✅ تم نسخ الهاشتاغات!')); }
 
     function updateXCounter() { const el = document.getElementById('x-tweet-text'); const counter = document.getElementById('x-char-count'); if (!el || !counter) return; const len = el.textContent.length; counter.textContent = len + '/280'; counter.className = 'x-char-counter ' + (len > 280 ? 'x-char-warn' : 'x-char-ok'); }
     function renderPlatform(platform) { const d = smData[platform]; if (!d) return; const idx = d.current; const total = (d.titles || d.hooks || d.tweets || d.captions).length; const label = document.getElementById(platform + '-label'); if (label) label.textContent = (idx+1)+'/'+total; if (platform==='fb') { document.getElementById('fb-title-text').textContent=d.titles[idx]||''; document.getElementById('fb-caption-text').textContent=d.captions[idx]||''; } else if (platform==='ig') { document.getElementById('ig-hook-text').textContent=d.hooks[idx]||''; } else if (platform==='x') { document.getElementById('x-tweet-text').textContent=d.tweets[idx]||''; updateXCounter(); } else if (platform==='tg') { document.getElementById('tg-caption-text').textContent=d.captions[idx]||''; } else if (platform==='wa') { document.getElementById('wa-caption-text').textContent=d.captions[idx]||''; } else if (platform==='tt') { document.getElementById('tt-hook-text').textContent=d.hooks[idx]||''; } }
     function nextVariant(platform) { const d=smData[platform]; if(!d) return; const total=(d.titles||d.hooks||d.tweets||d.captions).length; d.current=(d.current+1)%total; renderPlatform(platform); }
     function prevVariant(platform) { const d=smData[platform]; if(!d) return; const total=(d.titles||d.hooks||d.tweets||d.captions).length; d.current=(d.current-1+total)%total; renderPlatform(platform); }
-    function copyPlatformText(elementId) { const el=document.getElementById(elementId); if(!el) return; navigator.clipboard.writeText(el.textContent.trim()).then(()=>alert('✅ تم النسخ!')); }
-    function copyPlatformHashtags(platform) { const d=smData[platform]; if(!d||!d.hashtags||!d.hashtags.length) return; navigator.clipboard.writeText(d.hashtags.join(' ')).then(()=>alert('✅ تم نسخ الهاشتاغات!')); }
+    function copyPlatformText(elementId) { const el=document.getElementById(elementId); if(!el) return; navigator.clipboard.writeText(el.textContent.trim()).then(()=>showToast('✅ تم النسخ!')); }
+    function copyPlatformHashtags(platform) { const d=smData[platform]; if(!d||!d.hashtags||!d.hashtags.length) return; navigator.clipboard.writeText(d.hashtags.join(' ')).then(()=>showToast('✅ تم نسخ الهاشتاغات!')); }
 
     let chatHistory = [];
     let chatContext = "";
@@ -1008,7 +1029,7 @@
         const jobId = document.getElementById('jobId').value;
 
         if (!jobId) {
-            alert('لا يمكن إعادة التوليد - job_id غير موجود');
+            showToast('لا يمكن إعادة التوليد', 'error');
             return;
         }
 
@@ -1026,7 +1047,7 @@
             const data = await res.json();
 
             if (data.error) {
-                alert('خطأ: ' + data.error);
+                showToast('خطأ: ' + data.error, 'error');
                 if (contentEl) contentEl.classList.remove('fading-out');
                 return;
             }
@@ -1049,7 +1070,7 @@
                 window.location.href = url.toString();
             }, 300);
         } catch(e) {
-            alert('تعذر الاتصال');
+            showToast('تعذر الاتصال', 'error');
             if (contentEl) contentEl.classList.remove('fading-out');
         } finally {
             btn.disabled = false;
